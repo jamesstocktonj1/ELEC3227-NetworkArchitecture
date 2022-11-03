@@ -4,7 +4,7 @@ This is a project template for the Il Matto development board.
 
 ### Project Folder Structure
     .
-    ├── build           #compiled files
+    ├── build           # compiled files
     ├── include         # dependency files
     ├── src             # source files
     ├── <target>.c
