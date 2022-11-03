@@ -48,9 +48,9 @@
  * library internal includes
  * the order in which they are included is important
 */
-#include "rfm12_hw.h"
-#include "rfm12_defaults.h"
-#include "rfm12_core.h"
+#include "include/rfm12_hw.h"
+#include "include/rfm12_defaults.h"
+#include "include/rfm12_core.h"
 #include "rfm12.h"
 
 //for uart debugging
@@ -89,21 +89,21 @@ rfm12_control_t ctrl;
 */
 
 /* include spi functions into here */
-#include "rfm12_spi.c"
-#include "rfm12_spi_linux.c"
+#include "include/rfm12_spi.c"
+#include "include/rfm12_spi_linux.c"
 
 /*
  * include control / init functions into here
  * all of the stuff in there is optional, so there's no code-bloat.
 */
 #define RFM12_LIVECTRL_HOST 1//if we are buliding for the microcontroller, we are the host.
-#include "rfm12_livectrl.c"
+#include "include/rfm12_livectrl.c"
 
 /*
  * include extra features here
  * all of the stuff in there is optional, so there's no code-bloat..
 */
-#include "rfm12_extra.c"
+#include "include/rfm12_extra.c"
 
 
 /************************

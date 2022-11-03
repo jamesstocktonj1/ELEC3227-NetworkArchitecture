@@ -54,6 +54,8 @@
 #include "rfm12_defaults.h"
 #include "rfm12_core.h"
 
+#include "rfm12_config.h"
+
 /** \name States for rx and tx buffers
 * \anchor rxtx_states
 * \see rfm12_rx_status() and rfm12_control_t

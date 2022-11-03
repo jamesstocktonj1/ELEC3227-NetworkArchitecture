@@ -242,7 +242,7 @@
 
  #ifndef RFM12_FREQUENCY
  	#ifndef FREQ
- 		#error "RFM12_FREQUENCY not defined."
+ 		#warning "RFM12_FREQUENCY not defined."
  	#else
  		#define RFM12_FREQUENCY FREQ
  		#warning "using FREQ for RFM12_FREQUENCY. Please use RFM12_FREQUENCY in the future!"
@@ -257,7 +257,7 @@
  #elif (RFM12_BASEBAND) == RFM12_BAND_915
  	#define RFM12_FREQUENCY_CALC(x) RFM12_FREQUENCY_CALC_915(x)
  #else
- 	#error "Unsupported RFM12 baseband selected."
+ 	#warning "Unsupported RFM12 baseband selected."
  #endif
 
  #endif /* _RFM12_DEFAULTS_H */
