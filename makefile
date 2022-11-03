@@ -18,6 +18,7 @@ CLK = 12000000
 
 # compiler constants
 CC = avr-gcc
+TEST-CC = gcc
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 OBJSIZE = avr-size
@@ -25,6 +26,7 @@ OBJSIZE = avr-size
 # compiler flags
 CFLAGS = -Wall -Os
 TARGET = main
+TESTFLAGS = -lstdc++ -Os
 
 # build and source folders
 BUILD = build
@@ -35,6 +37,11 @@ INCLUDES = $(wildcard $(INCLUDE)/*.h)
 OBJECTS = $(subst $(SOURCE), $(BUILD), $(SOURCES:.c=.o))
 #LIB = lib
 #LIBRARY = $(wildcard $(LIB)/*.c)
+
+# test files
+TEST = test
+TESTS = $(wildcard $(TEST)/*.c)
+TEST_TARGET = test.out
 
 #programmer constant
 AVRDUDE = avrdude 
@@ -48,13 +55,16 @@ EF = 0xff
 
 all: $(BUILD)/$(TARGET).hex
 
+test: $(BUILD)/$(TEST_TARGET)
+	$(BUILD)/$(TEST_TARGET)
+
 disasm: $(BUILD)/$(TARGET).elf
 	$(OBJDUMP) -d $(BUILD)/$(TARGET).elf
 
 size: $(BUILD)/$(TARGET).elf
 	$(OBJSIZE) -C $(BUILD)/$(TARGET).elf
 
-test:
+test-flash:
 	$(AVRDUDE) -c $(PROGRAMMER) -p $(MCU)
 
 flash: all
@@ -67,19 +77,20 @@ clean:
 	@rm -f $(BUILD)/$(TARGET).elf
 	@rm -f $(BUILD)/$(TARGET).hex
 	@rm -f $(OBJECTS)
+	@rm -f $(BUILD)/$(TEST_TARGET)
 	
 help:
 	@echo "Il Matto Makefile Usage"
-	@echo "	all	- compiles whole program"
-	@echo "	disasm	- disassembles elf file"
-	@echo "	size	- shows size of elf file"
-	@echo "	test	- test programmer connection"
-	@echo "	flash	- upload hex to target"
-	@echo "	fuse	- set fuses of target"
-	@echo "	clean	- deletes compiled files"
+	@echo "	all		- compiles whole program"
+	@echo "	disasm		- disassembles elf file"
+	@echo "	size		- shows size of elf file"
+	@echo "	test-flash	- test programmer connection"
+	@echo "	flash		- upload hex to target"
+	@echo "	fuse		- set fuses of target"
+	@echo "	clean		- deletes compiled files"
+	@echo "	test		- runs the tests found in test/"
 
-
-$(BUILD)/%.o: $(SOURCE)/%.c
+$(BUILD)/%.o: $(SOURCE)/%.c $(INCLUDES)
 	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) -c $< -o $@
 
 $(BUILD)/$(TARGET).elf: $(TARGET).c $(OBJECTS)
@@ -87,3 +98,7 @@ $(BUILD)/$(TARGET).elf: $(TARGET).c $(OBJECTS)
 
 $(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
 	$(OBJCOPY) $(BUILD)/$(TARGET).elf $(BUILD)/$(TARGET).hex -O ihex
+
+
+$(BUILD)/$(TEST_TARGET): $(TESTS)
+	$(TEST-CC) $(TESTFLAGS) $(TESTS) -o $@
