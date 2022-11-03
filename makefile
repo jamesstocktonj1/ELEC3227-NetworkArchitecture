@@ -88,7 +88,7 @@ help:
 	@echo "	flash	- upload hex to target"
 	@echo "	fuse	- set fuses of target"
 	@echo "	clean	- deletes compiled files"
-	@echo " test	- runs the tests found in test/"
+	@echo "	test	- runs the tests found in test/"
 
 $(BUILD)/%.o: $(SOURCE)/%.c $(INCLUDES)
 	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) -c $< -o $@
