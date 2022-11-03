@@ -81,14 +81,14 @@ clean:
 	
 help:
 	@echo "Il Matto Makefile Usage"
-	@echo "	all	- compiles whole program"
-	@echo "	disasm	- disassembles elf file"
-	@echo "	size	- shows size of elf file"
+	@echo "	all		- compiles whole program"
+	@echo "	disasm		- disassembles elf file"
+	@echo "	size		- shows size of elf file"
 	@echo "	test-flash	- test programmer connection"
-	@echo "	flash	- upload hex to target"
-	@echo "	fuse	- set fuses of target"
-	@echo "	clean	- deletes compiled files"
-	@echo "	test	- runs the tests found in test/"
+	@echo "	flash		- upload hex to target"
+	@echo "	fuse		- set fuses of target"
+	@echo "	clean		- deletes compiled files"
+	@echo "	test		- runs the tests found in test/"
 
 $(BUILD)/%.o: $(SOURCE)/%.c $(INCLUDES)
 	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) -c $< -o $@
