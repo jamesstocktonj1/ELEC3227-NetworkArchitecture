@@ -1,2 +1,2 @@
 #include "rfm12_config.h"
-#include "../lib/librfm12/include/rfm12.h"
+#include "../lib/librfm12/src/rfm12.h"

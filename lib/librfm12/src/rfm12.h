@@ -51,10 +51,8 @@
 
 
 //It is very important to set the config options for structs and such
-#include "rfm12_defaults.h"
-#include "rfm12_core.h"
-
-#include "rfm12_config.h"
+#include "include/rfm12_defaults.h"
+#include "include/rfm12_core.h"
 
 /** \name States for rx and tx buffers
 * \anchor rxtx_states
@@ -64,7 +62,7 @@
 typedef enum{
     STATUS_FREE, STATUS_OCCUPIED
 } buff_state;
-const buff_state STATUS_COMPLETE = STATUS_OCCUPIED; //For compatibility
+// const buff_state STATUS_COMPLETE = STATUS_OCCUPIED; //For compatibility
 //@}
 
 
@@ -326,7 +324,7 @@ extern rfm12_control_t ctrl;
  * include headers for all the optional stuff in here
  * this way the user only needs to include rfm12.h
 */
-#include "rfm12_extra.h"
-#include "rfm12_livectrl.h"
+#include "include/rfm12_extra.h"
+#include "include/rfm12_livectrl.h"
 
 #endif /* _RFM12_H */

@@ -1,8 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "lib/librfm12/include/rfm12_config.h"
-#include "lib/librfm12/include/rfm12.h"
+#include "include/rfm12.h"
 
 #include "include/io.h"
 #include "include/serial.h"

@@ -35,15 +35,17 @@ INCLUDES = $(wildcard $(INCLUDE)/*.h)
 OBJECTS = $(subst $(SOURCE), $(BUILD), $(SOURCES:.c=.o))
 
 # library folders
-LIB = lib/librfm12/include
+LIB =
 LIB_BUILD = build/lib
 LIBRARYS = $(wildcard $(LIB)/*.c)
 #LIB_OBJECTS = $(LIB_BUILD)/rfm12.o
-LIB_OBJECTS = $(subst $(LIB), $(LIB_BUILD), $(LIBRARYS:.c=.o))
+LIB_OBJECTS = $(foreach x,$(LIB),$(subst $(x), $(LIB_BUILD), $(LIBRARYS:.c=.o)))
 
 #programmer constant
 AVRDUDE = avrdude 
 PROGRAMMER = usbasp
+
+CFLAGS	+= -D__PLATFORM_AVR__
 
 #fuses
 LF = 0xff
@@ -90,7 +92,7 @@ $(BUILD)/%.o: $(SOURCE)/%.c
 
 
 $(LIB_OBJECTS): $(LIBRARYS)
-	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) -c $< -o $@
+	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) $(addprefix -I,$(INCLUDE)) -c $< -o $@
 
 
 $(BUILD)/$(TARGET).elf: $(TARGET).c $(OBJECTS) $(LIB_OBJECTS)
