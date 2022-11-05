@@ -63,6 +63,7 @@ typedef enum{
     STATUS_FREE, STATUS_OCCUPIED
 } buff_state;
 // const buff_state STATUS_COMPLETE = STATUS_OCCUPIED; //For compatibility
+#define STATUS_COMPLETE STATUS_OCCUPIED
 //@}
 
 
