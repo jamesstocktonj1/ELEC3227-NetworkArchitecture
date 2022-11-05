@@ -1,6 +1,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "include/rfm12.h"
+
 #include "include/io.h"
 #include "include/serial.h"
 
@@ -13,6 +15,8 @@
 int main() {
     init_pins();
     init_serial();
+
+    rfm12_init();
 
 
     while(1) {

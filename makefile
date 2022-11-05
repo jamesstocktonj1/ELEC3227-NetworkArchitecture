@@ -35,8 +35,13 @@ SOURCES = $(wildcard $(SOURCE)/*.c)
 INCLUDE = include
 INCLUDES = $(wildcard $(INCLUDE)/*.h)
 OBJECTS = $(subst $(SOURCE), $(BUILD), $(SOURCES:.c=.o))
-#LIB = lib
-#LIBRARY = $(wildcard $(LIB)/*.c)
+
+# library folders
+LIB =
+LIB_BUILD = build/lib
+LIBRARYS = $(wildcard $(LIB)/*.c)
+#LIB_OBJECTS = $(LIB_BUILD)/rfm12.o
+LIB_OBJECTS = $(foreach x,$(LIB),$(subst $(x), $(LIB_BUILD), $(LIBRARYS:.c=.o)))
 
 # test files
 TEST = test
@@ -46,6 +51,8 @@ TEST_TARGET = test.out
 #programmer constant
 AVRDUDE = avrdude 
 PROGRAMMER = usbasp
+
+CFLAGS	+= -D__PLATFORM_AVR__
 
 #fuses
 LF = 0xff
@@ -77,7 +84,7 @@ clean:
 	@rm -f $(BUILD)/$(TARGET).elf
 	@rm -f $(BUILD)/$(TARGET).hex
 	@rm -f $(OBJECTS)
-	@rm -f $(BUILD)/$(TEST_TARGET)
+	@rm -f $(LIB_OBJECTS)
 	
 help:
 	@echo "Il Matto Makefile Usage"
@@ -93,8 +100,13 @@ help:
 $(BUILD)/%.o: $(SOURCE)/%.c $(INCLUDES)
 	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) -c $< -o $@
 
-$(BUILD)/$(TARGET).elf: $(TARGET).c $(OBJECTS)
-	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) $(TARGET).c $(OBJECTS) -o $(BUILD)/$(TARGET).elf
+
+$(LIB_OBJECTS): $(LIBRARYS)
+	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) $(addprefix -I,$(INCLUDE)) -c $< -o $@
+
+
+$(BUILD)/$(TARGET).elf: $(TARGET).c $(OBJECTS) $(LIB_OBJECTS)
+	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) $(TARGET).c $(OBJECTS) $(LIB_OBJECTS) -o $(BUILD)/$(TARGET).elf
 
 $(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
 	$(OBJCOPY) $(BUILD)/$(TARGET).elf $(BUILD)/$(TARGET).hex -O ihex

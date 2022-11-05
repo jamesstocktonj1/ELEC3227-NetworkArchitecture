@@ -1,0 +1,146 @@
+2014-05-10
+------------------------------------------------------------------------
+
+Added initial Linux SPI implementation to use the library on a
+Raspberry Pi or other Linux based SPI-capable platforms.
+
+------------------------------------------------------------------------
+
+2012-01-28
+
+* included rfm12_read_interrupt_flags_inline() again for performance
+  reasons (interrupt handler might be to slow on 115200 Baud otherwise)
+* clear interrupt flag before checking status (there is a glitch sometimes
+  while the int line goes high, which triggers another interrupt otherwise,
+  which also hurts performance
+* LNA controllable over rfm12_livectrl
+
+------------------------------------------------------------------------
+
+2012-01-28
+
+* reworked rfm12_init to use programspace table of init values. saves 40 Bytes.
+
+------------------------------------------------------------------------
+
+2012-01-28
+
+* totally new table based livectrl implementation
+* switchable livectrl client support from library (get strings for parameters)
+* livectrl client support also useable over remote connection: only one
+  simple rfm12_livectrl(uint8_t cmd, uint16_t value) function,
+  where the parameters can be passed from a remote client.
+* parameter load / save and client implementation in examples/uart_frontend
+
+------------------------------------------------------------------------
+
+2012-01-26
+
+* additional livectrl functions
+* tests for the livectrl functions in uart_frontend example
+
+------------------------------------------------------------------------
+
+2012-01-25
+
+* rfm12_data_delayed removed and replaced by rfm12_data_safe which turns off
+  the interrupt while sending livectrl commands.
+* uart_frontend example with VT100 uart interface for controlling rfm12..
+  this ist still work in progress.
+
+------------------------------------------------------------------------
+
+2012-01-24
+
+* interrupt handler restructured from goto to do{}while(), fixed deadlock bug
+  completely: it could still occur if rx or tx interrupt occurred during servicing
+  wakeup timer interrupt.
+
+------------------------------------------------------------------------
+
+2012-01-24
+
+* there was an evil bug, where rfm12.h did not include rfm12_core.h to configure #defines
+  this yielded structs, that looked different for rfm12 lib and user code....
+* Wakeup timer is finally working most of the time .... there still is a glitch somewhere
+
+------------------------------------------------------------------------
+
+2012-01-23
+
+* use of PWRMGT_DEFAULT makro in rfm12_config.h deprecated. wakeup timer and
+  low battery detector handle this automatic.
+* RFM12_USE_CLOCK_OUTPUT makro added for config file. this turns on the clock output
+* RFM12_CLOCK_OUT_FREQUENCY makro to configure clock output
+* RFM12_LBD_VOLTAGE makro and constants for configuring LBD voltage
+* Support for RFM12BP fixed.
+
+------------------------------------------------------------------------
+
+2012-01-22
+
+Merged changes from Hansinators 1.1 Version
+* code size improvement
+* some minor stuff
+
+------------------------------------------------------------------------
+
+2012-01-22
+
+* interrupt deadlock bug fixed: if interrupt handler was executing while
+  the interrupt condition occurred, the interrupt line stayed low, and interrupt
+  was never entered again (edge triggered). This is now fixed by looping in
+  the interrupt handler until no interrupt conditions are present.
+* Support form RFM12BP added. Tested working.
+* more RFM12 parameters adjustable in config file
+ 
+------------------------------------------------------------------------
+
+2010-07-11 13:37:00 +0100 (Sun, 11 Jul 2010)
+* branch in 1.2-dev
+* implemented callback function for receiving
+* old (unused) config variable "LOW_POWER" removed from demo config
+* rfm12_ctrl extended with several functions
+* implemented delayed execution of rf12 instructions at the end of the interrupt/polling routine
+* corrected TXCONF_POWER_* bitmasks according to current revision of the datasheet
+
+------------------------------------------------------------------------
+
+2010-01-09 19:40:33 +0100 (Sat, 09 Jan 2010)
+nur jedes 2.te Packet wurde gesendet - vielen Dank an werner.baumann at t-online.de
+
+------------------------------------------------------------------------
+
+2009-11-30 21:22:02 +0100 (Mon, 30 Nov 2009)
+fixed frequency calculation
+
+------------------------------------------------------------------------
+
+2009-11-30 20:49:41 +0100 (Mon, 30 Nov 2009)
+comitted patch from Mikl?\195?\179s M?\195?\161rton
+
+------------------------------------------------------------------------
+
+2009-11-19 00:03:21 +0100 (Thu, 19 Nov 2009) 
+rfm12 ask sending needed some fixes. works flawlessly now!
+
+------------------------------------------------------------------------
+
+2009-11-03 17:18:43 +0100 (Tue, 03 Nov 2009) 
+updated doxygen config
+
+------------------------------------------------------------------------
+
+2009-10-26 22:37:33 +0100 (Mon, 26 Oct 2009) 
+added section about ask data transmission
+
+------------------------------------------------------------------------
+
+r51 | hansi | 2009-10-06 00:42:11 +0200 (Tue, 06 Oct 2009)
+removed dev message
+
+------------------------------------------------------------------------
+
+2009-10-06 00:37:18 +0200 (Tue, 06 Oct 2009) 
+restructured paths
+
