@@ -85,6 +85,8 @@ clean:
 	@rm -f $(BUILD)/$(TARGET).hex
 	@rm -f $(OBJECTS)
 	@rm -f $(LIB_OBJECTS)
+	@rm -f $(BUILD)/$(TEST_TARGET)
+	@rm -f $(BUILD)/temp.txt
 	
 help:
 	@echo "Il Matto Makefile Usage"
