@@ -1,0 +1,16 @@
+name: Unit-Tests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    run-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Run Unit Tests
+        run: make test
+      - name: Test Build
+        run: make all
