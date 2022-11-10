@@ -4,8 +4,10 @@
 #include "application_test.h"
 #include "datalink_test.h"
 #include "network_test.h"
+#include "config_test.h"
 
 
 int main() {
-    printf("Hello World!");
+
+    main_config_test();
 }

@@ -26,7 +26,7 @@ OBJSIZE = avr-size
 # compiler flags
 CFLAGS = -Wall -Os
 TARGET = main
-TESTFLAGS = -lstdc++ -Os
+TESTFLAGS = -Wall -Os -lstdc++ -DTEST
 
 # build and source folders
 BUILD = build
@@ -46,6 +46,11 @@ LIB_OBJECTS = $(foreach x,$(LIB),$(subst $(x), $(LIB_BUILD), $(LIBRARYS:.c=.o)))
 # test files
 TEST = test
 TESTS = $(wildcard $(TEST)/*.c)
+TEST_FILES = \
+	src/application.c \
+	src/network.c \
+	src/datalink.c \
+	src/config.c
 TEST_TARGET = test.out
 
 #programmer constant
@@ -85,6 +90,8 @@ clean:
 	@rm -f $(BUILD)/$(TARGET).hex
 	@rm -f $(OBJECTS)
 	@rm -f $(LIB_OBJECTS)
+	@rm -f $(BUILD)/$(TEST_TARGET)
+	@rm -f $(BUILD)/temp.txt
 	
 help:
 	@echo "Il Matto Makefile Usage"
@@ -113,4 +120,4 @@ $(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
 
 
 $(BUILD)/$(TEST_TARGET): $(TESTS)
-	$(TEST-CC) $(TESTFLAGS) $(TESTS) -o $@
+	$(TEST-CC) $(TESTFLAGS) $(TESTS) $(TEST_FILES) -o $@
