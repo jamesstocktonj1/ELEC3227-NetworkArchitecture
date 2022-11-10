@@ -8,6 +8,6 @@
 
 
 int main() {
-    print("Hello Error!");
+    
     main_config_test();
 }
