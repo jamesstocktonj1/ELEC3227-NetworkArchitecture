@@ -3,6 +3,7 @@
 
 #ifndef TEST
 #include <avr/io.h>
+#include <stdio.h>
 #else
 #include <stdio.h>
 #include <stdint.h>
