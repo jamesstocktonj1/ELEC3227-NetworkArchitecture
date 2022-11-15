@@ -10,4 +10,6 @@
 int main() {
 
     main_config_test();
+
+    main_application_test();
 }
