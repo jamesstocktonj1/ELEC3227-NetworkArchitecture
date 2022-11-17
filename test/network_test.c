@@ -1,4 +1,7 @@
 #include "network_test.h"
 
-#include "../include/network.h"
-#include "../include/config.h"
+
+void main_network_test() {
+
+    fprintf(stderr, "main_network_test\n");
+}
