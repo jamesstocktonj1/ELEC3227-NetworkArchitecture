@@ -10,7 +10,7 @@
 #endif
 
 // checksum constants
-#define CRC_CONSTANT 0xA001
+#define CRC_CONSTANT 0x1021
 
 
 typedef struct {
@@ -46,7 +46,7 @@ void print_segment(Segment p);
 void print_packet(Packet p);
 void print_frame(Frame p);
 
-// CRC-16 Modbus
+// CRC-16 CCITT
 uint16_t crc16_update(uint16_t crc, uint8_t a);
 uint16_t crc16_compute(uint8_t *data, uint8_t length);
 
