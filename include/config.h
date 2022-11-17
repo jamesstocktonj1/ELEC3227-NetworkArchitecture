@@ -9,6 +9,9 @@
 #include <stdint.h>
 #endif
 
+// checksum constants
+#define CRC_CONSTANT 0xA001
+
 
 typedef struct {
     uint16_t control;
@@ -42,5 +45,9 @@ typedef struct {
 void print_segment(Segment p);
 void print_packet(Packet p);
 void print_frame(Frame p);
+
+// CRC-16 Modbus
+uint16_t crc16_update(uint16_t crc, uint8_t a);
+uint16_t crc16_compute(uint8_t *data, uint8_t length);
 
 #endif

@@ -11,7 +11,4 @@
 
 void main_application_test(void);
 
-void crc16_compute_test(void);
-void crc16_decompute_test(void);
-
 #endif
