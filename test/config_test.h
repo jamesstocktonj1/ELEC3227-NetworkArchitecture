@@ -14,4 +14,6 @@ void print_segment_test(void);
 void print_packet_test(void);
 void print_frame_test(void);
 
+void crc16_compute_test(void);
+
 #endif

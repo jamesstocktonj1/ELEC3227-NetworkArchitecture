@@ -1,4 +1,7 @@
 #include "datalink_test.h"
 
-#include "../include/datalink.h"
-#include "../include/config.h"
+
+void main_datalink_test() {
+
+    fprintf(stderr, "main_datalink_test\n");
+}
