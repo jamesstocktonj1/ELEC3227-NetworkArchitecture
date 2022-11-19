@@ -46,11 +46,14 @@ LIB_OBJECTS = $(foreach x,$(LIB),$(subst $(x), $(LIB_BUILD), $(LIBRARYS:.c=.o)))
 # test files
 TEST = test
 TESTS = $(wildcard $(TEST)/*.c)
+TESTS_INCLUDE = $(wildcard $(TEST)/*.h)
 TEST_FILES = \
 	src/application.c \
+	src/transport.c \
 	src/network.c \
 	src/datalink.c \
 	src/config.c
+TEST_INCLUDE = $(subst $(SOURCE), $(INCLUDE), $(TEST_FILES:.c=.h))
 TEST_TARGET = test.out
 
 #programmer constant
@@ -119,5 +122,5 @@ $(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
 	$(OBJCOPY) $(BUILD)/$(TARGET).elf $(BUILD)/$(TARGET).hex -O ihex
 
 
-$(BUILD)/$(TEST_TARGET): $(TESTS)
+$(BUILD)/$(TEST_TARGET): $(TESTS) $(TEST_FILES) $(TEST_INCLUDE) $(TESTS_INCLUDE)
 	$(TEST-CC) $(TESTFLAGS) $(TESTS) $(TEST_FILES) -o $@
