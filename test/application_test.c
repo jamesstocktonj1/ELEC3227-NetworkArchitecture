@@ -7,6 +7,7 @@ void main_application_test() {
 
     encrypt_data_test();
     decrypt_data_test();
+    dual_encryption_test();
 }
 
 
