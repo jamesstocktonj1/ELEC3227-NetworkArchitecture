@@ -40,7 +40,7 @@ int uputchar0(char c, FILE *stream) {
 int ugetchar0(FILE *stream) {
 
     //wait for receive
-    while(!(UCSR0A & _BV(RXC0)));
+    while(!(UCSR0A & _BV(RXC0))) {};
 	return UDR0;
 }
 
@@ -48,8 +48,11 @@ int ugetchar0(FILE *stream) {
 #ifdef UDR1
 
 //input/output streams
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
 FILE serialOut1 = FDEV_SETUP_STREAM(uputchar1, NULL, _FDEV_SETUP_WRITE);
 FILE serialIn1 = FDEV_SETUP_STREAM(NULL, ugetchar1, _FDEV_SETUP_READ);
+#pragma GCC diagnostic pop
 
 void init_serial1() {
 
@@ -89,7 +92,7 @@ void uputline1(char *l) {
 int ugetchar1() {
 
     //wait for receive
-    while(!(UCSR1A & _BV(RXC1)));
+    while(!(UCSR1A & _BV(RXC1))) {};
 	return UDR1;
 
 }
