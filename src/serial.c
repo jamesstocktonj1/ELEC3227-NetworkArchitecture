@@ -40,7 +40,7 @@ int uputchar0(char c, FILE *stream) {
 int ugetchar0(FILE *stream) {
 
     //wait for receive
-    while(!(UCSR0A & _BV(RXC0)));
+    while(!(UCSR0A & _BV(RXC0))) {};
 	return UDR0;
 }
 
@@ -64,11 +64,10 @@ void init_serial1() {
     UCSR1C = _BV(UCSZ10) | _BV(UCSZ11);
 }
 
-
-int uputchar1(char c) {
+int uputchar1(char c, FILE *stream) {
 
     //force \r for \n
-    if(c == '\n') uputchar1('\r');
+    if(c == '\n') uputchar1('\r', stream);
 
     //wait for register to be cleared
     while (!(UCSR1A & _BV(UDRE1)));
@@ -78,19 +77,10 @@ int uputchar1(char c) {
 	return c;
 }
 
-void uputline1(char *l) {
-
-    while(*l != '\0') {
-        uputchar1(*l);
-        l++;
-    }
-}
-
-int ugetchar1() {
+int ugetchar1(FILE *stream) {
 
     //wait for receive
-    while(!(UCSR1A & _BV(RXC1)));
+    while(!(UCSR1A & _BV(RXC1))) {};
 	return UDR1;
-
 }
 #endif
