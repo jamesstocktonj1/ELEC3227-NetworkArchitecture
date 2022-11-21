@@ -11,12 +11,14 @@
 void main_transport_test(void);
 
 void transport_state_machine_test(void);
-void transport_state_connect_test(void);    // test CONNECT
-void transport_state_accept_test(void);     // test ACCEPT
-void transport_state_send_test(void);       // test SEND
-void transport_state_ack_test(void);        // test ACK
-void transport_state_nack_test(void);       // test NACK
-void transport_state_close_test(void);      // test CLOSE
+void transport_state_connect_test(void);        // test CONNECT
+void transport_state_accept_test(void);         // test ACCEPT
+void transport_state_send_test(void);           // test SEND
+void transport_state_ack_test(void);            // test ACK
+void transport_state_nack_test(void);           // test NACK
+void transport_state_close_test(void);          // test CLOSE
+
+void transport_state_connect_nack_test(void);   // test CONNECT NACK
 
 void transport_timeout_test(void);
 

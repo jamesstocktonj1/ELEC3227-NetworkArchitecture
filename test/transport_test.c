@@ -21,6 +21,8 @@ void transport_state_machine_test() {
     transport_state_nack_test();
     transport_state_close_test();
 
+    transport_state_connect_nack_test();
+
     fprintf(stderr, "  PASS: transport_state_machine_test\n");
 }
 
@@ -185,6 +187,33 @@ void transport_state_close_test() {
     }
 
     fprintf(stderr, "  PASS: transport_state_close_test\n");
+}
+
+void transport_state_connect_nack_test() {
+
+    Segment testSegment;
+    testSegment.control = (TEST_NET_ID << 8) | NACK;
+    testSegment.source = SRC_ADDR;
+    testSegment.destination = TEST_DEST_ADDR;
+
+    ConnectionState testState = CONN_OPEN;
+    ConnectionType testConnType = CLIENT;
+
+    transport_handle_segment(testSegment, &testState, &testConnType);
+
+    if(testState != CONN_FAIL) {
+        fprintf(stderr, "  FAIL: transport_state_connect_nack_test\n");
+        fprintf(stderr, "  Connection State failed to transition to CONN_NACK after connection NACK\n");
+        assert(0);
+    }
+
+    if(testConnType != NONE) {
+        fprintf(stderr, "  FAIL: transport_state_connect_nack_test\n");
+        fprintf(stderr, "  Connection Type failed to return to NONE after connection CLOSE\n");
+        assert(0);
+    }
+
+    fprintf(stderr, "  PASS: transport_state_connect_nack_test\n");
 }
 
 
