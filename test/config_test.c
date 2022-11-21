@@ -31,7 +31,7 @@ void print_segment_test() {
 
     char * line = NULL;
     size_t len = 0;
-    getline(&line, &len, output);
+    assert(getline(&line, &len, output) != -1);
     fclose(output);
 
     uint8_t nequal = strcmp(line, "Segment: 0x12 -> 0x34  Data Length: 0x56\n");
@@ -61,7 +61,7 @@ void print_packet_test() {
 
     char * line = NULL;
     size_t len = 0;
-    getline(&line, &len, output);
+    assert(getline(&line, &len, output) != -1);
     fclose(output);
 
     uint8_t nequal = strcmp(line, "Packet:  0x12 -> 0x34  Data Length: 0x56\n");
@@ -90,7 +90,7 @@ void print_frame_test() {
 
     char * line = NULL;
     size_t len = 0;
-    getline(&line, &len, output);
+    assert(getline(&line, &len, output) != -1);
     fclose(output);
 
     uint8_t nequal = strcmp(line, "Frame:  0x1234             Data Length: 0x56\n");

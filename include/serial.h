@@ -27,9 +27,8 @@ extern FILE serialIn1;
 
 void init_serial1(void);
 
-int uputchar1(char c);
-void uputline1(char *l);
-int ugetchar1(void);
+int uputchar1(char c, FILE *stream);
+int ugetchar1(FILE *stream);
 #endif
 
 #endif
