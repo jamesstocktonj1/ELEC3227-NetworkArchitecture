@@ -20,6 +20,10 @@ void transport_state_close_test(void);          // test CLOSE
 
 void transport_state_connect_nack_test(void);   // test CONNECT NACK
 
+
+void transport_encapsulate_data_test(void);
+void transport_send_data_test(void);
+
 void transport_timeout_test(void);
 
 #endif

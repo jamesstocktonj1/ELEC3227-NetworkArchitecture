@@ -21,9 +21,18 @@
 #define NACK    0x04
 #define CLOSE   0x05
 
+// Transport Buffer Constants
+#define BUFF_SIZE 114
+
 // Timeout Constants
 #define TRANS_TIMEOUT   500
 
+
+// Transport Buffer
+extern uint8_t transport_tx_flag;
+extern AppData transport_tx_buffer;
+extern uint8_t transport_rx_flag;
+extern AppData transport_rx_buffer;
 
 // Timeout Variables
 extern uint16_t transport_timer;
@@ -41,5 +50,7 @@ uint8_t transport_timeout(void);
 
 // Transport Functions
 void transport_handle_segment(Segment seg, ConnectionState *connState, ConnectionType *connType);
+Segment transport_encapsulate_data(void);
+uint8_t transport_send_data(void);
 
 #endif
