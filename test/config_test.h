@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include "getline.h"
 
 
 void main_config_test(void);
