@@ -118,7 +118,7 @@ void transport_state_ack_test() {
 
     transport_handle_segment(testSegment, &testState, &testConnType);
 
-    if(testState != CONN_CLOSE) {
+    if(testState != IDLE) {
         fprintf(stderr, "  FAIL: transport_state_ack_test\n");
         fprintf(stderr, "  Connection State failed to transition to CONN_CLOSE after connection ACK\n");
         assert(0);
@@ -145,7 +145,7 @@ void transport_state_nack_test() {
 
     transport_handle_segment(testSegment, &testState, &testConnType);
 
-    if(testState != CONN_CLOSE) {
+    if(testState != IDLE) {
         fprintf(stderr, "  FAIL: transport_state_nack_test\n");
         fprintf(stderr, "  Connection State failed to transition to CONN_NACK after connection NACK\n");
         assert(0);
