@@ -3,6 +3,9 @@
 
 #include "config.h"
 
+#define SRC_ADDR        0x02
+#define TEST_DEST_ADDR  0x01
+#define TEST_NET_ID     0x12
 
 // Control Byte Constants
 #define PROT            0
@@ -27,8 +30,8 @@ extern uint16_t transport_timer;
 
 
 // State Machine
-enum ConnectionState { IDLE, CONN_OPEN, CONN_ACCEPT, CONN_SEND, CONN_DATA, CONN_CLOSE, CONN_FAIL };
-enum ConnectionType  { NONE, HOST, CLIENT };
+typedef enum ConnectionState_t { IDLE, CONN_OPEN, CONN_DATA, CONN_FAIL } ConnectionState;
+typedef enum ConnectionType_t  { NONE, HOST, CLIENT } ConnectionType;
 
 
 // Timeout Functions
@@ -36,5 +39,7 @@ void transport_timer_reset(void);
 void transport_timer_update(void);
 uint8_t transport_timeout(void);
 
+// Transport Functions
+void transport_handle_segment(Segment seg, ConnectionState *connState, ConnectionType *connType);
 
 #endif
