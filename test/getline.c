@@ -1,6 +1,6 @@
 #include "getline.h"
 
-#ifdef _WIN32
+#ifdef __MINIGW32__
 size_t getline(char** lineptr, size_t* n, FILE* stream)
 {
   char* bufptr;
