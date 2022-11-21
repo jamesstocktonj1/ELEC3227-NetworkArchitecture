@@ -1,6 +1,12 @@
 #include "../include/transport.h"
 
 
+// Transport Buffer
+uint8_t transport_tx_flag;
+AppData transport_tx_buffer;
+uint8_t transport_rx_flag;
+AppData transport_rx_buffer;
+
 // Timeout Variables
 uint16_t transport_timer = 0;
 
