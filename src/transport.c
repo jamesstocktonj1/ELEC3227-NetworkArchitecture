@@ -45,7 +45,11 @@ void transport_handle_segment(Segment seg, ConnectionState *connState, Connectio
                 *connState = CONN_DATA;
                 
                 transport_timer_reset();
-            } 
+            }
+            else if((*connType == CLIENT) && (segmentState == NACK)) {
+                *connState = CONN_FAIL;
+                *connType = NONE;
+            }
             // client sends data
             else if((*connType == HOST) && (segmentState == SEND)) {
                 *connState = CONN_DATA;
