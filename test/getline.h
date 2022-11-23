@@ -1,7 +1,7 @@
 #ifndef GETLINE_H
 #define GETLINE_H
 
-#ifdef __MINIGW32__
+#ifdef __MINGW32__
 #include <stdio.h>
 #include <stdlib.h>
 #define GETLINE_BUFLEN 128
