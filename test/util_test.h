@@ -1,7 +1,7 @@
-#ifndef CONFIG_TEST_H
-#define CONFIG_TEST_H
+#ifndef UTIL_TEST_H
+#define UTIL_TEST_H
 
-#include "../include/config.h"
+#include "../include/util.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -9,7 +9,7 @@
 #include "getline.h"
 
 
-void main_config_test(void);
+void main_util_test(void);
 
 void print_segment_test(void);
 void print_packet_test(void);

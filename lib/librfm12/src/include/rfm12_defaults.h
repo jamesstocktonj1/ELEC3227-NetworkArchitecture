@@ -39,7 +39,7 @@
 
 
  #ifdef PWRMGT_DEFAULT
- 	#warning "You are using the PWRMGT_DEFAULT makro directly in your rfm12_config.h - this is no longer supported."
+ 	#warning "You are using the PWRMGT_DEFAULT makro directly in your rfm12_util.h - this is no longer supported."
  	#warning "RFM12_USE_WAKEUP_TIMER and RFM12_LOW_BATT_DETECTOR care about this on their own now. just remove PWRMGT_DEFAULT if you needed it for that."
  	#warning "if you need the clock output, use the new RFM12_USE_CLOCK_OUTPUT instead!"
  	#undef PWRMGT_DEFAULT
