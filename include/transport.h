@@ -1,7 +1,7 @@
 #ifndef TRANSPORT_H
 #define TRANSPORT_H
 
-#include "config.h"
+#include "util.h"
 
 #define SRC_ADDR        0x02
 #define TEST_DEST_ADDR  0x01
@@ -49,9 +49,8 @@ void transport_timer_update(void);
 uint8_t transport_timeout(void);
 
 // Transport Functions
-void transport_handle_rx(Segment seg, ConnectionState *connState, ConnectionType *connType);
 void transport_handle_tx(uint8_t *data, uint8_t length, uint8_t address, uint8_t port);
-Segment transport_encapsulate_data(void);
-uint8_t transport_send_data(void);
+void transport_handle_rx(Segment seg, ConnectionState *connState, ConnectionType *connType);
+uint8_t transport_get_rx_data(uint8_t *data);
 
 #endif

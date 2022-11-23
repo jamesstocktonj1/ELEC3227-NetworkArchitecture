@@ -2,7 +2,7 @@
 #define TRANSPORT_TEST_H
 
 #include "../include/transport.h"
-#include "../include/config.h"
+#include "../include/util.h"
 
 #include <assert.h>
 #include <stdio.h>
