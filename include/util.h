@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef UTIL_H
+#define UTIL_H
 
 #ifndef TEST
 #include <avr/io.h>

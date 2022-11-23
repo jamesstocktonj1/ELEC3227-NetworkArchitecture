@@ -68,7 +68,7 @@ Raspberry Pi or other Linux based SPI-capable platforms.
 
 2012-01-23
 
-* use of PWRMGT_DEFAULT makro in rfm12_config.h deprecated. wakeup timer and
+* use of PWRMGT_DEFAULT makro in rfm12_util.h deprecated. wakeup timer and
   low battery detector handle this automatic.
 * RFM12_USE_CLOCK_OUTPUT makro added for config file. this turns on the clock output
 * RFM12_CLOCK_OUT_FREQUENCY makro to configure clock output

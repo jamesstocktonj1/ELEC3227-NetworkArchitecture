@@ -1,9 +1,9 @@
-#include "config_test.h"
+#include "util_test.h"
 
 
-void main_config_test() {
+void main_util_test() {
 
-    fprintf(stderr, "main_config_test\n");
+    fprintf(stderr, "main_util_test\n");
 
     print_segment_test();
     print_packet_test();

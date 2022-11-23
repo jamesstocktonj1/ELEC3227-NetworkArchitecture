@@ -1,4 +1,4 @@
-#include "../include/config.h"
+#include "../include/util.h"
 
 
 void print_segment(Segment p) {
