@@ -36,7 +36,7 @@ void transport_state_connect_test() {
     ConnectionState testState = IDLE;
     ConnectionType testConnType = NONE;
 
-    transport_handle_segment(testSegment, &testState, &testConnType);
+    transport_handle_rx(testSegment, &testState, &testConnType);
 
     if(testState != CONN_OPEN) {
         fprintf(stderr, "  FAIL: transport_state_connect_test\n");
@@ -63,7 +63,7 @@ void transport_state_accept_test() {
     ConnectionState testState = CONN_OPEN;
     ConnectionType testConnType = CLIENT;
 
-    transport_handle_segment(testSegment, &testState, &testConnType);
+    transport_handle_rx(testSegment, &testState, &testConnType);
 
 
     if(testState != CONN_DATA) {
@@ -91,7 +91,7 @@ void transport_state_send_test() {
     ConnectionState testState = CONN_OPEN;
     ConnectionType testConnType = HOST;
 
-    transport_handle_segment(testSegment, &testState, &testConnType);
+    transport_handle_rx(testSegment, &testState, &testConnType);
 
     if(testState != CONN_DATA) {
         fprintf(stderr, "  FAIL: transport_state_send_test\n");
@@ -118,7 +118,7 @@ void transport_state_ack_test() {
     ConnectionState testState = CONN_DATA;
     ConnectionType testConnType = CLIENT;
 
-    transport_handle_segment(testSegment, &testState, &testConnType);
+    transport_handle_rx(testSegment, &testState, &testConnType);
 
     if(testState != IDLE) {
         fprintf(stderr, "  FAIL: transport_state_ack_test\n");
@@ -145,7 +145,7 @@ void transport_state_nack_test() {
     ConnectionState testState = CONN_DATA;
     ConnectionType testConnType = CLIENT;
 
-    transport_handle_segment(testSegment, &testState, &testConnType);
+    transport_handle_rx(testSegment, &testState, &testConnType);
 
     if(testState != IDLE) {
         fprintf(stderr, "  FAIL: transport_state_nack_test\n");
@@ -172,7 +172,7 @@ void transport_state_close_test() {
     ConnectionState testState = CONN_DATA;
     ConnectionType testConnType = HOST;
 
-    transport_handle_segment(testSegment, &testState, &testConnType);
+    transport_handle_rx(testSegment, &testState, &testConnType);
 
     if(testState != IDLE) {
         fprintf(stderr, "  FAIL: transport_state_close_test\n");
@@ -199,7 +199,7 @@ void transport_state_connect_nack_test() {
     ConnectionState testState = CONN_OPEN;
     ConnectionType testConnType = CLIENT;
 
-    transport_handle_segment(testSegment, &testState, &testConnType);
+    transport_handle_rx(testSegment, &testState, &testConnType);
 
     if(testState != CONN_FAIL) {
         fprintf(stderr, "  FAIL: transport_state_connect_nack_test\n");

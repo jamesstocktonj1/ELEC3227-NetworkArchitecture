@@ -30,7 +30,7 @@ uint8_t transport_timeout() {
 }
 
 
-void transport_handle_segment(Segment seg, ConnectionState *connState, ConnectionType *connType) {
+void transport_handle_rx(Segment seg, ConnectionState *connState, ConnectionType *connType) {
 
     uint8_t segmentState = seg.control & PROT_MASK;
 

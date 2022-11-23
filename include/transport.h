@@ -49,7 +49,8 @@ void transport_timer_update(void);
 uint8_t transport_timeout(void);
 
 // Transport Functions
-void transport_handle_segment(Segment seg, ConnectionState *connState, ConnectionType *connType);
+void transport_handle_rx(Segment seg, ConnectionState *connState, ConnectionType *connType);
+void transport_handle_tx(uint8_t *data, uint8_t length, uint8_t address, uint8_t port);
 Segment transport_encapsulate_data(void);
 uint8_t transport_send_data(void);
 
