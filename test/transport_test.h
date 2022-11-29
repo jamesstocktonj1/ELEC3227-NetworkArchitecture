@@ -2,6 +2,7 @@
 #define TRANSPORT_TEST_H
 
 #include "../include/transport.h"
+#include "../include/application.h"
 #include "../include/util.h"
 
 #include <assert.h>
@@ -20,6 +21,7 @@ void transport_state_close_test(void);          // test CLOSE
 
 void transport_state_connect_nack_test(void);   // test CONNECT NACK
 
+void transport_communication_test(void);
 
 void transport_encapsulate_data_test(void);
 void transport_send_data_test(void);
