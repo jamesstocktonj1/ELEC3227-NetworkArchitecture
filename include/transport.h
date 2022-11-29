@@ -2,8 +2,12 @@
 #define TRANSPORT_H
 
 #include "util.h"
+#include "application.h"
 
-#define SRC_ADDR        0x02
+#include <stdlib.h>
+
+
+#define TEST_SRC_ADDR   0x02
 #define TEST_DEST_ADDR  0x01
 #define TEST_NET_ID     0x12
 
@@ -29,10 +33,11 @@
 
 
 // Transport Buffer
-extern uint8_t transport_tx_flag;
-extern AppData transport_tx_buffer;
-extern uint8_t transport_rx_flag;
-extern AppData transport_rx_buffer;
+extern uint8_t transportTxFlag;
+extern Segment transportTxSegment;
+extern uint8_t transportTxAddress;
+extern uint8_t transportRxFlag;
+extern Segment transportRxSegment;
 
 // Timeout Variables
 extern uint16_t transport_timer;
@@ -42,15 +47,19 @@ extern uint16_t transport_timer;
 typedef enum ConnectionState_t { IDLE, CONN_OPEN, CONN_DATA, CONN_FAIL } ConnectionState;
 typedef enum ConnectionType_t  { NONE, HOST, CLIENT } ConnectionType;
 
+// Transport State Machine
+extern ConnectionState transportConnectionState;
+extern ConnectionType transportConnectionType;
+
 
 // Timeout Functions
+void transport_init(void);
 void transport_timer_reset(void);
 void transport_timer_update(void);
 uint8_t transport_timeout(void);
 
 // Transport Functions
-void transport_handle_tx(uint8_t *data, uint8_t length, uint8_t address, uint8_t port);
-void transport_handle_rx(Segment seg, ConnectionState *connState, ConnectionType *connType);
-uint8_t transport_get_rx_data(uint8_t *data);
+void transport_handle_tx(void);
+void transport_handle_rx(void);
 
 #endif

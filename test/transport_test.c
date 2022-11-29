@@ -14,6 +14,8 @@ void transport_state_machine_test() {
 
     fprintf(stderr, "  RUN:  transport_state_machine_test\n");
 
+    transport_init();
+
     transport_state_connect_test();
     transport_state_accept_test();
     transport_state_send_test();
@@ -28,23 +30,22 @@ void transport_state_machine_test() {
 
 void transport_state_connect_test() {
 
-    Segment testSegment;
-    testSegment.control = (TEST_NET_ID << 8) | CONNECT;
-    testSegment.source = SRC_ADDR;
-    testSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.control = (TEST_NET_ID << 8) | CONNECT;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
 
-    ConnectionState testState = IDLE;
-    ConnectionType testConnType = NONE;
+    transportConnectionState = IDLE;
+    transportConnectionType = NONE;
 
-    transport_handle_rx(testSegment, &testState, &testConnType);
+    transport_handle_rx();
 
-    if(testState != CONN_OPEN) {
+    if(transportConnectionState != CONN_OPEN) {
         fprintf(stderr, "  FAIL: transport_state_connect_test\n");
         fprintf(stderr, "  Connection State failed to transition to CONN_OPEN after connection CONNECT\n");
         assert(0);
     }
 
-    if(testConnType != HOST) {
+    if(transportConnectionType != HOST) {
         fprintf(stderr, "  FAIL: transport_state_connect_test\n");
         fprintf(stderr, "  Connection Type failed to transition to HOST after connection CONNECT\n");
         assert(0);
@@ -55,24 +56,22 @@ void transport_state_connect_test() {
 
 void transport_state_accept_test() {
 
-    Segment testSegment;
-    testSegment.control = (TEST_NET_ID << 8) | ACCEPT;
-    testSegment.source = SRC_ADDR;
-    testSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.control = (TEST_NET_ID << 8) | ACCEPT;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
 
-    ConnectionState testState = CONN_OPEN;
-    ConnectionType testConnType = CLIENT;
+    transportConnectionState = CONN_OPEN;
+    transportConnectionType = CLIENT;
 
-    transport_handle_rx(testSegment, &testState, &testConnType);
+    transport_handle_rx();
 
-
-    if(testState != CONN_DATA) {
+    if(transportConnectionState != CONN_DATA) {
         fprintf(stderr, "  FAIL: transport_state_accept_test\n");
         fprintf(stderr, "  Connection State failed to transition to CONN_DATA after connection ACCEPT\n");
         assert(0);
     }
 
-    if(testConnType != CLIENT) {
+    if(transportConnectionType != CLIENT) {
         fprintf(stderr, "  FAIL: transport_state_accept_test\n");
         fprintf(stderr, "  Connection Type failed to transition to CLIENT after connection ACCEPT\n");
         assert(0);
@@ -83,23 +82,22 @@ void transport_state_accept_test() {
 
 void transport_state_send_test() {
 
-    Segment testSegment;
-    testSegment.control = (TEST_NET_ID << 8) | SEND;
-    testSegment.source = SRC_ADDR;
-    testSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.control = (TEST_NET_ID << 8) | SEND;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
 
-    ConnectionState testState = CONN_OPEN;
-    ConnectionType testConnType = HOST;
+    transportConnectionState = CONN_OPEN;
+    transportConnectionType = HOST;
 
-    transport_handle_rx(testSegment, &testState, &testConnType);
+    transport_handle_rx();
 
-    if(testState != CONN_DATA) {
+    if(transportConnectionState != CONN_DATA) {
         fprintf(stderr, "  FAIL: transport_state_send_test\n");
         fprintf(stderr, "  Connection State failed to transition to CONN_DATA after connection SEND\n");
         assert(0);
     }
 
-    if(testConnType != HOST) {
+    if(transportConnectionType != HOST) {
         fprintf(stderr, "  FAIL: transport_state_send_test\n");
         fprintf(stderr, "  Connection Type expected to be HOST\n");
         assert(0);
@@ -110,23 +108,22 @@ void transport_state_send_test() {
 
 void transport_state_ack_test() {
 
-    Segment testSegment;
-    testSegment.control = (TEST_NET_ID << 8) | ACK;
-    testSegment.source = SRC_ADDR;
-    testSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.control = (TEST_NET_ID << 8) | ACK;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
 
-    ConnectionState testState = CONN_DATA;
-    ConnectionType testConnType = CLIENT;
+    transportConnectionState = CONN_DATA;
+    transportConnectionType = CLIENT;
 
-    transport_handle_rx(testSegment, &testState, &testConnType);
+    transport_handle_rx();
 
-    if(testState != IDLE) {
+    if(transportConnectionState != IDLE) {
         fprintf(stderr, "  FAIL: transport_state_ack_test\n");
         fprintf(stderr, "  Connection State failed to transition to CONN_CLOSE after connection ACK\n");
         assert(0);
     }
 
-    if(testConnType != NONE) {
+    if(transportConnectionType != NONE) {
         fprintf(stderr, "  FAIL: transport_state_ack_test\n");
         fprintf(stderr, "  Connection Type expected to be NONE\n");
         assert(0);
@@ -137,23 +134,22 @@ void transport_state_ack_test() {
 
 void transport_state_nack_test() {
 
-    Segment testSegment;
-    testSegment.control = (TEST_NET_ID << 8) | NACK;
-    testSegment.source = SRC_ADDR;
-    testSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.control = (TEST_NET_ID << 8) | NACK;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
 
-    ConnectionState testState = CONN_DATA;
-    ConnectionType testConnType = CLIENT;
+    transportConnectionState = CONN_DATA;
+    transportConnectionType = CLIENT;
 
-    transport_handle_rx(testSegment, &testState, &testConnType);
+    transport_handle_rx();
 
-    if(testState != IDLE) {
+    if(transportConnectionState != IDLE) {
         fprintf(stderr, "  FAIL: transport_state_nack_test\n");
         fprintf(stderr, "  Connection State failed to transition to CONN_NACK after connection NACK\n");
         assert(0);
     }
 
-    if(testConnType != NONE) {
+    if(transportConnectionType != NONE) {
         fprintf(stderr, "  FAIL: transport_state_nack_test\n");
         fprintf(stderr, "  Connection Type expected to be NONE\n");
         assert(0);
@@ -164,23 +160,22 @@ void transport_state_nack_test() {
 
 void transport_state_close_test() {
 
-    Segment testSegment;
-    testSegment.control = (TEST_NET_ID << 8) | CLOSE;
-    testSegment.source = SRC_ADDR;
-    testSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.control = (TEST_NET_ID << 8) | CLOSE;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
 
-    ConnectionState testState = CONN_DATA;
-    ConnectionType testConnType = HOST;
+    transportConnectionState = CONN_DATA;
+    transportConnectionType = HOST;
 
-    transport_handle_rx(testSegment, &testState, &testConnType);
+    transport_handle_rx();
 
-    if(testState != IDLE) {
+    if(transportConnectionState != IDLE) {
         fprintf(stderr, "  FAIL: transport_state_close_test\n");
         fprintf(stderr, "  Connection State failed to return to IDLE after connection CLOSE\n");
         assert(0);
     }
 
-    if(testConnType != NONE) {
+    if(transportConnectionType != NONE) {
         fprintf(stderr, "  FAIL: transport_state_close_test\n");
         fprintf(stderr, "  Connection Type failed to return to NONE after connection CLOSE\n");
         assert(0);
@@ -191,23 +186,22 @@ void transport_state_close_test() {
 
 void transport_state_connect_nack_test() {
 
-    Segment testSegment;
-    testSegment.control = (TEST_NET_ID << 8) | NACK;
-    testSegment.source = SRC_ADDR;
-    testSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.control = (TEST_NET_ID << 8) | NACK;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
 
-    ConnectionState testState = CONN_OPEN;
-    ConnectionType testConnType = CLIENT;
+    transportConnectionState = CONN_OPEN;
+    transportConnectionType = CLIENT;
 
-    transport_handle_rx(testSegment, &testState, &testConnType);
+    transport_handle_rx();
 
-    if(testState != CONN_FAIL) {
+    if(transportConnectionState != CONN_FAIL) {
         fprintf(stderr, "  FAIL: transport_state_connect_nack_test\n");
         fprintf(stderr, "  Connection State failed to transition to CONN_NACK after connection NACK\n");
         assert(0);
     }
 
-    if(testConnType != NONE) {
+    if(transportConnectionType != NONE) {
         fprintf(stderr, "  FAIL: transport_state_connect_nack_test\n");
         fprintf(stderr, "  Connection Type failed to return to NONE after connection CLOSE\n");
         assert(0);
