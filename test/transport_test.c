@@ -298,8 +298,8 @@ void transport_communication_test() {
     application_init();
 
     // setup test data
-    uint8_t testData[5] = {0, 1, 2, 3, 4, 5};
-    uint8_t testDataLength = 5;
+    uint8_t testData[6] = {0, 1, 2, 3, 4, 5};
+    uint8_t testDataLength = 6;
     memcpy(applicationTxData, testData, testDataLength);
     applicationTxLength = testDataLength;
     applicationTxFlag = 1;
