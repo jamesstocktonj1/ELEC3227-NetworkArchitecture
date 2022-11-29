@@ -45,6 +45,22 @@ void transport_init() {
 
 void transport_handle_tx() {
 
+    // request open connection
+    if(transportTxFlag == 0) {
+        transportConnectionState = CONN_OPEN;
+        transportConnectionType = CLIENT;
+
+        transportTxFlag = 1;
+        transportTxSegment.control = CONNECT;
+        transportTxSegment.source = TRANSMIT_PORT;
+        transportTxSegment.destination = LIGHT_PORT;
+        transportTxSegment.length = 0x01;
+        transportTxSegment.data[0] = 0x00;
+        transportTxSegment.checksum = 0x00; // TODO: Checksum
+    }
+
+    transport_timer_reset();
+
 }
 
 void transport_handle_rx() {
@@ -54,11 +70,12 @@ void transport_handle_rx() {
         case IDLE:
             // client requests to connect
             if((transportConnectionType == NONE) && (segmentState == CONNECT)) {
-                transportConnectionState = CONN_OPEN;
-                transportConnectionType = HOST;
 
-                // reply with accept connection
+                // host accepts connection
                 if(transportTxFlag == 0) {
+                    transportConnectionState = CONN_OPEN;
+                    transportConnectionType = HOST;
+
                     transportTxFlag = 1;
                     transportTxSegment.control = ACCEPT;
                     transportTxSegment.source = TRANSMIT_PORT;
@@ -75,7 +92,19 @@ void transport_handle_rx() {
         case CONN_OPEN:
             // host accepts connection
             if((transportConnectionType == CLIENT) && (segmentState == ACCEPT)) {
-                transportConnectionState = CONN_DATA;
+
+                // client replies with data
+                if(transportTxFlag == 0) {
+                    transportConnectionState = CONN_DATA;
+
+                    transportTxFlag = 1;
+                    transportTxSegment.control = SEND;
+                    transportTxSegment.source = TRANSMIT_PORT;
+                    transportTxSegment.destination = LIGHT_PORT;
+                    transportTxSegment.length = applicationTxLength;
+                    memcpy(transportTxSegment.data, applicationTxData, applicationTxLength);
+                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                }
                 
                 transport_timer_reset();
             }
@@ -85,19 +114,59 @@ void transport_handle_rx() {
             }
             // client sends data
             else if((transportConnectionType == HOST) && (segmentState == SEND)) {
-                transportConnectionState = CONN_DATA;
+                
+                // host (n)acknowledges data
+                if(transportTxFlag == 0) {
+                    transportConnectionState = CONN_DATA;
+
+                    memcpy(applicationRxData, transportRxSegment.data, transportRxSegment.length);
+                    applicationRxLength = transportRxSegment.length;
+                    applicationRxFlag = 1;
+                    
+                    transportTxFlag = 1;
+                    transportTxSegment.control = ACK;
+                    transportTxSegment.source = TRANSMIT_PORT;
+                    transportTxSegment.destination = LIGHT_PORT;
+                    transportTxSegment.length = 0x01;
+                    transportTxSegment.data[0] = 0x00;
+                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                }
                 
                 transport_timer_reset();
             }
             break;
         case CONN_DATA:
             if((transportConnectionType == CLIENT) && (segmentState == ACK)) {
-                transportConnectionState = IDLE;
-                transportConnectionType = NONE;
+                
+                // client closes connection
+                if(transportTxFlag == 0) {
+                    transportConnectionState = IDLE;
+                    transportConnectionType = NONE;
+                    
+                    transportTxFlag = 1;
+                    transportTxSegment.control = CLOSE;
+                    transportTxSegment.source = TRANSMIT_PORT;
+                    transportTxSegment.destination = LIGHT_PORT;
+                    transportTxSegment.length = 0x01;
+                    transportTxSegment.data[0] = 0x00;
+                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                }
             }
             else if((transportConnectionType == CLIENT) && (segmentState == NACK)) {
-                transportConnectionState = IDLE;
-                transportConnectionType = NONE;
+
+                // client closes connection
+                if(transportTxFlag == 0) {
+                    transportConnectionState = IDLE;
+                    transportConnectionType = NONE;
+                    
+                    transportTxFlag = 1;
+                    transportTxSegment.control = CLOSE;
+                    transportTxSegment.source = TRANSMIT_PORT;
+                    transportTxSegment.destination = LIGHT_PORT;
+                    transportTxSegment.length = 0x01;
+                    transportTxSegment.data[0] = 0x00;
+                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                }
             }
             else if((transportConnectionType == HOST) && (segmentState == CLOSE)) {
                 transportConnectionState = IDLE;

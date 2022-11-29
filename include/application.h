@@ -3,6 +3,8 @@
 
 #include "util.h"
 
+#include <stdlib.h>
+
 // Application Port Constants
 #define BROADCAST_PORT  0x00
 #define LIGHT_PORT      0x01
