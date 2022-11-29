@@ -37,6 +37,8 @@ void transport_state_connect_test() {
     transportConnectionState = IDLE;
     transportConnectionType = NONE;
 
+    transportTxFlag = 0;
+
     transport_handle_rx();
 
     if(transportConnectionState != CONN_OPEN) {
@@ -48,6 +50,12 @@ void transport_state_connect_test() {
     if(transportConnectionType != HOST) {
         fprintf(stderr, "  FAIL: transport_state_connect_test\n");
         fprintf(stderr, "  Connection Type failed to transition to HOST after connection CONNECT\n");
+        assert(0);
+    }
+
+    if(transportTxSegment.control != ACCEPT) {
+        fprintf(stderr, "  FAIL: transport_state_connect_test\n");
+        fprintf(stderr, "  Connection Reply failed to reply with ACCEPT\n");
         assert(0);
     }
 
@@ -63,6 +71,8 @@ void transport_state_accept_test() {
     transportConnectionState = CONN_OPEN;
     transportConnectionType = CLIENT;
 
+    transportTxFlag = 0;
+
     transport_handle_rx();
 
     if(transportConnectionState != CONN_DATA) {
@@ -74,6 +84,12 @@ void transport_state_accept_test() {
     if(transportConnectionType != CLIENT) {
         fprintf(stderr, "  FAIL: transport_state_accept_test\n");
         fprintf(stderr, "  Connection Type failed to transition to CLIENT after connection ACCEPT\n");
+        assert(0);
+    }
+
+    if(transportTxSegment.control != SEND) {
+        fprintf(stderr, "  FAIL: transport_state_connect_test\n");
+        fprintf(stderr, "  Connection Reply failed to reply with SEND\n");
         assert(0);
     }
 
@@ -89,6 +105,8 @@ void transport_state_send_test() {
     transportConnectionState = CONN_OPEN;
     transportConnectionType = HOST;
 
+    transportTxFlag = 0;
+
     transport_handle_rx();
 
     if(transportConnectionState != CONN_DATA) {
@@ -100,6 +118,12 @@ void transport_state_send_test() {
     if(transportConnectionType != HOST) {
         fprintf(stderr, "  FAIL: transport_state_send_test\n");
         fprintf(stderr, "  Connection Type expected to be HOST\n");
+        assert(0);
+    }
+
+    if(transportTxSegment.control != ACK) {
+        fprintf(stderr, "  FAIL: transport_state_connect_test\n");
+        fprintf(stderr, "  Connection Reply failed to reply with ACK\n");
         assert(0);
     }
 
@@ -115,6 +139,8 @@ void transport_state_ack_test() {
     transportConnectionState = CONN_DATA;
     transportConnectionType = CLIENT;
 
+    transportTxFlag = 0;
+
     transport_handle_rx();
 
     if(transportConnectionState != IDLE) {
@@ -126,6 +152,12 @@ void transport_state_ack_test() {
     if(transportConnectionType != NONE) {
         fprintf(stderr, "  FAIL: transport_state_ack_test\n");
         fprintf(stderr, "  Connection Type expected to be NONE\n");
+        assert(0);
+    }
+
+    if(transportTxSegment.control != CLOSE) {
+        fprintf(stderr, "  FAIL: transport_state_connect_test\n");
+        fprintf(stderr, "  Connection Reply failed to reply with CLOSE\n");
         assert(0);
     }
 
@@ -141,6 +173,8 @@ void transport_state_nack_test() {
     transportConnectionState = CONN_DATA;
     transportConnectionType = CLIENT;
 
+    transportTxFlag = 0;
+
     transport_handle_rx();
 
     if(transportConnectionState != IDLE) {
@@ -155,6 +189,12 @@ void transport_state_nack_test() {
         assert(0);
     }
 
+    if(transportTxSegment.control != CLOSE) {
+        fprintf(stderr, "  FAIL: transport_state_connect_test\n");
+        fprintf(stderr, "  Connection Reply failed to reply with CLOSE\n");
+        assert(0);
+    }
+
     fprintf(stderr, "  PASS: transport_state_nack_test\n");
 }
 
@@ -166,6 +206,8 @@ void transport_state_close_test() {
 
     transportConnectionState = CONN_DATA;
     transportConnectionType = HOST;
+
+    transportTxFlag = 0;
 
     transport_handle_rx();
 
@@ -192,6 +234,8 @@ void transport_state_connect_nack_test() {
 
     transportConnectionState = CONN_OPEN;
     transportConnectionType = CLIENT;
+
+    transportTxFlag = 0;
 
     transport_handle_rx();
 
