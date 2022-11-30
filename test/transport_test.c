@@ -461,11 +461,11 @@ void transport_timeout_accept_test() {
     transport_handle_rx();
 
     int i, j;
-    for(i=0; i<TRANS_RESEND; i++) {
+    for(i=0; i<TRANS_RESEND+1; i++) {
 
         if(transportTxFlag == 0) {
             fprintf(stderr, "  FAIL: transport_timeout_accept_test\n");
-            fprintf(stderr, "  Transport Flag was not set to resend segment\n");
+            fprintf(stderr, "  Transport Flag was not set to resend segment after attempt %d\n", i);
             assert(0);
         }
         
@@ -486,15 +486,17 @@ void transport_timeout_accept_test() {
 
     if(transportConnectionState != IDLE) {
         fprintf(stderr, "  FAIL: transport_timeout_accept_test\n");
-        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        fprintf(stderr, "  Connection State was not set to IDLE after failed resends\n");
         assert(0);
     }
 
     if(transportConnectionType != NONE) {
         fprintf(stderr, "  FAIL: transport_timeout_accept_test\n");
-        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        fprintf(stderr, "  Connection Type was not set to NONE after failed resends\n");
         assert(0);
     }
+
+    fprintf(stderr, "  PASS: transport_timeout_accept_test\n");
 }
 
 void transport_timeout_send_test() {
@@ -510,11 +512,11 @@ void transport_timeout_send_test() {
     transport_handle_rx();
 
     int i, j;
-    for(i=0; i<TRANS_RESEND; i++) {
+    for(i=0; i<TRANS_RESEND+1; i++) {
 
         if(transportTxFlag == 0) {
             fprintf(stderr, "  FAIL: transport_timeout_send_test\n");
-            fprintf(stderr, "  Transport Flag was not set to resend segment\n");
+            fprintf(stderr, "  Transport Flag was not set to resend segment after attempt %d\n", i);
             assert(0);
         }
         
@@ -535,15 +537,17 @@ void transport_timeout_send_test() {
 
     if(transportConnectionState != IDLE) {
         fprintf(stderr, "  FAIL: transport_timeout_send_test\n");
-        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        fprintf(stderr, "  Connection State was not set to IDLE after failed resends\n");
         assert(0);
     }
 
     if(transportConnectionType != NONE) {
         fprintf(stderr, "  FAIL: transport_timeout_send_test\n");
-        fprintf("  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        fprintf(stderr, "  Connection Type was not set to NONE after failed resends\n");
         assert(0);
     }
+
+    fprintf(stderr, "  PASS: transport_timeout_send_test\n");
 }
 
 void transport_timeout_ack_test() {
@@ -559,11 +563,11 @@ void transport_timeout_ack_test() {
     transport_handle_rx();
 
     int i, j;
-    for(i=0; i<TRANS_RESEND; i++) {
+    for(i=0; i<TRANS_RESEND+1; i++) {
 
         if(transportTxFlag == 0) {
             fprintf(stderr, "  FAIL: transport_timeout_ack_test\n");
-            fprintf(stderr, "  Transport Flag was not set to resend segment\n");
+            fprintf(stderr, "  Transport Flag was not set to resend segment after attempt %d\n", i);
             assert(0);
         }
         
@@ -584,13 +588,15 @@ void transport_timeout_ack_test() {
 
     if(transportConnectionState != IDLE) {
         fprintf(stderr, "  FAIL: transport_timeout_ack_test\n");
-        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        fprintf(stderr, "  Connection State was not set to IDLE after failed resends\n");
         assert(0);
     }
 
     if(transportConnectionType != NONE) {
         fprintf(stderr, "  FAIL: transport_timeout_ack_test\n");
-        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        fprintf(stderr, "  Connection Type was not set to NONE after failed resends\n");
         assert(0);
     }
+
+    fprintf(stderr, "  PASS: transport_timeout_ack_test\n");
 }
