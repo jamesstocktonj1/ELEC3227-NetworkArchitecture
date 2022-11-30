@@ -25,6 +25,11 @@ void transport_state_machine_test() {
 
     transport_state_connect_nack_test();
 
+    transport_timeout_connect_test();
+    transport_timeout_accept_test();
+    transport_timeout_send_test();
+    transport_timeout_ack_test();
+
     transport_communication_test();
 
     fprintf(stderr, "  PASS: transport_state_machine_test\n");
@@ -436,4 +441,156 @@ void transport_communication_test() {
     fprintf(stderr, "\n");
 
     fprintf(stderr, "  PASS: transport_communication_test\n");
+}
+
+void transport_timeout_connect_test() {
+    
+
+}
+
+void transport_timeout_accept_test() {
+    transportRxSegment.control = (TEST_NET_ID << 8) | CONNECT;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
+
+    transportConnectionState = IDLE;
+    transportConnectionType = NONE;
+
+    transportTxFlag = 0;
+
+    transport_handle_rx();
+
+    int i, j;
+    for(i=0; i<TRANS_RESEND; i++) {
+
+        if(transportTxFlag == 0) {
+            fprintf(stderr, "  FAIL: transport_timeout_accept_test\n");
+            fprintf(stderr, "  Transport Flag was not set to resend segment\n");
+            assert(0);
+        }
+        
+        // timeout segment
+        transportTxFlag = 0;
+        for(j=0; j<TRANS_TIMEOUT; j++) {
+            transport_timer_update();
+        }
+
+        transport_handle_rx();
+    }
+
+    if(transportTxFlag != 0) {
+        fprintf(stderr, "  FAIL: transport_timeout_accept_test\n");
+        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        assert(0);
+    }
+
+    if(transportConnectionState != IDLE) {
+        fprintf(stderr, "  FAIL: transport_timeout_accept_test\n");
+        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        assert(0);
+    }
+
+    if(transportConnectionType != NONE) {
+        fprintf(stderr, "  FAIL: transport_timeout_accept_test\n");
+        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        assert(0);
+    }
+}
+
+void transport_timeout_send_test() {
+    transportRxSegment.control = (TEST_NET_ID << 8) | ACCEPT;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
+
+    transportConnectionState = CONN_OPEN;
+    transportConnectionType = CLIENT;
+
+    transportTxFlag = 0;
+
+    transport_handle_rx();
+
+    int i, j;
+    for(i=0; i<TRANS_RESEND; i++) {
+
+        if(transportTxFlag == 0) {
+            fprintf(stderr, "  FAIL: transport_timeout_send_test\n");
+            fprintf(stderr, "  Transport Flag was not set to resend segment\n");
+            assert(0);
+        }
+        
+        // timeout segment
+        transportTxFlag = 0;
+        for(j=0; j<TRANS_TIMEOUT; j++) {
+            transport_timer_update();
+        }
+
+        transport_handle_rx();
+    }
+
+    if(transportTxFlag != 0) {
+        fprintf(stderr, "  FAIL: transport_timeout_send_test\n");
+        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        assert(0);
+    }
+
+    if(transportConnectionState != IDLE) {
+        fprintf(stderr, "  FAIL: transport_timeout_send_test\n");
+        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        assert(0);
+    }
+
+    if(transportConnectionType != NONE) {
+        fprintf(stderr, "  FAIL: transport_timeout_send_test\n");
+        fprintf("  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        assert(0);
+    }
+}
+
+void transport_timeout_ack_test() {
+    transportRxSegment.control = (TEST_NET_ID << 8) | SEND;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
+
+    transportConnectionState = CONN_OPEN;
+    transportConnectionType = HOST;
+
+    transportTxFlag = 0;
+
+    transport_handle_rx();
+
+    int i, j;
+    for(i=0; i<TRANS_RESEND; i++) {
+
+        if(transportTxFlag == 0) {
+            fprintf(stderr, "  FAIL: transport_timeout_ack_test\n");
+            fprintf(stderr, "  Transport Flag was not set to resend segment\n");
+            assert(0);
+        }
+        
+        // timeout segment
+        transportTxFlag = 0;
+        for(j=0; j<TRANS_TIMEOUT; j++) {
+            transport_timer_update();
+        }
+
+        transport_handle_rx();
+    }
+
+    if(transportTxFlag != 0) {
+        fprintf(stderr, "  FAIL: transport_timeout_ack_test\n");
+        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        assert(0);
+    }
+
+    if(transportConnectionState != IDLE) {
+        fprintf(stderr, "  FAIL: transport_timeout_ack_test\n");
+        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        assert(0);
+    }
+
+    if(transportConnectionType != NONE) {
+        fprintf(stderr, "  FAIL: transport_timeout_ack_test\n");
+        fprintf(stderr, "  Transport Flag was found set after %d failed resends\n", TRANS_RESEND);
+        assert(0);
+    }
 }

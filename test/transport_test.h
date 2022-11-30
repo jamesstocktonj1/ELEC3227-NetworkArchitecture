@@ -19,9 +19,15 @@ void transport_state_ack_test(void);            // test ACK
 void transport_state_nack_test(void);           // test NACK
 void transport_state_close_test(void);          // test CLOSE
 
+void transport_timeout_connect_test(void);
+void transport_timeout_accept_test(void);
+void transport_timeout_send_test(void);
+void transport_timeout_ack_test(void);
+
 void transport_state_connect_nack_test(void);   // test CONNECT NACK
 
 void transport_communication_test(void);
+void transport_resend_test(void);
 
 void transport_encapsulate_data_test(void);
 void transport_send_data_test(void);
