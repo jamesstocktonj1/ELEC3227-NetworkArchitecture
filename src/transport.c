@@ -5,6 +5,7 @@
 uint8_t transportTxFlag;
 Segment transportTxSegment;
 uint8_t transportTxAddress;
+uint8_t transportTxRetry;
 uint8_t transportRxFlag;
 Segment transportRxSegment;
 
@@ -51,6 +52,7 @@ void transport_handle_tx() {
         transportConnectionType = CLIENT;
 
         transportTxFlag = 1;
+        transportTxRetry = TRANS_RESEND;
         transportTxSegment.control = CONNECT;
         transportTxSegment.source = TRANSMIT_PORT;
         transportTxSegment.destination = LIGHT_PORT;
@@ -66,6 +68,11 @@ void transport_handle_tx() {
 void transport_handle_rx() {
     uint8_t segmentState = transportRxSegment.control & PROT_MASK;
 
+    // check for message timeout
+    if(transport_timeout() && (transportConnectionState != IDLE)) {
+        transportConnectionState = CONN_FAIL;
+    }
+
     switch(transportConnectionState) {
         case IDLE:
             // client requests to connect
@@ -77,6 +84,7 @@ void transport_handle_rx() {
                     transportConnectionType = HOST;
 
                     transportTxFlag = 1;
+                    transportTxRetry = TRANS_RESEND;
                     transportTxSegment.control = ACCEPT;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = LIGHT_PORT;
@@ -98,6 +106,7 @@ void transport_handle_rx() {
                     transportConnectionState = CONN_DATA;
 
                     transportTxFlag = 1;
+                    transportTxRetry = TRANS_RESEND;
                     transportTxSegment.control = SEND;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = LIGHT_PORT;
@@ -124,6 +133,7 @@ void transport_handle_rx() {
                     applicationRxFlag = 1;
                     
                     transportTxFlag = 1;
+                    transportTxRetry = TRANS_RESEND;
                     transportTxSegment.control = ACK;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = LIGHT_PORT;
@@ -142,8 +152,11 @@ void transport_handle_rx() {
                 if(transportTxFlag == 0) {
                     transportConnectionState = IDLE;
                     transportConnectionType = NONE;
+
+                    applicationTxFlag = 0;
                     
                     transportTxFlag = 1;
+                    transportTxRetry = TRANS_RESEND;
                     transportTxSegment.control = CLOSE;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = LIGHT_PORT;
@@ -174,7 +187,19 @@ void transport_handle_rx() {
             }
             break;
         case CONN_FAIL:
-            // connection failure should be handled elsewhere
+            // on connection timeout / resend handler
+            if(transportTxRetry) {
+                // resend segment
+                transportTxFlag = 1;
+                transportTxRetry--;
+
+                transport_timer_reset();
+            }
+            else {
+                transportConnectionState = IDLE;
+                transportConnectionType = NONE;
+            }
+
             break;
     }
 }

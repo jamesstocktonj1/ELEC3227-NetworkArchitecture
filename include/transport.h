@@ -31,11 +31,15 @@
 // Timeout Constants
 #define TRANS_TIMEOUT   500
 
+// Resend Constants
+#define TRANS_RESEND 5
+
 
 // Transport Buffer
 extern uint8_t transportTxFlag;
 extern Segment transportTxSegment;
 extern uint8_t transportTxAddress;
+extern uint8_t transportTxRetry;
 extern uint8_t transportRxFlag;
 extern Segment transportRxSegment;
 
