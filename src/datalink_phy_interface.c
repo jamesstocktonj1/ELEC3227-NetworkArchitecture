@@ -1,6 +1,6 @@
 #include "../include/datalink_phy_interface.h"
 
-#include "string.h"
+#include <string.h>
 
 // Include the library for the RFM12 module and the UART
 #include "../include/rfm12_config.h"
