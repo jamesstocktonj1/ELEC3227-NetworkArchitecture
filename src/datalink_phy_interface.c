@@ -30,6 +30,7 @@ uint8_t dll_rf_rx(uint8_t *data) {
     return length;
 }
 
+// TODO: CONVERT FROM 1-p CSMA to 0.05-p CSMA
 void dll_rf_tick() {
     //don't disturb RFM12 if transmitting or receiving
 	if (ctrl.rfm12_state != STATE_RX_IDLE) return;
