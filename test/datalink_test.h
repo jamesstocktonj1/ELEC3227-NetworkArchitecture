@@ -2,7 +2,7 @@
 #define DATALINK_TEST_H
 
 #include "../include/datalink.h"
-#include "../include/config.h"
+#include "../include/util.h"
 
 #include <assert.h>
 #include <stdio.h>

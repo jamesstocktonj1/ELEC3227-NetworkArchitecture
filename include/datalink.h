@@ -1,7 +1,7 @@
 #ifndef DATALINK_H
 #define DATALINK_H
 
-#include "config.h"
+#include "util.h"
 
 #define DLL_MAX_PACKET_SIZE 128
 #define DLL_MAX_FRAME_SIZE 32

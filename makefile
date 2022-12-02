@@ -51,7 +51,7 @@ TEST_FILES = \
 	src/application.c \
 	src/network.c \
 	src/datalink.c \
-	src/config.c
+	src/util.c
 TEST_INCLUDE = $(subst $(SOURCE), $(INCLUDE), $(TEST_FILES:.c=.h))
 TEST_TARGET = test.out
 
