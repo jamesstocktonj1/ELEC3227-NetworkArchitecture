@@ -4,6 +4,12 @@
 #include "datalink.h"
 
 /**
+ * This function checks if the RFM12B module is ready for more data to transmit
+ * @returns 0 - Not ready, 1 - Ready
+*/
+uint8_t dll_rf_can_tx();
+
+/**
  * This function queues data to transmit on the RFM12B module
  * @param data A pointer to the data
  * @param length The length of the data

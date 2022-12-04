@@ -12,6 +12,10 @@
 
 uint16_t is_carrier_present();
 
+uint8_t dll_rf_can_tx() {
+    return ctrl.txstate == STATUS_FREE;
+}
+
 int8_t dll_rf_tx(uint8_t *data, uint8_t length) {
     if (ctrl.txstate != STATUS_FREE) return -1; // TX buffer not free
 
@@ -23,6 +27,8 @@ int8_t dll_rf_tx(uint8_t *data, uint8_t length) {
 }
 
 uint8_t dll_rf_rx(uint8_t *data) {
+    //don't disturb RFM12 if transmitting or receiving
+	if (ctrl.rfm12_state != STATE_RX_IDLE) return 0;
     if (rfm12_rx_status() != STATUS_COMPLETE) return 0;
     uint8_t length = rfm12_rx_len();
 	memcpy(data, rfm12_rx_buffer(), length);
@@ -32,6 +38,7 @@ uint8_t dll_rf_rx(uint8_t *data) {
 
 void dll_rf_init() {
     rfm12_init();
+    sei(); // enable interrupts
 }
 
 // TODO: CONVERT FROM 1-p CSMA to 0.05-p CSMA
@@ -42,7 +49,9 @@ void dll_rf_tick() {
     //do we have something to transmit?
     if (ctrl.txstate != STATUS_OCCUPIED) return;
 
+    // Check twice
 	if (is_carrier_present()) return;
+    if (is_carrier_present()) return;
 
 	rfm12_start_tx();
 }

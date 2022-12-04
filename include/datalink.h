@@ -4,10 +4,14 @@
 #include "util.h"
 
 #define DLL_MAX_PACKET_SIZE 128
-#define DLL_MAX_FRAME_SIZE 32
-#define DLL_MAX_MTU 23
-#define DLL_MTU 23
+#define DLL_MAX_FRAME_SIZE 32-2
+#define DLL_MAX_MTU DLL_MAX_FRAME_SIZE-9
+#define DLL_MTU 10
 #define DLL_RX_TABLE_SIZE 4
+
+#if DLL_MTU > DLL_MAX_MTU
+#error DLL_MTU is more than DLL_MAX_MTU
+#endif
 
 #define DLL_HEADER 0x02
 #define DLL_FOOTER 0x03

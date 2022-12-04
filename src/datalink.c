@@ -121,6 +121,7 @@ int8_t dll_rx_table_insert_fragment(uint8_t *data, uint8_t length, uint8_t start
             if (entry->free) continue;
             if (entry->src != src) continue;
             if (entry->seq_num != seq_num) continue;
+            // printf("start_offset %i %i %i\n", entry->length, start_offset, end_flag);
             if (entry->length != start_offset) continue;
             break;
         }

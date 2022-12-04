@@ -107,15 +107,15 @@
 //#define DATARATE_VALUE      RFM12_DATARATE_CALC_LOW(1200.0)
 
 //TRX format characteristics
-#define RFM12_TRX_FRAME_SIZE 32
+#define RFM12_TRX_FRAME_SIZE 30
 
 // TODO: Remove
 //TX BUFFER SIZE
-#define RFM12_TX_BUFFER_SIZE  32
+#define RFM12_TX_BUFFER_SIZE  30
 
 // TODO: Remove
 //RX BUFFER SIZE (there are going to be 2 Buffers of this size for double_buffering)
-#define RFM12_RX_BUFFER_SIZE  32
+#define RFM12_RX_BUFFER_SIZE  30
 
 
 /************************

@@ -8,7 +8,7 @@
 #include "include/datalink.h"
 #include "include/datalink_phy_interface.h"
 
-char msg[] = "This message should be longer than 32 bytes!";
+char msg[] = "This message should be longer than the MTU!";
 
 #define MAC_ADDR 0x1
 
@@ -26,7 +26,9 @@ int main() {
     dll_rf_init();
     printf("Done\n");
 
-    uint16_t t = 0;
+    uint16_t t = 4980;
+
+    uint8_t n = 0;
 
     int8_t error = 0;
 
@@ -45,7 +47,7 @@ int main() {
             }
         }
 
-        if (dll_has_tx_frame()) {
+        if (dll_rf_can_tx() && dll_has_tx_frame()) {
             uint8_t length = dll_get_tx_frame(tx_frame, MAC_ADDR);
             error = dll_rf_tx(tx_frame, length);
             if (error) printf("RF TX Error: %i\n", error);
@@ -57,8 +59,13 @@ int main() {
             if (error) printf("DLL RX Error: %i\n", error);
         }
 
-        dll_rf_tick();
+        // Slow down transmission rate so receivers have time to handle the frames
+        if (n >= 25) {
+            dll_rf_tick();
+            n = 0;
+        }
         _delay_ms(1);
-        t++;
+        n++;
+        t+=1;
     }
 }
