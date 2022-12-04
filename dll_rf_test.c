@@ -21,6 +21,8 @@ int main() {
     init_pins();
     init_serial();
 
+    // TODO: Seed PRNG
+
     printf("Initialising...");
     dll_init();
     dll_rf_init();
@@ -39,7 +41,7 @@ int main() {
             printf("%s\n", rx_packet);
         }
 
-        if (t >= 5000) {
+        if (t >= 500) {
             t = 0;
             if (!dll_has_tx_frame()) {
                 uint8_t queued = dll_queue_tx_net_packet((uint8_t*)msg, sizeof(msg), DLL_BROADCAST_ADDR);

@@ -43,3 +43,15 @@ uint16_t crc16_compute(uint8_t *data, uint8_t length) {
 
     return (uint16_t)(crc & 0xffff);
 }
+
+static long int prng_current = 0;
+
+void prng_seed(long int seed) {
+    prng_current = seed;
+}
+
+long int prng() {  //random number generator; call with 1 <= x <=M-1
+    prng_current = (prng_current >> 16) + ((prng_current << 15) & M)  - (prng_current >> 21) - ((prng_current << 10) & M);
+    if (prng_current < 0) prng_current += M;
+    return prng_current;
+}
