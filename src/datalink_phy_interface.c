@@ -12,7 +12,7 @@
 
 uint16_t is_carrier_present();
 
-int8_t dll_rf_tx(uint8_t length, uint8_t *data) {
+int8_t dll_rf_tx(uint8_t *data, uint8_t length) {
     if (ctrl.txstate != STATUS_FREE) return -1; // TX buffer not free
 
     if (rfm12_tx(length, 0, data) != RFM12_TX_ENQUEUED) {
@@ -28,6 +28,10 @@ uint8_t dll_rf_rx(uint8_t *data) {
 	memcpy(data, rfm12_rx_buffer(), length);
 	rfm12_rx_clear();
     return length;
+}
+
+void dll_rf_init() {
+    rfm12_init();
 }
 
 // TODO: CONVERT FROM 1-p CSMA to 0.05-p CSMA
