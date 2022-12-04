@@ -28,9 +28,7 @@ int main() {
     dll_rf_init();
     printf("Done\n");
 
-    uint16_t t = 4980;
-
-    uint8_t n = 0;
+    uint16_t t = 0xffff;
 
     int8_t error = 0;
 
@@ -61,13 +59,8 @@ int main() {
             if (error) printf("DLL RX Error: %i\n", error);
         }
 
-        // Slow down transmission rate so receivers have time to handle the frames
-        if (n >= 25) {
-            dll_rf_tick();
-            n = 0;
-        }
+        dll_rf_tick();
         _delay_ms(1);
-        n++;
         t+=1;
     }
 }
