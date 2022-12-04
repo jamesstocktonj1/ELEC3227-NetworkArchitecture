@@ -23,6 +23,9 @@
  *		(for performance reasons)				*
  ******************************************************/
 
+// Disable warnings, otherwise we get -Wunused-function
+#pragma GCC system_header
+
 //hardware spi helper macros
 #define SS_ASSERT() PORT_SS &= ~(1<<BIT_SS)
 #define SS_RELEASE() PORT_SS |= (1<<BIT_SS)
