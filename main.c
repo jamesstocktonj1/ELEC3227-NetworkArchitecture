@@ -5,6 +5,7 @@
 
 #include "include/io.h"
 #include "include/serial.h"
+#include "include/timer.h"
 
 #include "include/util.h"
 #include "include/application.h"
@@ -15,8 +16,11 @@
 int main() {
     init_pins();
     init_serial();
+    init_timer();
 
     rfm12_init();
+
+    sei();
 
 
     while(1) {
