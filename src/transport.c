@@ -62,16 +62,30 @@ void transport_handle_tx() {
     }
 
     transport_timer_reset();
+}
 
+void transport_handle_timeout() {
+
+    // check for message timeout
+    if(transport_timeout() && (transportConnectionState != IDLE)) {
+
+        // on connection timeout / resend handler
+        if(transportTxRetry) {
+            // resend segment
+            transportTxFlag = 1;
+            transportTxRetry--;
+
+            transport_timer_reset();
+        }
+        else {
+            transportConnectionState = IDLE;
+            transportConnectionType = NONE;
+        }
+    }
 }
 
 void transport_handle_rx() {
     uint8_t segmentState = transportRxSegment.control & PROT_MASK;
-
-    // check for message timeout
-    if(transport_timeout() && (transportConnectionState != IDLE)) {
-        transportConnectionState = CONN_FAIL;
-    }
 
     switch(transportConnectionState) {
         case IDLE:
@@ -187,19 +201,6 @@ void transport_handle_rx() {
             }
             break;
         case CONN_FAIL:
-            // on connection timeout / resend handler
-            if(transportTxRetry) {
-                // resend segment
-                transportTxFlag = 1;
-                transportTxRetry--;
-
-                transport_timer_reset();
-            }
-            else {
-                transportConnectionState = IDLE;
-                transportConnectionType = NONE;
-            }
-
             break;
     }
 }

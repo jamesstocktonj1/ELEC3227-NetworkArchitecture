@@ -65,5 +65,6 @@ uint8_t transport_timeout(void);
 // Transport Functions
 void transport_handle_tx(void);
 void transport_handle_rx(void);
+void transport_handle_timeout(void);
 
 #endif

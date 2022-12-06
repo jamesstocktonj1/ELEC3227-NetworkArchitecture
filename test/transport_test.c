@@ -475,7 +475,7 @@ void transport_timeout_accept_test() {
             transport_timer_update();
         }
 
-        transport_handle_rx();
+        transport_handle_timeout();
     }
 
     if(transportTxFlag != 0) {
@@ -514,6 +514,8 @@ void transport_timeout_send_test() {
     int i, j;
     for(i=0; i<TRANS_RESEND+1; i++) {
 
+        fprintf(stderr, "  Timeout: %d\n", transportTxRetry);
+
         if(transportTxFlag == 0) {
             fprintf(stderr, "  FAIL: transport_timeout_send_test\n");
             fprintf(stderr, "  Transport Flag was not set to resend segment after attempt %d\n", i);
@@ -526,7 +528,7 @@ void transport_timeout_send_test() {
             transport_timer_update();
         }
 
-        transport_handle_rx();
+        transport_handle_timeout();
     }
 
     if(transportTxFlag != 0) {
@@ -577,7 +579,7 @@ void transport_timeout_ack_test() {
             transport_timer_update();
         }
 
-        transport_handle_rx();
+        transport_handle_timeout();
     }
 
     if(transportTxFlag != 0) {
