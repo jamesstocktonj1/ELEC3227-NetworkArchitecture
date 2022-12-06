@@ -66,5 +66,7 @@ uint8_t transport_timeout(void);
 void transport_handle_tx(void);
 void transport_handle_rx(void);
 void transport_handle_timeout(void);
+uint8_t transport_poll_tx(void);
+uint8_t transport_poll_rx(void);
 
 #endif

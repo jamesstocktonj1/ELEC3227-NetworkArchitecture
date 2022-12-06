@@ -204,3 +204,12 @@ void transport_handle_rx() {
             break;
     }
 }
+
+uint8_t transport_poll_tx() {
+    return (transportTxFlag == 0) && (applicationTxFlag);
+}
+
+uint8_t transport_poll_rx() {
+    transport_handle_timeout();
+    return (transportRxFlag) && (applicationRxFlag == 0);
+}
