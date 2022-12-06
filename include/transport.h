@@ -57,7 +57,7 @@ extern ConnectionType transportConnectionType;
 
 
 /**
- * This function initialises all the parameters for the transport layer
+ * This function initialises all the variables for the transport layer
  * 
  */
 void transport_init(void);

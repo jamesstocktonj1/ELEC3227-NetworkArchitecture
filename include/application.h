@@ -10,6 +10,8 @@
 #define LIGHT_PORT      0x01
 #define TRANSMIT_PORT   0x02
 
+// Application RX Address
+
 // Application Constants
 #define BUFF_SIZE       114
 
@@ -26,13 +28,48 @@ extern uint8_t *applicationRxData;
 extern uint8_t applicationRxLength;
 
 
-// Application Functions
+/**
+ * This function initialises all the variables for the application layer
+ * 
+ */
 void application_init(void);
+
+/**
+ * This function handles the recieving data from the transport layer
+ * 
+ * @param data      - pointer to data
+ * @param length    - length of data
+ * @param port      - source address
+ */
 void application_handle_rx(uint8_t *data, uint8_t length, uint8_t port);
+
+/**
+ * This function handles the sending of data to the transport layer
+ * 
+ * @param data      - pointer to data
+ * @param length    - length of data
+ * @param port      - destination port
+ * @param address   - destination address
+ */
 void application_handle_tx(uint8_t *data, uint8_t length, uint8_t port, uint8_t address);
 
-// Support Functions
+
+/**
+ * This function handles the encryption of data
+ * 
+ * @param data  - pointer to data
+ * @param len   - length of data
+ * @param key   - encryption key
+ */
 void encrypt_data(uint8_t *data, uint8_t len, uint16_t key);
+
+/**
+ * This function handles the decryption of data
+ * 
+ * @param data  - pointer to data
+ * @param len   - length of data
+ * @param key   - encryption key
+ */
 void decrypt_data(uint8_t *data, uint8_t len, uint16_t key);
 
 #endif
