@@ -30,8 +30,11 @@
 #define RREQ_HOP_COUNT_BYTE 9
 
 #define RREP_RREQ_DEST_ADDRESS_BYTE 5 
-#define RREP_DEST_SEQ_BYTE 6
-#define RREP_HOP_COUNT_BYTE 7
+#define RREP_RREQ_ORIG_ADDRESS_BYTE 6
+#define RREP_DEST_SEQ_BYTE 7
+#define RREP_HOP_COUNT_BYTE 8
+
+#define QUEUE_MAX_SIZE 5
 
 
 
@@ -48,7 +51,7 @@ void net_init(uint8_t node_address);
 bool net_handle_rx_packet(uint8_t *packet);
 
 bool net_handle_rreq(uint8_t *packet);
-void net_handle_rrep(uint8_t *packet);
+bool net_handle_rrep(uint8_t *packet);
 void net_handle_rerr(uint8_t *packet);
 void net_handle_data(uint8_t *packet);
 
