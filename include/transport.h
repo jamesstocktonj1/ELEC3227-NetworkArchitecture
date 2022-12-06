@@ -56,17 +56,62 @@ extern ConnectionState transportConnectionState;
 extern ConnectionType transportConnectionType;
 
 
-// Timeout Functions
+/**
+ * This function initialises all the parameters for the transport layer
+ * 
+ */
 void transport_init(void);
+
+/**
+ * This function resets the timer for the transport layer
+ */
 void transport_timer_reset(void);
+
+/**
+ * This function decrements the timer for the transport layer
+ * It is called in the 1ms hardware timer set in include/timer.h
+ * 
+ */
 void transport_timer_update(void);
+
+/**
+ * This function checks whether the transport timer has timed out
+ * 
+ * @return returns 1 - timed out, 0 - otherwise
+ */
 uint8_t transport_timeout(void);
 
-// Transport Functions
+
+/**
+ * This functions takes data from the application layer and processes it to the network layer
+ * 
+ */
 void transport_handle_tx(void);
+
+/**
+ * This functions takes data from the network layer and processes it to the application layer
+ * 
+ */
 void transport_handle_rx(void);
+
+/**
+ * This function checks the transport timer and handles the resend of segments
+ * 
+ */
 void transport_handle_timeout(void);
+
+/**
+ * This function checks whether data can be processed from the application layer to the network layer
+ * 
+ * @return returns 1 - data can be processed, 0 - no data available / cannot process
+ */
 uint8_t transport_poll_tx(void);
+
+/**
+ * This function checks whether data can be processed from the network layer to the application layer
+ * 
+ * @return returns 1 - data can be processed, 0 - no data available / cannot process 
+ */
 uint8_t transport_poll_rx(void);
 
 #endif
