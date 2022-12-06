@@ -80,6 +80,7 @@ void transport_handle_timeout() {
         else {
             transportConnectionState = IDLE;
             transportConnectionType = NONE;
+            transportTxFlag = 0;
         }
     }
 }
