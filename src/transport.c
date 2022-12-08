@@ -91,7 +91,7 @@ void transport_handle_rx() {
     uint8_t segmentState = transportRxSegment.control & PROT_MASK;
 
     // filter RX port
-    if((transportConnectionState != NONE) && (transportRxSegment.destination != applicationTxPort)) {
+    if((transportConnectionState != IDLE) && (transportRxSegment.destination != applicationTxPort)) {
         return;
     }
 
