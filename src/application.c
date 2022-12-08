@@ -18,10 +18,34 @@ void application_init() {
     applicationTxFlag = 0;
     applicationTxData = (uint8_t *)malloc(BUFF_SIZE);
     applicationTxLength = 0;
+    applicationTxPort = 0;
+    applicationTxAddress = 0;
 
     applicationRxFlag = 0;
     applicationRxData = (uint8_t *)malloc(BUFF_SIZE);
     applicationRxLength = 0;
+    applicationRxPort = 0;
+}
+
+
+uint8_t application_handle_rx(uint8_t *data, uint8_t *port) {
+    if(applicationRxFlag) {
+        memcpy(data, applicationRxData, applicationRxLength);
+        applicationRxFlag = 0;
+        return applicationRxLength;
+    }
+    return 0;
+}
+
+uint8_t application_handle_tx(uint8_t *data, uint8_t length, uint8_t port, uint8_t address) {
+    if(applicationTxFlag == 0) {
+        memcpy(applicationTxData, data, length);
+        applicationTxLength = length;
+        applicationTxPort = port;
+        applicationTxAddress = address;
+        applicationTxFlag = 1;
+    }
+    return applicationTxFlag;
 }
 
 

@@ -41,10 +41,10 @@ void application_init(void);
  * This function handles the recieving data from the transport layer
  * 
  * @param data      - pointer to data
- * @param length    - length of data
- * @param port      - source address
+ * @param port      - pointer to destiantion address
+ * @return          - returns length of data
  */
-void application_handle_rx(uint8_t *data, uint8_t length, uint8_t port);
+uint8_t application_handle_rx(uint8_t *data, uint8_t *port);
 
 /**
  * This function handles the sending of data to the transport layer
@@ -54,7 +54,7 @@ void application_handle_rx(uint8_t *data, uint8_t length, uint8_t port);
  * @param port      - destination port
  * @param address   - destination address
  */
-void application_handle_tx(uint8_t *data, uint8_t length, uint8_t port, uint8_t address);
+uint8_t application_handle_tx(uint8_t *data, uint8_t length, uint8_t port, uint8_t address);
 
 
 /**
