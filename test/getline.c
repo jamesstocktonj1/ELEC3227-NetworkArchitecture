@@ -1,6 +1,6 @@
 #include "getline.h"
 
-#ifdef __MINGW32__
+#ifdef __MINGW64__
 size_t getline(char** lineptr, size_t* n, FILE* stream)
 {
   char* bufptr;
