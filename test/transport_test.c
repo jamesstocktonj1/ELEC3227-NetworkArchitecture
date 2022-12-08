@@ -40,6 +40,7 @@ void transport_state_connect_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | CONNECT;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = IDLE;
     transportConnectionType = NONE;
@@ -74,6 +75,7 @@ void transport_state_accept_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | ACCEPT;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_OPEN;
     transportConnectionType = CLIENT;
@@ -108,6 +110,7 @@ void transport_state_send_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | SEND;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_OPEN;
     transportConnectionType = HOST;
@@ -142,6 +145,7 @@ void transport_state_ack_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | ACK;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_DATA;
     transportConnectionType = CLIENT;
@@ -176,6 +180,7 @@ void transport_state_nack_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | NACK;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_DATA;
     transportConnectionType = CLIENT;
@@ -210,6 +215,7 @@ void transport_state_close_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | CLOSE;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_DATA;
     transportConnectionType = HOST;
@@ -238,6 +244,7 @@ void transport_state_connect_nack_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | NACK;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_OPEN;
     transportConnectionType = CLIENT;
@@ -309,6 +316,7 @@ void transport_communication_test() {
     applicationTxLength = testDataLength;
     applicationTxFlag = 1;
     applicationRxFlag = 0;
+    applicationTxPort = LIGHT_PORT;
 
     transportTxFlag = 0;
 
