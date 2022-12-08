@@ -47,7 +47,8 @@ void transport_init() {
 void transport_handle_tx() {
 
     // request open connection
-    if(transportTxFlag == 0) {
+    if((transportTxFlag == 0) && (applicationTxFlag) && (transportConnectionState == IDLE) && (transportConnectionType == NONE)) {
+
         transportConnectionState = CONN_OPEN;
         transportConnectionType = CLIENT;
 
@@ -55,7 +56,8 @@ void transport_handle_tx() {
         transportTxRetry = TRANS_RESEND;
         transportTxSegment.control = CONNECT;
         transportTxSegment.source = TRANSMIT_PORT;
-        transportTxSegment.destination = LIGHT_PORT;
+        transportTxSegment.destination = applicationTxPort;
+        transportTxAddress = applicationTxAddress;
         transportTxSegment.length = 0x01;
         transportTxSegment.data[0] = 0x00;
         transportTxSegment.checksum = 0x00; // TODO: Checksum
@@ -88,6 +90,11 @@ void transport_handle_timeout() {
 void transport_handle_rx() {
     uint8_t segmentState = transportRxSegment.control & PROT_MASK;
 
+    // filter RX port
+    if((transportConnectionState != NONE) && (transportRxSegment.destination != applicationTxPort)) {
+        return;
+    }
+
     switch(transportConnectionState) {
         case IDLE:
             // client requests to connect
@@ -102,7 +109,8 @@ void transport_handle_rx() {
                     transportTxRetry = TRANS_RESEND;
                     transportTxSegment.control = ACCEPT;
                     transportTxSegment.source = TRANSMIT_PORT;
-                    transportTxSegment.destination = LIGHT_PORT;
+                    transportTxSegment.destination = applicationTxPort;
+                    transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
                     transportTxSegment.checksum = 0x00; // TODO: Checksum
@@ -124,7 +132,8 @@ void transport_handle_rx() {
                     transportTxRetry = TRANS_RESEND;
                     transportTxSegment.control = SEND;
                     transportTxSegment.source = TRANSMIT_PORT;
-                    transportTxSegment.destination = LIGHT_PORT;
+                    transportTxSegment.destination = applicationTxPort;
+                    transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = applicationTxLength;
                     memcpy(transportTxSegment.data, applicationTxData, applicationTxLength);
                     transportTxSegment.checksum = 0x00; // TODO: Checksum
@@ -151,7 +160,8 @@ void transport_handle_rx() {
                     transportTxRetry = TRANS_RESEND;
                     transportTxSegment.control = ACK;
                     transportTxSegment.source = TRANSMIT_PORT;
-                    transportTxSegment.destination = LIGHT_PORT;
+                    transportTxSegment.destination = applicationTxPort;
+                    transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
                     transportTxSegment.checksum = 0x00; // TODO: Checksum
@@ -174,7 +184,8 @@ void transport_handle_rx() {
                     transportTxRetry = TRANS_RESEND;
                     transportTxSegment.control = CLOSE;
                     transportTxSegment.source = TRANSMIT_PORT;
-                    transportTxSegment.destination = LIGHT_PORT;
+                    transportTxSegment.destination = applicationTxPort;
+                    transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
                     transportTxSegment.checksum = 0x00; // TODO: Checksum
@@ -190,7 +201,8 @@ void transport_handle_rx() {
                     transportTxFlag = 1;
                     transportTxSegment.control = CLOSE;
                     transportTxSegment.source = TRANSMIT_PORT;
-                    transportTxSegment.destination = LIGHT_PORT;
+                    transportTxSegment.destination = applicationTxPort;
+                    transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
                     transportTxSegment.checksum = 0x00; // TODO: Checksum
