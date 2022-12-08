@@ -12,7 +12,8 @@ static uint8_t dll_rx_packet[DLL_MAX_PACKET_SIZE] = {};
 static uint8_t dll_rx_packet_length = 0;
 
 void dll_init() {
-    for (uint8_t i = 0; i < DLL_RX_TABLE_SIZE; i++) {
+    uint8_t i;
+    for (i = 0; i < DLL_RX_TABLE_SIZE; i++) {
         dll_rx_table[i].free = 1;
     }
     dll_rx_packet_length = 0;
@@ -156,7 +157,8 @@ int8_t dll_rx_table_insert_fragment(uint8_t *data, uint8_t length, uint8_t start
     }
     if (index >= DLL_RX_TABLE_SIZE) {
         uint8_t oldest = 0;
-        for (uint8_t i = 0; i < DLL_RX_TABLE_SIZE; i++) {
+        uint8_t i;
+        for (i = 0; i < DLL_RX_TABLE_SIZE; i++) {
             dll_rx_table_entry_t *entry = &dll_rx_table[i];
             if (entry->order >= oldest) {
                 index = i;
@@ -180,7 +182,8 @@ int8_t dll_rx_table_insert_fragment(uint8_t *data, uint8_t length, uint8_t start
 
 void dll_reorder_rx_table() {
     uint8_t increment_next = 0;
-    for (int8_t n = DLL_RX_TABLE_SIZE; n >= 0; n--) {
+    int8_t n;
+    for (n = DLL_RX_TABLE_SIZE; n >= 0; n--) {
         uint8_t i;
         for (i = 0; i < DLL_RX_TABLE_SIZE; i++) {
             if (dll_rx_table[i].free) continue;
