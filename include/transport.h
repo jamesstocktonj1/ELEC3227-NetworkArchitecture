@@ -42,6 +42,7 @@ extern uint8_t transportTxAddress;
 extern uint8_t transportTxRetry;
 extern uint8_t transportRxFlag;
 extern Segment transportRxSegment;
+extern uint8_t transportRxAddress;
 
 // Timeout Variables
 extern uint16_t transport_timer;

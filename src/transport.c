@@ -8,6 +8,7 @@ uint8_t transportTxAddress;
 uint8_t transportTxRetry;
 uint8_t transportRxFlag;
 Segment transportRxSegment;
+uint8_t transportRxAddress;
 
 // Timeout Variables
 uint16_t transport_timer = 0;
@@ -90,7 +91,12 @@ void transport_handle_timeout() {
 void transport_handle_rx() {
     uint8_t segmentState = transportRxSegment.control & PROT_MASK;
 
-    // filter RX port
+    // filter RX Address
+    if(transportRxAddress != APP_ADDR) {
+        return;
+    }
+
+    // filter RX Port
     if((transportConnectionState != IDLE) && (transportRxSegment.destination != applicationTxPort)) {
         return;
     }

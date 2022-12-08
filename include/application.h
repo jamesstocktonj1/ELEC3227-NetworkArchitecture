@@ -10,7 +10,8 @@
 #define LIGHT_PORT      0x01
 #define TRANSMIT_PORT   0x02
 
-// Application RX Address
+// Default Device Address
+#define APP_ADDR 0x01
 
 // Application Constants
 #define BUFF_SIZE       114
