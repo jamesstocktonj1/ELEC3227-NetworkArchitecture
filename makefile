@@ -49,6 +49,7 @@ TESTS = $(wildcard $(TEST)/*.c)
 TESTS_INCLUDE = $(wildcard $(TEST)/*.h)
 TEST_FILES = \
 	src/application.c \
+	src/transport.c \
 	src/network.c \
 	src/datalink.c \
 	src/util.c

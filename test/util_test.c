@@ -36,7 +36,7 @@ void print_segment_test() {
 
     uint8_t nequal = strcmp(line, "Segment: 0x12 -> 0x34  Data Length: 0x56\n");
     if(nequal) {
-        fprintf(stderr, "  ERROR: print_segment_test\n");
+        fprintf(stderr, "  FAIL: print_segment_test\n");
         assert(0);
     }
 
@@ -66,7 +66,7 @@ void print_packet_test() {
 
     uint8_t nequal = strcmp(line, "Packet:  0x12 -> 0x34  Data Length: 0x56\n");
     if(nequal) {
-        fprintf(stderr, "  ERROR: print_packet_test\n");
+        fprintf(stderr, "  FAIL: print_packet_test\n");
         assert(0);
     }
 
@@ -95,7 +95,7 @@ void print_frame_test() {
 
     uint8_t nequal = strcmp(line, "Frame:  0x1234             Data Length: 0x56\n");
     if(nequal) {
-        fprintf(stderr, "  ERROR: print_frame_test\n");
+        fprintf(stderr, "  FAIL: print_frame_test\n");
         assert(0);
     }
 

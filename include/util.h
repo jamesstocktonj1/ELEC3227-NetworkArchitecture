@@ -12,6 +12,13 @@
 // checksum constants
 #define CRC_CONSTANT 0x1021
 
+typedef struct {
+    uint8_t port;
+    uint8_t address;
+    uint8_t* data;
+    uint8_t length;
+    uint8_t keyIndex;
+} AppData;
 
 typedef struct {
     uint16_t control;
