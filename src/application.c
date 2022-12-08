@@ -7,9 +7,12 @@ uint16_t *applicationEncryption;
 uint8_t applicationTxFlag;
 uint8_t *applicationTxData;
 uint8_t applicationTxLength;
+uint8_t applicationTxPort;
+uint8_t applicationTxAddress;
 uint8_t applicationRxFlag;
 uint8_t *applicationRxData;
 uint8_t applicationRxLength;
+uint8_t applicationRxPort;
 
 void application_init() {
     applicationTxFlag = 0;

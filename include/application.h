@@ -23,9 +23,12 @@ extern uint16_t *applicationEncryption;
 extern uint8_t applicationTxFlag;
 extern uint8_t *applicationTxData;
 extern uint8_t applicationTxLength;
+extern uint8_t applicationTxPort;
+extern uint8_t applicationTxAddress;
 extern uint8_t applicationRxFlag;
 extern uint8_t *applicationRxData;
 extern uint8_t applicationRxLength;
+extern uint8_t applicationRxPort;
 
 
 /**
