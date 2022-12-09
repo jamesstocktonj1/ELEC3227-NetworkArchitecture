@@ -23,14 +23,14 @@
 #define LENGTH_BYTE 4
 #define TRAN_SEGMENT_BYTE 5
 
-#define RREQ_ORIG_ADDRESS_BYTE 5
+#define RREQ_SENDER_BYTE 5
 #define RREQ_ORIG_SEQ_BYTE 6
 #define RREQ_DEST_SEQ_BYTE 7
 #define RREQ_RREQ_ID_BYTE 8
 #define RREQ_HOP_COUNT_BYTE 9
 
-#define RREP_RREQ_DEST_ADDRESS_BYTE 5 
-#define RREP_RREQ_ORIG_ADDRESS_BYTE 6
+#define RREP_RREQ_SENDER_BYTE 5 
+#define RREP_RREQ_NEXTHOP_BYTE 6
 #define RREP_DEST_SEQ_BYTE 7
 #define RREP_HOP_COUNT_BYTE 8
 
@@ -43,7 +43,7 @@
 
 #define REQUEST_MAX_AMOUNT 3
 #define RREQ_TTL 10
-
+#define RREP_TTL 10
 
 
 
@@ -58,6 +58,7 @@ typedef struct qrecord
 {
     uint8_t packet[NET_MAX_PACKET_SIZE];
     uint8_t packet_size;
+    uint8_t next_hop;
 } qrecord;
 
 
