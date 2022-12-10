@@ -72,8 +72,8 @@ void transport_handle_timeout() {
     // check for message timeout
     if(transport_timeout() && (transportConnectionState != IDLE)) {
 
-        // on connection timeout / resend handler
-        if(transportTxRetry) {
+        // on connection timeout / resend handler (and not error flag)
+        if(transportTxRetry && (transportErrorFlag == 0)) {
             // resend segment
             transportTxFlag = 1;
             transportTxRetry--;
