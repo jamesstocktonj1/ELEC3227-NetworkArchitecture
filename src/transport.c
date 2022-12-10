@@ -9,6 +9,7 @@ uint8_t transportTxRetry;
 uint8_t transportRxFlag;
 Segment transportRxSegment;
 uint8_t transportRxAddress;
+uint8_t transportErrorFlag;
 
 // Timeout Variables
 uint16_t transport_timer = 0;
