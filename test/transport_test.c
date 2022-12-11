@@ -35,6 +35,7 @@ void transport_state_machine_test() {
     transport_communication_test();
 
     transport_crc_test();
+    transport_crc_mismatch_test();
 
     fprintf(stderr, "  PASS: transport_state_machine_test\n");
 }
@@ -642,4 +643,33 @@ void transport_crc_test() {
     }
 
     fprintf(stderr, "  PASS: transport_crc_test\n");
+}
+
+void transport_crc_mismatch_test() {
+    transportRxSegment.control = (TEST_NET_ID << 8) | ACCEPT;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
+    
+    // simulate bad checksum
+    transportRxSegment.checksum = transport_crc(transportRxSegment) + 1;
+    applicationTxPort = LIGHT_PORT;
+
+    transportConnectionState = CONN_OPEN;
+    transportConnectionType = CLIENT;
+
+    transport_handle_rx();
+
+    if(transportConnectionState != CONN_OPEN) {
+        fprintf(stderr, "  FAIL: transport_crc_mismatch_test\n");
+        fprintf(stderr, "  Expected Connection State to not change\n");
+        assert(0);
+    }
+
+    if(transportConnectionType != CLIENT) {
+        fprintf(stderr, "  FAIL: transport_crc_mismatch_test\n");
+        fprintf(stderr, "  Expected Connection State to not change\n");
+        assert(0);
+    }
+
+    fprintf(stderr, "  PASS: transport_crc_mismatch_test\n");
 }
