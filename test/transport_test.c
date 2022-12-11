@@ -16,21 +16,23 @@ void transport_state_machine_test() {
 
     transport_init();
 
-    transport_state_connect_test();
-    transport_state_accept_test();
-    transport_state_send_test();
-    transport_state_ack_test();
-    transport_state_nack_test();
-    transport_state_close_test();
+    // transport_state_connect_test();
+    // transport_state_accept_test();
+    // transport_state_send_test();
+    // transport_state_ack_test();
+    // transport_state_nack_test();
+    // transport_state_close_test();
 
-    transport_state_connect_nack_test();
+    // transport_state_connect_nack_test();
 
-    transport_timeout_connect_test();
-    transport_timeout_accept_test();
-    transport_timeout_send_test();
-    transport_timeout_ack_test();
+    // transport_timeout_connect_test();
+    // transport_timeout_accept_test();
+    // transport_timeout_send_test();
+    // transport_timeout_ack_test();
 
-    transport_communication_test();
+    // transport_communication_test();
+
+    transport_crc_test();
 
     fprintf(stderr, "  PASS: transport_state_machine_test\n");
 }
@@ -607,4 +609,25 @@ void transport_timeout_ack_test() {
     }
 
     fprintf(stderr, "  PASS: transport_timeout_ack_test\n");
+}
+
+void transport_crc_test() {
+    Segment testSegment;
+    testSegment.control = (TEST_NET_ID << 8) | CONNECT;
+    testSegment.source = 0x02;
+    testSegment.destination = 0x01;
+    testSegment.length = 0x01;
+    testSegment.data = malloc(1);
+    testSegment.data[0] = 0x00;
+
+    uint16_t expChecksum = 33106;
+    uint16_t testChecksum = transport_crc(testSegment);
+
+    if(expChecksum != testChecksum) {
+        fprintf(stderr, "  FAIL: transport_crc_test\n");
+        fprintf(stderr, "  Expected Checksum 0x%04x but got 0x%04x\n", expChecksum, testChecksum);
+        assert(0);
+    }
+
+    fprintf(stderr, "  PASS: transport_crc_test\n");
 }
