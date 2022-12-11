@@ -10,7 +10,7 @@
 #endif
 
 // checksum constants
-#define CRC_CONSTANT 0x1021
+#define CRC_CONSTANT 0xa001
 
 typedef struct {
     uint8_t port;
