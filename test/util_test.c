@@ -106,7 +106,7 @@ void print_frame_test() {
 void crc16_compute_test() {
 
     uint8_t data[4] = {1, 2, 3, 4};
-    uint16_t expChecksum = 0x05fb;
+    uint16_t expChecksum = 0x2ba1;
 
     uint16_t testChecksum = crc16_compute(data, 4);
 
