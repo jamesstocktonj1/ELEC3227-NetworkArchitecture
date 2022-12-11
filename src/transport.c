@@ -62,7 +62,7 @@ void transport_handle_tx() {
         transportTxAddress = applicationTxAddress;
         transportTxSegment.length = 0x01;
         transportTxSegment.data[0] = 0x00;
-        transportTxSegment.checksum = 0x00; // TODO: Checksum
+        transportTxSegment.checksum = transport_crc(transportTxSegment);
     }
 
     transport_timer_reset();
@@ -99,6 +99,12 @@ void transport_handle_rx() {
 
     // filter RX Port
     if((transportConnectionState != IDLE) && (transportRxSegment.destination != applicationTxPort)) {
+        fprintf(stderr, "Transport Error: Segment Timeout\n");
+        return;
+    }
+
+    if(transport_crc(transportRxSegment) != transportRxSegment.checksum) {
+        fprintf(stderr, "Transport Error: Checksum Mismatch\n");
         return;
     }
 
@@ -120,7 +126,7 @@ void transport_handle_rx() {
                     transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
-                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                    transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
 
                 transport_timer_reset();
@@ -143,7 +149,7 @@ void transport_handle_rx() {
                     transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = applicationTxLength;
                     memcpy(transportTxSegment.data, applicationTxData, applicationTxLength);
-                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                    transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
                 
                 transport_timer_reset();
@@ -171,7 +177,7 @@ void transport_handle_rx() {
                     transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
-                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                    transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
                 
                 transport_timer_reset();
@@ -195,7 +201,7 @@ void transport_handle_rx() {
                     transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
-                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                    transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
             }
             else if((transportConnectionType == CLIENT) && (segmentState == NACK)) {
@@ -212,7 +218,7 @@ void transport_handle_rx() {
                     transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
-                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                    transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
             }
             else if((transportConnectionType == HOST) && (segmentState == CLOSE)) {
