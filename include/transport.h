@@ -27,6 +27,7 @@
 
 // Transport Buffer Constants
 #define BUFF_SIZE 114
+#define SEG_SIZE  121
 
 // Timeout Constants
 #define TRANS_TIMEOUT   500
@@ -115,5 +116,13 @@ uint8_t transport_poll_tx(void);
  * @return returns 1 - data can be processed, 0 - no data available / cannot process 
  */
 uint8_t transport_poll_rx(void);
+
+/**
+ * @brief 
+ * 
+ * @param data  - data to perform checksum on 
+ * @return      - returns crc16 checksum value
+ */
+uint16_t transport_crc(Segment data);
 
 #endif

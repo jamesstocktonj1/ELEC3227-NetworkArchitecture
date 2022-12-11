@@ -233,3 +233,17 @@ uint8_t transport_poll_rx() {
     transport_handle_timeout();
     return (transportRxFlag) && (applicationRxFlag == 0);
 }
+
+uint16_t transport_crc(Segment data) {
+    uint8_t *temp = (uint8_t *)malloc(data.length + 5);
+
+    temp[0] = (data.control >> 8);
+    temp[1] = (uint8_t)data.control;
+    temp[2] = data.source;
+    temp[3] = data.destination;
+    temp[4] = data.length;
+
+    memcpy(temp+5, data.data, data.length);
+
+    return crc16_compute(temp, data.length + 5);
+}
