@@ -1,5 +1,6 @@
 #include "../include/transport.h"
 
+#include <string.h>
 
 // Transport Buffer
 uint8_t transportTxFlag;
