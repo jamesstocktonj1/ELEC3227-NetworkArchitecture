@@ -38,7 +38,6 @@ uint8_t dll_rf_rx(uint8_t *data) {
 
 void dll_rf_init() {
     rfm12_init();
-    sei(); // enable interrupts
 }
 
 void dll_rf_tick() {

@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "include/io.h"
@@ -26,6 +27,7 @@ int main() {
     printf("Initialising...");
     dll_init();
     dll_rf_init();
+    sei(); // enable interrupts
     printf("Done\n");
 
     uint16_t t = 0xffff;
