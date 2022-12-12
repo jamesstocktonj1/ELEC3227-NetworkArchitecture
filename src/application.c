@@ -1,5 +1,7 @@
 #include "../include/application.h"
 
+#include <string.h>
+
 // Encryption Keys
 uint16_t *applicationEncryption;
 
