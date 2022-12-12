@@ -22,15 +22,15 @@ int main() {
     init_pins();
     init_serial();
 
+    // TODO: Seed PRNG
+
     printf("Initialising...");
     dll_init();
     dll_rf_init();
     sei(); // enable interrupts
     printf("Done\n");
 
-    uint16_t t = 4980;
-
-    uint8_t n = 0;
+    uint16_t t = 0xffff;
 
     int8_t error = 0;
 
@@ -41,7 +41,7 @@ int main() {
             printf("%s\n", rx_packet);
         }
 
-        if (t >= 5000) {
+        if (t >= 500) {
             t = 0;
             if (!dll_has_tx_frame()) {
                 uint8_t queued = dll_queue_tx_net_packet((uint8_t*)msg, sizeof(msg), DLL_BROADCAST_ADDR);
@@ -61,13 +61,8 @@ int main() {
             if (error) printf("DLL RX Error: %i\n", error);
         }
 
-        // Slow down transmission rate so receivers have time to handle the frames
-        if (n >= 25) {
-            dll_rf_tick();
-            n = 0;
-        }
+        dll_rf_tick();
         _delay_ms(1);
-        n++;
         t+=1;
     }
 }

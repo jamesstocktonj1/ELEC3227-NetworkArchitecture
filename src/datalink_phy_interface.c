@@ -40,19 +40,25 @@ void dll_rf_init() {
     rfm12_init();
 }
 
-// TODO: CONVERT FROM 1-p CSMA to 0.05-p CSMA
 void dll_rf_tick() {
+    // 0.05-p CSMA
+
+    // Do random calculation here instead of later, so the PRNG gets a bit more random
+    uint8_t actually_transmit = (prng() % 20) == 0;
+    
     //don't disturb RFM12 if transmitting or receiving
 	if (ctrl.rfm12_state != STATE_RX_IDLE) return;
 
     //do we have something to transmit?
     if (ctrl.txstate != STATUS_OCCUPIED) return;
 
-    // Check twice
-	if (is_carrier_present()) return;
-    if (is_carrier_present()) return;
+    // Check 1-8 times for a carrier (adds a variable bit of delay)
+    uint8_t n = 1 + (prng() % 8);
+    for (; n > 0; n--) {
+        if (is_carrier_present()) return;
+    }
 
-	rfm12_start_tx();
+    if (actually_transmit) rfm12_start_tx();
 }
 
 uint16_t is_carrier_present() {
