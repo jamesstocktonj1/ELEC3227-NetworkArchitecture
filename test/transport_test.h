@@ -34,4 +34,7 @@ void transport_send_data_test(void);
 
 void transport_timeout_test(void);
 
+void transport_crc_test(void);
+void transport_crc_mismatch_test(void);
+
 #endif

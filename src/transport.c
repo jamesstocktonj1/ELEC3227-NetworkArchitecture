@@ -1,5 +1,6 @@
 #include "../include/transport.h"
 
+#include <string.h>
 
 // Transport Buffer
 uint8_t transportTxFlag;
@@ -9,6 +10,7 @@ uint8_t transportTxRetry;
 uint8_t transportRxFlag;
 Segment transportRxSegment;
 uint8_t transportRxAddress;
+uint8_t transportErrorFlag;
 
 // Timeout Variables
 uint16_t transport_timer = 0;
@@ -61,7 +63,7 @@ void transport_handle_tx() {
         transportTxAddress = applicationTxAddress;
         transportTxSegment.length = 0x01;
         transportTxSegment.data[0] = 0x00;
-        transportTxSegment.checksum = 0x00; // TODO: Checksum
+        transportTxSegment.checksum = transport_crc(transportTxSegment);
     }
 
     transport_timer_reset();
@@ -98,6 +100,12 @@ void transport_handle_rx() {
 
     // filter RX Port
     if((transportConnectionState != IDLE) && (transportRxSegment.destination != applicationTxPort)) {
+        fprintf(stderr, "Transport Error: Segment Timeout\n");
+        return;
+    }
+
+    if(transport_crc(transportRxSegment) != transportRxSegment.checksum) {
+        fprintf(stderr, "Transport Error: Checksum Mismatch\n");
         return;
     }
 
@@ -119,7 +127,7 @@ void transport_handle_rx() {
                     transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
-                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                    transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
 
                 transport_timer_reset();
@@ -142,7 +150,7 @@ void transport_handle_rx() {
                     transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = applicationTxLength;
                     memcpy(transportTxSegment.data, applicationTxData, applicationTxLength);
-                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                    transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
                 
                 transport_timer_reset();
@@ -170,7 +178,7 @@ void transport_handle_rx() {
                     transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
-                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                    transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
                 
                 transport_timer_reset();
@@ -194,7 +202,7 @@ void transport_handle_rx() {
                     transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
-                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                    transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
             }
             else if((transportConnectionType == CLIENT) && (segmentState == NACK)) {
@@ -211,7 +219,7 @@ void transport_handle_rx() {
                     transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
-                    transportTxSegment.checksum = 0x00; // TODO: Checksum
+                    transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
             }
             else if((transportConnectionType == HOST) && (segmentState == CLOSE)) {
@@ -231,4 +239,18 @@ uint8_t transport_poll_tx() {
 uint8_t transport_poll_rx() {
     transport_handle_timeout();
     return (transportRxFlag) && (applicationRxFlag == 0);
+}
+
+uint16_t transport_crc(Segment data) {
+    uint8_t *temp = (uint8_t *)malloc(data.length + 5);
+
+    temp[0] = (data.control >> 8);
+    temp[1] = (uint8_t)data.control;
+    temp[2] = data.source;
+    temp[3] = data.destination;
+    temp[4] = data.length;
+
+    memcpy(temp+5, data.data, data.length);
+
+    return crc16_compute(temp, data.length + 5);
 }

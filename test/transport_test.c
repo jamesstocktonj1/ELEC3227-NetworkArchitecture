@@ -16,6 +16,8 @@ void transport_state_machine_test() {
 
     transport_init();
 
+    transportRxAddress = APP_ADDR;
+
     transport_state_connect_test();
     transport_state_accept_test();
     transport_state_send_test();
@@ -32,6 +34,9 @@ void transport_state_machine_test() {
 
     transport_communication_test();
 
+    transport_crc_test();
+    transport_crc_mismatch_test();
+
     fprintf(stderr, "  PASS: transport_state_machine_test\n");
 }
 
@@ -40,6 +45,7 @@ void transport_state_connect_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | CONNECT;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.checksum = transport_crc(transportRxSegment);
     applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = IDLE;
@@ -75,6 +81,7 @@ void transport_state_accept_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | ACCEPT;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.checksum = transport_crc(transportRxSegment);
     applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_OPEN;
@@ -110,6 +117,7 @@ void transport_state_send_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | SEND;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.checksum = transport_crc(transportRxSegment);
     applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_OPEN;
@@ -145,6 +153,7 @@ void transport_state_ack_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | ACK;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.checksum = transport_crc(transportRxSegment);
     applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_DATA;
@@ -180,6 +189,7 @@ void transport_state_nack_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | NACK;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.checksum = transport_crc(transportRxSegment);
     applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_DATA;
@@ -215,6 +225,7 @@ void transport_state_close_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | CLOSE;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.checksum = transport_crc(transportRxSegment);
     applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_DATA;
@@ -244,6 +255,7 @@ void transport_state_connect_nack_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | NACK;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.checksum = transport_crc(transportRxSegment);
     applicationTxPort = LIGHT_PORT;
 
     transportConnectionState = CONN_OPEN;
@@ -460,6 +472,7 @@ void transport_timeout_accept_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | CONNECT;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.checksum = transport_crc(transportRxSegment);
 
     transportConnectionState = IDLE;
     transportConnectionType = NONE;
@@ -511,6 +524,7 @@ void transport_timeout_send_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | ACCEPT;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.checksum = transport_crc(transportRxSegment);
 
     transportConnectionState = CONN_OPEN;
     transportConnectionType = CLIENT;
@@ -562,6 +576,7 @@ void transport_timeout_ack_test() {
     transportRxSegment.control = (TEST_NET_ID << 8) | SEND;
     transportRxSegment.source = TEST_SRC_ADDR;
     transportRxSegment.destination = TEST_DEST_ADDR;
+    transportRxSegment.checksum = transport_crc(transportRxSegment);
 
     transportConnectionState = CONN_OPEN;
     transportConnectionType = HOST;
@@ -607,4 +622,54 @@ void transport_timeout_ack_test() {
     }
 
     fprintf(stderr, "  PASS: transport_timeout_ack_test\n");
+}
+
+void transport_crc_test() {
+    Segment testSegment;
+    testSegment.control = (TEST_NET_ID << 8) | CONNECT;
+    testSegment.source = 0x02;
+    testSegment.destination = 0x01;
+    testSegment.length = 0x01;
+    testSegment.data = malloc(1);
+    testSegment.data[0] = 0x00;
+
+    uint16_t expChecksum = 33106;
+    uint16_t testChecksum = transport_crc(testSegment);
+
+    if(expChecksum != testChecksum) {
+        fprintf(stderr, "  FAIL: transport_crc_test\n");
+        fprintf(stderr, "  Expected Checksum 0x%04x but got 0x%04x\n", expChecksum, testChecksum);
+        assert(0);
+    }
+
+    fprintf(stderr, "  PASS: transport_crc_test\n");
+}
+
+void transport_crc_mismatch_test() {
+    transportRxSegment.control = (TEST_NET_ID << 8) | ACCEPT;
+    transportRxSegment.source = TEST_SRC_ADDR;
+    transportRxSegment.destination = TEST_DEST_ADDR;
+    
+    // simulate bad checksum
+    transportRxSegment.checksum = transport_crc(transportRxSegment) + 1;
+    applicationTxPort = LIGHT_PORT;
+
+    transportConnectionState = CONN_OPEN;
+    transportConnectionType = CLIENT;
+
+    transport_handle_rx();
+
+    if(transportConnectionState != CONN_OPEN) {
+        fprintf(stderr, "  FAIL: transport_crc_mismatch_test\n");
+        fprintf(stderr, "  Expected Connection State to not change\n");
+        assert(0);
+    }
+
+    if(transportConnectionType != CLIENT) {
+        fprintf(stderr, "  FAIL: transport_crc_mismatch_test\n");
+        fprintf(stderr, "  Expected Connection State to not change\n");
+        assert(0);
+    }
+
+    fprintf(stderr, "  PASS: transport_crc_mismatch_test\n");
 }
