@@ -41,7 +41,8 @@ uint8_t enqueue(uint8_t *packet, uint8_t packet_size)
             if(front == -1)
                 front = 0;
             back++;
-            for (int i=0; i<packet_size; i++)
+            int i;
+            for (i=0; i<packet_size; i++)
             {
                 queue[back].packet[i] = packet[i];
             }
@@ -115,7 +116,8 @@ void net_init(uint8_t node_address){
     front = -1;
     back = -1;
     route_table[0].next_hop = 0;
-    for(int i=1; i<10; i++)
+    int i;
+    for(i=1; i<10; i++)
     {
         route_table[i].next_hop = 255;
     }
