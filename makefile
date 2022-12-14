@@ -28,6 +28,8 @@ CFLAGS = -Wall -Os
 TARGET = main
 TESTFLAGS = -Wall -Os -lstdc++ -DTEST
 
+DLL_RF_TEST_TARGET = dll_rf_test
+
 # build and source folders
 BUILD = build
 SOURCE = src
@@ -49,11 +51,17 @@ TESTS = $(wildcard $(TEST)/*.c)
 TESTS_INCLUDE = $(wildcard $(TEST)/*.h)
 TEST_FILES = \
 	src/application.c \
+	src/transport.c \
 	src/network.c \
 	src/datalink.c \
 	src/util.c
 TEST_INCLUDE = $(subst $(SOURCE), $(INCLUDE), $(TEST_FILES:.c=.h))
 TEST_TARGET = test.out
+
+# demonstration files
+DEMO = demo
+APP_DEMO = 	application
+APP_TARGET = $(APP_DEMO).out
 
 #programmer constant
 AVRDUDE = avrdude 
@@ -72,6 +80,13 @@ all: $(BUILD)/$(TARGET).hex
 test: $(BUILD)/$(TEST_TARGET)
 	$(BUILD)/$(TEST_TARGET)
 
+app_demo: $(BUILD)/$(APP_TARGET)
+	$(BUILD)/$(APP_TARGET)
+
+
+.PHONY: dll_rf_test
+dll_rf_test: $(BUILD)/$(DLL_RF_TEST_TARGET).hex
+
 disasm: $(BUILD)/$(TARGET).elf
 	$(OBJDUMP) -d $(BUILD)/$(TARGET).elf
 
@@ -84,12 +99,16 @@ test-flash:
 flash: all
 	$(AVRDUDE) -c $(PROGRAMMER) -p $(MCU) -U flash:w:$(BUILD)/$(TARGET).hex
 
+flash-dll: dll_rf_test
+	$(AVRDUDE) -c $(PROGRAMMER) -p $(MCU) -U flash:w:$(BUILD)/$(DLL_RF_TEST_TARGET).hex
+
 fuse:
 	$(AVRDUDE) -c $(PROGRAMMER) -p $(MCU) -U lfuse:w:$(LF):m -U hfuse:w:$(HF):m -U efuse:w:$(EF):m
 
 clean:
 	@rm -f $(BUILD)/$(TARGET).elf
 	@rm -f $(BUILD)/$(TARGET).hex
+	@rm -f $(BUILD)/$(DLL_RF_TEST_TARGET).hex
 	@rm -f $(OBJECTS)
 	@rm -f $(LIB_OBJECTS)
 	@rm -f $(BUILD)/$(TEST_TARGET)
@@ -120,6 +139,15 @@ $(BUILD)/$(TARGET).elf: $(TARGET).c $(OBJECTS) $(LIB_OBJECTS)
 $(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
 	$(OBJCOPY) $(BUILD)/$(TARGET).elf $(BUILD)/$(TARGET).hex -O ihex
 
+$(BUILD)/%.elf: %.c $(OBJECTS) $(LIB_OBJECTS)
+	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) $< $(OBJECTS) $(LIB_OBJECTS) -o $@
+
+$(BUILD)/%.hex: $(BUILD)/%.elf
+	$(OBJCOPY) $< $@ -O ihex
+
 
 $(BUILD)/$(TEST_TARGET): $(TESTS) $(TEST_FILES) $(TEST_INCLUDE) $(TESTS_INCLUDE)
 	$(TEST-CC) $(TESTFLAGS) $(TESTS) $(TEST_FILES) -o $@
+
+$(BUILD)/$(APP_TARGET): $(DEMO)/$(APP_DEMO).c $(TEST_FILES) $(TEST_INCLUDE)
+	$(TEST-CC) $(TESTFLAGS) $(TEST_FILES) $(DEMO)/$(APP_DEMO).c -o $@
