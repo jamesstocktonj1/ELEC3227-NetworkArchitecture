@@ -48,7 +48,7 @@ int main() {
     sei(); // enable interrupts
     printf("Done\n");
 
-    uint16_t t = 500;
+    uint16_t t = 5000;
 
     uint8_t i;
     uint8_t rxLength;
@@ -79,7 +79,7 @@ int main() {
             }
 
 
-            t = 500;
+            t = 5000;
         }
         
         rxLength = application_handle_rx(rxBuffer, NULL);
@@ -94,6 +94,8 @@ int main() {
         }
 
         poll_network_stack();
+
+        _delay_ms(1);
     }
 }
 
