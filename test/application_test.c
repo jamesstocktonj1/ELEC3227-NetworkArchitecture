@@ -5,9 +5,13 @@ void main_application_test() {
 
     fprintf(stderr, "main_application_test\n");
 
+    application_init();
+
     encrypt_data_test();
     decrypt_data_test();
     dual_encryption_test();
+
+    application_data_test();
 }
 
 
@@ -87,4 +91,65 @@ void dual_encryption_test() {
     }
 
     fprintf(stderr, "  PASS: dual_encryption_test\n");
+}
+
+void application_data_test() {
+    uint8_t testTxData[3] = {0x01, 0x02, 0x03};
+    applicationTxFlag = 0;
+
+    fprintf(stderr, "  Original Data: ");
+    int i;
+    for(i=0; i<3; i++) {
+        fprintf(stderr, "0x%04x, ", testTxData[i]);
+    }
+    fprintf(stderr, "\n");
+
+    uint8_t isTx = application_handle_tx(testTxData, 3, 0x01, APP_ADDR);
+    if(isTx == 0) {
+        fprintf(stderr, "  FAIL: application_tx_data_test\n");
+        fprintf(stderr, "  Application Failed to send data\n");
+        assert(0);
+    }
+
+    fprintf(stderr, "  Encrypted Data: ");
+    for(i=0; i<3; i++) {
+        fprintf(stderr, "0x%04x, ", applicationTxData[i]);
+    }
+    fprintf(stderr, "\n");
+
+    memcpy(applicationRxData, applicationTxData, applicationTxLength);
+    applicationRxLength = applicationTxLength;
+    applicationRxFlag = applicationTxFlag;
+    applicationRxEncryption = applicationTxEncryption;
+
+
+    uint8_t testRxData[3];
+    uint8_t testPort;
+
+    uint8_t isRx = application_handle_rx(testRxData, testPort);
+    if(isRx == 0) {
+        fprintf(stderr, "  FAIL: application_tx_data_test\n");
+        fprintf(stderr, "  Application failed to recieve data\n");
+        assert(0);
+    }
+    else if(isRx != 3) {
+        fprintf(stderr, "  FAIL: application_tx_data_test\n");
+        fprintf(stderr, "  Expected data of length 3 but got %d\n", isRx);
+        assert(0);
+    }
+
+    uint8_t isDiff = compare_data(testRxData, testTxData, isRx);
+    if(isDiff) {
+        fprintf(stderr, "  FAIL: application_tx_data_test\n");
+        print_data(testRxData, testTxData, isRx);
+        assert(0);
+    }
+
+    fprintf(stderr, "  Decrypted Data: ");
+    for(i=0; i<3; i++) {
+        fprintf(stderr, "0x%04x, ", testTxData[i]);
+    }
+    fprintf(stderr, "\n");
+
+    fprintf(stderr, "  PASS: application_tx_data_test\n");
 }
