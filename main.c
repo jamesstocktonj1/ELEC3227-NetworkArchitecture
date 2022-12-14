@@ -43,7 +43,7 @@ int main() {
 
     // TODO: Seed PRNG
 
-    printf("Initialising...");
+    printf("Initialising... ");
     application_init();
     transport_init();
     // network_init();
@@ -66,7 +66,11 @@ int main() {
             t--;
         }
         else {
+            #ifdef NODE1
             uint8_t data[5] = {0x00, 0x01, 0x02, 0x03, 0x04};
+            #else
+            uint8_t data[5] = {0x10, 0x10, 0x20, 0x30, 0x40};
+            #endif
             uint8_t data_length = 5;
             uint8_t sent = application_handle_tx(data, data_length, LIGHT_PORT, DEST_ADDR);
 
@@ -114,6 +118,8 @@ void poll_network_stack() {
     if(transport_poll_rx()) {
         transport_handle_rx();
     }
+
+    transport_handle_timeout();
 
     // handle network layer
     if(dllRxFlag)
