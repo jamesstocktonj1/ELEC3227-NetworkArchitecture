@@ -1,4 +1,5 @@
 #include "../include/network.h"
+#include "../include/util.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -71,6 +72,7 @@ void send_packet()
     
     if(count==0 && dllRxReady )
         {   
+            printf("Packet ready to be sent");
             if(dequeue(&dllTxPacket))
             {
                 count++;
@@ -84,12 +86,14 @@ void send_packet()
             {
                 if((route_table[dllTxPacket.packet[DEST_ADDRESS_BYTE]]).next_hop != UNKNOWN_NEXT_HOP)
                 {
+                    printf('Entry in route table exists');
                     dllTxFlag=1;
                     count = 0;
                     
                 }
                 else
                 {
+                    printf('No entry in route table, sending RREQ');
                     send_rreq(dllTxPacket.packet[DEST_ADDRESS_BYTE]);
                     count++;
                 }
@@ -103,11 +107,11 @@ void send_packet()
 
 
 
-void net_init(uint8_t node_address){
+void net_init(){
     net_seqnum = 0;
     route_table = calloc(DEFAULT_NETWORK_SIZE, sizeof(net_rt_entry));
     RREQ_ID_buffer = 0;
-    net_node_address = node_address;
+    net_node_address = APP_ADDR;
     front = -1;
     back = -1;
     route_table[0].next_hop = 0;
@@ -116,6 +120,8 @@ void net_init(uint8_t node_address){
     {
         route_table[i].next_hop = 255;
     }
+
+    printf("Network layer initialised");
 
 }
 
@@ -127,6 +133,7 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
     {
         case RREQ_ID: 
         {
+        printf("RREQ packet received");
             if(net_handle_rreq(packet))
                 {
                     send_rrep(packet);
@@ -143,6 +150,7 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
 
         case RREP_ID: 
         {
+            printf("RREP packet received");
             if(!net_handle_rrep(packet))
                 {
                     send_rrep(packet);
@@ -152,11 +160,17 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
         break;
 
         case RERR_ID: 
+        {
+            printf("RERR packet received");
             net_handle_rerr(packet);
+        }
         break;
 
         case DATA_ID: 
+        {
+            printf("DATA packet received");
             net_handle_data(packet, length);
+        }
         break;
     }
 };
@@ -216,13 +230,14 @@ uint8_t net_handle_data(uint8_t *packet, uint8_t length)
             transportRxSegment.source = packet[SRC_ADDRESS_BYTE];
             transportRxSegment.destination = packet[DEST_ADDRESS_BYTE];
             transportRxSegment.length = packet[LENGTH_BYTE];
-            memcpy(&(transportRxSegment.data), &packet[TRAN_SEGMENT_BYTE], length - DATA_PACKET_SIZE_NO_TRAN);
+            memcpy(&(transportRxSegment.data), &packet[TRAN_SEGMENT_BYTE], transportRxSegment.length);
             transportRxSegment.checksum = packet[length - 1];
             
             return 1;
         }
     else
         {
+            //change to resend data 
             enqueue(packet, length);
             return 0;
         }
@@ -230,17 +245,17 @@ uint8_t net_handle_data(uint8_t *packet, uint8_t length)
 }
 
 
-uint8_t send_data (  uint8_t dest_node,  uint8_t time_to_live, uint8_t *tran_segment, uint8_t tran_seg_length)
+uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_length)
 {
     static uint8_t count = 0;
 
     uint8_t packet[tran_seg_length + DATA_PACKET_SIZE_NO_TRAN ];
     packet[CONTROL_1_BYTE] |= DATA_ID<<6;
-    packet[CONTROL_1_BYTE] |= time_to_live<<4;
+    packet[CONTROL_1_BYTE] |= DEFAULT_TTL<<4;
     packet[CONTROL_2_BYTE] = 0;
     packet[SRC_ADDRESS_BYTE] = net_node_address;
     packet[DEST_ADDRESS_BYTE] = dest_node;
-    packet[LENGTH_BYTE] = tran_seg_length + DATA_PACKET_SIZE_NO_TRAN ;
+    packet[LENGTH_BYTE] = tran_seg_length ;
     memcpy(&packet[TRAN_SEGMENT_BYTE], tran_segment, tran_seg_length);
     enqueue(packet, tran_seg_length + DATA_PACKET_SIZE_NO_TRAN);
 

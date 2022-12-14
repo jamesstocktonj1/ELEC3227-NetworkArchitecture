@@ -41,6 +41,7 @@
 #define DATA_PACKET_SIZE_NO_TRAN 5
 
 #define QUEUE_MAX_SIZE 5
+#define DEFAULT_TTL 5
 
 #define REQUEST_MAX_AMOUNT 3
 #define RREQ_TTL 10
@@ -72,7 +73,7 @@ extern uint8_t dllTxNexthop;
 
 
 
-void net_init(uint8_t node_address);
+void net_init();
 
 void net_handle_rx_packet(uint8_t *packet, uint8_t length);
 
@@ -82,9 +83,11 @@ void net_handle_rerr(uint8_t *packet);
 uint8_t net_handle_data(uint8_t *packet, uint8_t length);
 
 void send_rreq( uint8_t dest_node);
-uint8_t send_data (  uint8_t dest_node,  uint8_t time_to_live, uint8_t *tran_segment, uint8_t tran_seg_length);
+uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_length);
 void send_rrep(uint8_t *packet);
 void resend_packet(uint8_t *packet, uint8_t length);
+
+void send_packet();
 
 
 

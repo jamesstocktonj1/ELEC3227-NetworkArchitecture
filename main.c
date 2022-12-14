@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <string.h>
 
 #include "include/io.h"
 #include "include/serial.h"
@@ -33,6 +34,8 @@ uint8_t rx_packet[DLL_MAX_PACKET_SIZE] = {0};
 uint8_t tx_frame[DLL_MAX_FRAME_SIZE] = {0};
 uint8_t rx_frame[DLL_MAX_FRAME_SIZE] = {0};
 
+uint8_t dllRxFlag;
+
 int main() {
     init_pins();
     init_serial();
@@ -53,6 +56,7 @@ int main() {
     uint8_t i;
     uint8_t rxLength;
     uint8_t rxBuffer[BUFF_SIZE];
+    uint8_t dllRxLength;
 
 
     while(1) {
@@ -112,6 +116,29 @@ void poll_network_stack() {
     }
 
     // handle network layer
+    if(dllRxFlag)
+    {
+
+        net_handle_rx_packet(rx_packet, dllRxLength);
+    }
+
+    if(transportTxFlag)
+    {
+        uint8_t packet[7+transportTxSegment.length];
+
+            packet[CONTROL_1_BYTE] = transportTxSegment.control>>8;
+            packet[CONTROL_2_BYTE] = transportTxSegment.control;
+            packet[SRC_ADDRESS_BYTE] = transportTxSegment.source;
+            packet[DEST_ADDRESS_BYTE] = transportTxSegment.destination;
+            packet[LENGTH_BYTE] = transportTxSegment.length;
+            memcpy(&packet[TRAN_SEGMENT_BYTE], &(transportRxSegment.data), transportTxSegment.length );
+            packet[TRAN_SEGMENT_BYTE + transportTxSegment.length] = transportTxSegment.checksum>>8;
+            packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
+            send_data(transportTxAddress, transportTxSegment.data, transportTxSegment.length );
+    }
+    send_packet();
+
+
 
 
     // handle data link layer
@@ -119,7 +146,9 @@ void poll_network_stack() {
 
     while (dll_has_rx_packet()) {
         uint8_t length = dll_get_rx_packet(rx_packet);
+        dllRxFlag = 1;
         length++;
+        dllRxLength = length;
         // SEND TO NET LAYER
     }
 
