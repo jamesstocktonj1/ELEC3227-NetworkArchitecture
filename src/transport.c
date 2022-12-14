@@ -57,7 +57,7 @@ void transport_handle_tx() {
 
         transportTxFlag = 1;
         transportTxRetry = TRANS_RESEND;
-        transportTxSegment.control = CONNECT;
+        transportTxSegment.control = (NET_ID << 8) | CONNECT;
         transportTxSegment.source = TRANSMIT_PORT;
         transportTxSegment.destination = applicationTxPort;
         transportTxAddress = applicationTxAddress;
@@ -98,14 +98,19 @@ void transport_handle_rx() {
         return;
     }
 
+    if((transportRxSegment.control >> 8) != NET_ID){
+        printf("Transport Error: Mismatching Network ID\n");
+        return;
+    }
+
     // filter RX Port
     if((transportConnectionState != IDLE) && (transportRxSegment.destination != applicationTxPort)) {
-        fprintf(stderr, "Transport Error: Segment Timeout\n");
+        printf("Transport Error: Segment Timeout\n");
         return;
     }
 
     if(transport_crc(transportRxSegment) != transportRxSegment.checksum) {
-        fprintf(stderr, "Transport Error: Checksum Mismatch\n");
+        printf("Transport Error: Checksum Mismatch\n");
         return;
     }
 
@@ -121,7 +126,7 @@ void transport_handle_rx() {
 
                     transportTxFlag = 1;
                     transportTxRetry = TRANS_RESEND;
-                    transportTxSegment.control = ACCEPT;
+                    transportTxSegment.control = (NET_ID << 8) | (applicationTxEncryption << 4) | ACCEPT;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = applicationTxPort;
                     transportTxAddress = applicationTxAddress;
@@ -142,9 +147,11 @@ void transport_handle_rx() {
                 if(transportTxFlag == 0) {
                     transportConnectionState = CONN_DATA;
 
+                    applicationRxEncryption = (transportRxSegment.control >> 4) & 0xf;
+
                     transportTxFlag = 1;
                     transportTxRetry = TRANS_RESEND;
-                    transportTxSegment.control = SEND;
+                    transportTxSegment.control = (NET_ID << 8) | SEND;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = applicationTxPort;
                     transportTxAddress = applicationTxAddress;
@@ -172,7 +179,7 @@ void transport_handle_rx() {
                     
                     transportTxFlag = 1;
                     transportTxRetry = TRANS_RESEND;
-                    transportTxSegment.control = ACK;
+                    transportTxSegment.control = (NET_ID << 8) | ACK;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = applicationTxPort;
                     transportTxAddress = applicationTxAddress;
@@ -196,7 +203,7 @@ void transport_handle_rx() {
                     
                     transportTxFlag = 1;
                     transportTxRetry = TRANS_RESEND;
-                    transportTxSegment.control = CLOSE;
+                    transportTxSegment.control = (NET_ID << 8) | CLOSE;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = applicationTxPort;
                     transportTxAddress = applicationTxAddress;
@@ -213,7 +220,7 @@ void transport_handle_rx() {
                     transportConnectionType = NONE;
                     
                     transportTxFlag = 1;
-                    transportTxSegment.control = CLOSE;
+                    transportTxSegment.control = (NET_ID << 8) | CLOSE;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = applicationTxPort;
                     transportTxAddress = applicationTxAddress;
