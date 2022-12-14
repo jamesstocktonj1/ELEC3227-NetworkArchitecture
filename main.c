@@ -88,7 +88,7 @@ int main() {
         
         rxLength = application_handle_rx(rxBuffer, NULL);
         if(rxLength) {
-            printf("Data RX :");
+            printf("Data RX:");
             
             uint8_t i;
             for(i=0; i<rxLength; i++) {
@@ -114,6 +114,8 @@ void poll_network_stack() {
     if(transport_poll_rx()) {
         transport_handle_rx();
     }
+
+    transport_handle_timeout();
 
     // handle network layer
 
