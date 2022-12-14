@@ -3,7 +3,16 @@
 #include <string.h>
 
 // Encryption Keys
-uint16_t *applicationEncryption;
+uint16_t applicationEncryption[16] PROGMEM = {
+    0xce9d, 0x311c,
+    0xfc5d, 0x8059,
+    0x1231, 0xc579,
+    0x6013, 0x2f04,
+    0x766f, 0xfca3,
+    0x5eae, 0x88fd,
+    0x8241, 0x6e9f,
+    0x8865, 0x72fa
+};
 
 // Application Buffer
 uint8_t applicationTxFlag;
@@ -11,10 +20,13 @@ uint8_t *applicationTxData;
 uint8_t applicationTxLength;
 uint8_t applicationTxPort;
 uint8_t applicationTxAddress;
+uint8_t applicationTxEncryption;
 uint8_t applicationRxFlag;
 uint8_t *applicationRxData;
 uint8_t applicationRxLength;
 uint8_t applicationRxPort;
+uint8_t applicationRxEncryption;
+
 
 void application_init() {
     applicationTxFlag = 0;
@@ -22,6 +34,7 @@ void application_init() {
     applicationTxLength = 0;
     applicationTxPort = 0;
     applicationTxAddress = 0;
+    applicationTxEncryption = 0;
 
     applicationRxFlag = 0;
     applicationRxData = (uint8_t *)malloc(BUFF_SIZE);
@@ -32,7 +45,9 @@ void application_init() {
 
 uint8_t application_handle_rx(uint8_t *data, uint8_t *port) {
     if(applicationRxFlag) {
+        decrypt_data(applicationRxData, applicationRxLength, applicationEncryption[applicationRxEncryption]);
         memcpy(data, applicationRxData, applicationRxLength);
+        
         applicationRxFlag = 0;
         return applicationRxLength;
     }
@@ -46,6 +61,9 @@ uint8_t application_handle_tx(uint8_t *data, uint8_t length, uint8_t port, uint8
         applicationTxPort = port;
         applicationTxAddress = address;
         applicationTxFlag = 1;
+
+        applicationTxEncryption = (applicationTxEncryption + 1) & 0xf;
+        encrypt_data(applicationTxData, applicationTxLength, applicationEncryption[applicationTxEncryption]);
     }
     return applicationTxFlag;
 }

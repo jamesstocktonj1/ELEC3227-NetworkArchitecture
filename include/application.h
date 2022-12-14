@@ -5,6 +5,12 @@
 
 #include <stdlib.h>
 
+#ifdef TEST
+#define PROGMEM
+#else
+#include <avr/pgmspace.h>
+#endif
+
 // Application Port Constants
 #define BROADCAST_PORT  0x00
 #define LIGHT_PORT      0x01
@@ -13,12 +19,15 @@
 // Default Device Address
 #define APP_ADDR 0x01
 
+// Default Network ID
+#define NET_ID 0x12
+
 // Application Constants
 #define BUFF_SIZE       114
 
 
 // Encryption Keys
-extern uint16_t *applicationEncryption;
+extern uint16_t applicationEncryption[16];
 
 // Application Buffer
 extern uint8_t applicationTxFlag;
@@ -26,10 +35,12 @@ extern uint8_t *applicationTxData;
 extern uint8_t applicationTxLength;
 extern uint8_t applicationTxPort;
 extern uint8_t applicationTxAddress;
+extern uint8_t applicationTxEncryption;
 extern uint8_t applicationRxFlag;
 extern uint8_t *applicationRxData;
 extern uint8_t applicationRxLength;
 extern uint8_t applicationRxPort;
+extern uint8_t applicationRxEncryption;
 
 
 /**
