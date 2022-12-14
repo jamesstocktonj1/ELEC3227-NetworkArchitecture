@@ -40,7 +40,7 @@ int main() {
 
     // TODO: Seed PRNG
 
-    printf("Initialising...");
+    printf("Initialising... ");
     application_init();
     transport_init();
     // network_init();
@@ -62,7 +62,11 @@ int main() {
             t--;
         }
         else {
+            #ifdef NODE1
             uint8_t data[5] = {0x00, 0x01, 0x02, 0x03, 0x04};
+            #else
+            uint8_t data[5] = {0x10, 0x10, 0x20, 0x30, 0x40};
+            #endif
             uint8_t data_length = 5;
             uint8_t sent = application_handle_tx(data, data_length, LIGHT_PORT, DEST_ADDR);
 
@@ -84,7 +88,7 @@ int main() {
         
         rxLength = application_handle_rx(rxBuffer, NULL);
         if(rxLength) {
-            printf("Data RX:");
+            printf("Data RX :");
             
             uint8_t i;
             for(i=0; i<rxLength; i++) {
