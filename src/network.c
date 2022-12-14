@@ -72,7 +72,7 @@ void send_packet()
     
     if(count==0 && dllRxReady )
         {   
-            printf("Packet ready to be sent");
+            printf("Packet ready to be sent\n");
             if(dequeue(&dllTxPacket))
             {
                 count++;
@@ -86,14 +86,14 @@ void send_packet()
             {
                 if((route_table[dllTxPacket.packet[DEST_ADDRESS_BYTE]]).next_hop != UNKNOWN_NEXT_HOP)
                 {
-                    printf('Entry in route table exists');
+                    printf("Entry in route table exists\n");
                     dllTxFlag=1;
                     count = 0;
                     
                 }
                 else
                 {
-                    printf('No entry in route table, sending RREQ');
+                    printf("No entry in route table, sending RREQ");
                     send_rreq(dllTxPacket.packet[DEST_ADDRESS_BYTE]);
                     count++;
                 }
@@ -121,7 +121,7 @@ void net_init(){
         route_table[i].next_hop = 255;
     }
 
-    printf("Network layer initialised");
+    printf("Network layer initialised\n");
 
 }
 
@@ -133,7 +133,7 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
     {
         case RREQ_ID: 
         {
-        printf("RREQ packet received");
+        printf("RREQ packet received\n");
             if(net_handle_rreq(packet))
                 {
                     send_rrep(packet);
@@ -150,7 +150,7 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
 
         case RREP_ID: 
         {
-            printf("RREP packet received");
+            printf("RREP packet received\n");
             if(!net_handle_rrep(packet))
                 {
                     send_rrep(packet);
@@ -161,14 +161,14 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
 
         case RERR_ID: 
         {
-            printf("RERR packet received");
+            printf("RERR packet received\n");
             net_handle_rerr(packet);
         }
         break;
 
         case DATA_ID: 
         {
-            printf("DATA packet received");
+            printf("DATA packet received\n");
             net_handle_data(packet, length);
         }
         break;

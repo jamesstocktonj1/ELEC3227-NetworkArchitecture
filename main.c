@@ -47,7 +47,7 @@ int main() {
     printf("Initialising... ");
     application_init();
     transport_init();
-    // network_init();
+    net_init();
     dll_init();
     sei(); // enable interrupts
     printf("Done\n");
@@ -113,10 +113,12 @@ void poll_network_stack() {
 
     // handle transport layer
     if(transport_poll_tx()) {
+        printf("Transport TX Data\n");
         transport_handle_tx();
     }
 
     if(transport_poll_rx()) {
+        printf("Transport RX Data\n");
         transport_handle_rx();
     }
 
@@ -125,12 +127,13 @@ void poll_network_stack() {
     // handle network layer
     if(dllRxFlag)
     {
-
+        printf("Network RX Data\n");
         net_handle_rx_packet(rx_packet, dllRxLength);
     }
 
     if(transportTxFlag)
     {
+        printf("Network TX Data\n");
         uint8_t packet[7+transportTxSegment.length];
 
             packet[CONTROL_1_BYTE] = transportTxSegment.control>>8;
@@ -142,7 +145,16 @@ void poll_network_stack() {
             packet[TRAN_SEGMENT_BYTE + transportTxSegment.length] = transportTxSegment.checksum>>8;
             packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
             send_data(transportTxAddress, transportTxSegment.data, transportTxSegment.length );
+
+            uint8_t dllQueued = dll_queue_tx_net_packet(packet, 7+transportTxSegment.length, transportTxAddress);
+            if(!dllQueued) {
+                printf("Network Failed to add to DLL queue\n");
+            }
+
+            transportTxFlag = 0;
+            
     }
+    
     send_packet();
 
 
@@ -152,6 +164,7 @@ void poll_network_stack() {
     int8_t error = 0;
 
     while (dll_has_rx_packet()) {
+        printf("DLL RX Data\n");
         uint8_t length = dll_get_rx_packet(rx_packet);
         dllRxFlag = 1;
         length++;
@@ -167,6 +180,7 @@ void poll_network_stack() {
     // }
 
     if (dll_rf_can_tx() && dll_has_tx_frame()) {
+        printf("DLL TX Data Here\n");
         uint8_t length = dll_get_tx_frame(tx_frame, MAC_ADDR);
         error = dll_rf_tx(tx_frame, length);
         if (error) printf("RF TX Error: %i\n", error);
@@ -174,6 +188,7 @@ void poll_network_stack() {
 
     uint8_t length = dll_rf_rx(rx_frame);
     if (length) {
+        printf("DLL TX Data\n");
         error = dll_receive_dll_frame(rx_frame, length, MAC_ADDR);
         if (error) printf("DLL RX Error: %i\n", error);
     }

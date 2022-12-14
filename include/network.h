@@ -3,6 +3,7 @@
 
 #include "util.h"
 #include "transport.h"
+#include "datalink.h"
 
 #define NET_MAX_SEGMENT_SIZE 121
 #define NET_MAX_PACKET_SIZE 128
