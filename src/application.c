@@ -3,7 +3,7 @@
 #include <string.h>
 
 // Encryption Keys
-uint16_t applicationEncryption[16] PROGMEM = {
+uint16_t const applicationEncryption[16] PROGMEM = {
     0xce9d, 0x311c,
     0xfc5d, 0x8059,
     0x1231, 0xc579,

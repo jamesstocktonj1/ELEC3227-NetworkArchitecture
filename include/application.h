@@ -27,7 +27,7 @@
 
 
 // Encryption Keys
-extern uint16_t applicationEncryption[16];
+extern const uint16_t applicationEncryption[16] PROGMEM;
 
 // Application Buffer
 extern uint8_t applicationTxFlag;
