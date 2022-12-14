@@ -105,7 +105,7 @@ void transport_handle_rx() {
 
     // filter RX Port
     if((transportConnectionState != IDLE) && (transportRxSegment.destination != applicationTxPort)) {
-        printf("Transport Error: Segment Timeout\n");
+        printf("Transport Error: Mismatch of Port\n");
         return;
     }
 
