@@ -17,7 +17,6 @@ void encrypt_data_test(void);
 void decrypt_data_test(void);
 void dual_encryption_test(void);
 
-void application_tx_data_test(void);
-void application_rx_data_test(void);
+void application_data_test(void);
 
 #endif

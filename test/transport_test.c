@@ -67,7 +67,7 @@ void transport_state_connect_test() {
         assert(0);
     }
 
-    if(transportTxSegment.control != ACCEPT) {
+    if((transportTxSegment.control & 0xf) != ACCEPT) {
         fprintf(stderr, "  FAIL: transport_state_connect_test\n");
         fprintf(stderr, "  Connection Reply failed to reply with ACCEPT\n");
         assert(0);
@@ -103,7 +103,7 @@ void transport_state_accept_test() {
         assert(0);
     }
 
-    if(transportTxSegment.control != SEND) {
+    if((transportTxSegment.control & 0xf) != SEND) {
         fprintf(stderr, "  FAIL: transport_state_connect_test\n");
         fprintf(stderr, "  Connection Reply failed to reply with SEND\n");
         assert(0);
@@ -139,7 +139,7 @@ void transport_state_send_test() {
         assert(0);
     }
 
-    if(transportTxSegment.control != ACK) {
+    if((transportTxSegment.control & 0xf) != ACK) {
         fprintf(stderr, "  FAIL: transport_state_connect_test\n");
         fprintf(stderr, "  Connection Reply failed to reply with ACK\n");
         assert(0);
@@ -175,7 +175,7 @@ void transport_state_ack_test() {
         assert(0);
     }
 
-    if(transportTxSegment.control != CLOSE) {
+    if((transportTxSegment.control & 0xf) != CLOSE) {
         fprintf(stderr, "  FAIL: transport_state_connect_test\n");
         fprintf(stderr, "  Connection Reply failed to reply with CLOSE\n");
         assert(0);
@@ -211,7 +211,7 @@ void transport_state_nack_test() {
         assert(0);
     }
 
-    if(transportTxSegment.control != CLOSE) {
+    if((transportTxSegment.control & 0xf) != CLOSE) {
         fprintf(stderr, "  FAIL: transport_state_connect_test\n");
         fprintf(stderr, "  Connection Reply failed to reply with CLOSE\n");
         assert(0);
@@ -345,7 +345,7 @@ void transport_communication_test() {
 
     transport_handle_tx();
 
-    if(transportTxSegment.control != CONNECT) {
+    if((transportTxSegment.control & 0xf) != CONNECT) {
         fprintf(stderr, "  FAIL: Client Connect\n");
         fprintf(stderr, "  Client did not send CONNECT\n");
         assert(0);
@@ -365,7 +365,7 @@ void transport_communication_test() {
 
     transport_handle_rx();
 
-    if(transportTxSegment.control != ACCEPT) {
+    if((transportTxSegment.control & 0xf) != ACCEPT) {
         fprintf(stderr, "  FAIL: Host Accept\n");
         fprintf(stderr, "  Host did not send ACCEPT\n");
         assert(0);
@@ -385,7 +385,7 @@ void transport_communication_test() {
 
     transport_handle_rx();
 
-    if(transportTxSegment.control != SEND) {
+    if((transportTxSegment.control & 0xf) != SEND) {
         fprintf(stderr, "  FAIL: Client Send\n");
         fprintf(stderr, "  Client did not send SEND\n");
         assert(0);
@@ -405,7 +405,7 @@ void transport_communication_test() {
 
     transport_handle_rx();
 
-    if(transportTxSegment.control != ACK) {
+    if((transportTxSegment.control & 0xf) != ACK) {
         fprintf(stderr, "  FAIL: Host Acknowledge Send\n");
         fprintf(stderr, "  Host did not send ACK\n");
         assert(0);
@@ -424,7 +424,7 @@ void transport_communication_test() {
 
     transport_handle_rx();
 
-    if(transportTxSegment.control != CLOSE) {
+    if((transportTxSegment.control & 0xf) != CLOSE) {
         fprintf(stderr, "  FAIL: Client Close\n");
         fprintf(stderr, "  Client did not send CLOSE\n");
         assert(0);
