@@ -2,6 +2,7 @@
 #define NETWORK_H
 
 #include "util.h"
+#include "transport.h"
 
 #define NET_MAX_SEGMENT_SIZE 121
 #define NET_MAX_PACKET_SIZE 128
@@ -67,10 +68,6 @@ extern uint8_t dllRxLength;
 extern qrecord dllTxPacket;
 extern uint8_t dllTxLength;
 extern uint8_t dllTxNexthop;
-
-extern uint8_t transportRxFlag;
-extern Segment transportRxSegment;
-extern uint8_t transportRxError;
 
 
 

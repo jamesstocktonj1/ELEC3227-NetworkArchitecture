@@ -22,11 +22,6 @@ qrecord dllTxPacket;
 uint8_t dllTxFlag;
 
 
-uint8_t transportRxFlag;
-Segment transportRxSegment;
-uint8_t transportRxError;
-
-
 
 
 
@@ -257,7 +252,7 @@ uint8_t send_data (  uint8_t dest_node,  uint8_t time_to_live, uint8_t *tran_seg
     if(count==REQUEST_MAX_AMOUNT)
     {
         count = 0;
-        transportRxError = 1;
+        transportErrorFlag = 1;
         return 0;
     }
 
