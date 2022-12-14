@@ -35,6 +35,7 @@ uint8_t tx_frame[DLL_MAX_FRAME_SIZE] = {0};
 uint8_t rx_frame[DLL_MAX_FRAME_SIZE] = {0};
 
 uint8_t dllRxFlag;
+uint8_t dllRxLength;
 
 int main() {
     init_pins();
@@ -56,7 +57,7 @@ int main() {
     uint8_t i;
     uint8_t rxLength;
     uint8_t rxBuffer[BUFF_SIZE];
-    uint8_t dllRxLength;
+    
 
 
     while(1) {
