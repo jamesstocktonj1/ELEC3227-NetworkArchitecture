@@ -58,6 +58,10 @@ TEST_FILES = \
 TEST_INCLUDE = $(subst $(SOURCE), $(INCLUDE), $(TEST_FILES:.c=.h))
 TEST_TARGET = test.out
 
+# script files
+SERIAL_TARGET = serial-logger
+SERIAL_PATH = scripts/serial-logger
+
 # demonstration files
 DEMO = demo
 APP_DEMO = 	application
@@ -83,6 +87,8 @@ test: $(BUILD)/$(TEST_TARGET)
 app_demo: $(BUILD)/$(APP_TARGET)
 	$(BUILD)/$(APP_TARGET)
 
+serial: $(BUILD)/$(SERIAL_TARGET).exe
+	$(BUILD)/$(SERIAL_TARGET).exe
 
 .PHONY: dll_rf_test
 dll_rf_test: $(BUILD)/$(DLL_RF_TEST_TARGET).hex
@@ -113,6 +119,7 @@ clean:
 	@rm -f $(LIB_OBJECTS)
 	@rm -f $(BUILD)/$(TEST_TARGET)
 	@rm -f $(BUILD)/temp.txt
+	@rm -f $(BUILD)/$(SERIAL_TARGET).exe
 	
 help:
 	@echo "Il Matto Makefile Usage"
@@ -151,3 +158,7 @@ $(BUILD)/$(TEST_TARGET): $(TESTS) $(TEST_FILES) $(TEST_INCLUDE) $(TESTS_INCLUDE)
 
 $(BUILD)/$(APP_TARGET): $(DEMO)/$(APP_DEMO).c $(TEST_FILES) $(TEST_INCLUDE)
 	$(TEST-CC) $(TESTFLAGS) $(TEST_FILES) $(DEMO)/$(APP_DEMO).c -o $@
+
+
+$(BUILD)/$(SERIAL_TARGET).exe: $(SERIAL_PATH)/$(SERIAL_TARGET).go
+	go build -o $(BUILD) $(SERIAL_PATH)/$(SERIAL_TARGET).go
