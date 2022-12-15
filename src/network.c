@@ -1,16 +1,17 @@
 #include "../include/network.h"
 #include "../include/util.h"
 #include <stdlib.h>
-#include <string.h>
+
 
 static uint8_t net_seqnum; 
-static net_rt_entry *route_table;
+static net_rt_entry route_table[DEFAULT_NETWORK_SIZE];
 static uint8_t RREQ_ID_buffer;
 static uint8_t net_node_address;
 
 static qrecord queue[QUEUE_MAX_SIZE];
 static int8_t front;
 static int8_t back;
+static qrecord tx_buffer;
 
 
 static uint8_t rreq_id; 
@@ -21,6 +22,8 @@ uint8_t dllRxLength;
 uint8_t dllRxReady;
 qrecord dllTxPacket;
 uint8_t dllTxFlag;
+
+uint8_t *net_tx_buffer[NET_MAX_PACKET_SIZE];
 
 
 
@@ -43,6 +46,7 @@ uint8_t enqueue(uint8_t *packet, uint8_t packet_size)
                 queue[back].packet[i] = packet[i];
             }
             queue[back].packet_size = packet_size;
+            //fprintf(stderr,"packet enqueued\n");
             return 1;
             
         }
@@ -54,71 +58,129 @@ uint8_t dequeue (qrecord *buffer)
         return 0;
     else
         {
-            qrecord temp = queue[front];
+            *buffer = queue[front];
             front++;
             if (front > back)
                 front = back = -1;
-            *buffer = temp;
+            //fprintf(stderr,"packet dequeued\n");
             return 1;
         }
 }
 
-void send_packet()
+uint8_t net_tx_poll()
 {
-    static int count = 0;
-    static int sendflag = 0;
-
-
-    
-    if(count==0 && dllRxReady )
-        {   
-            printf("Packet ready to be sent\n");
-            if(dequeue(&dllTxPacket))
-            {
-                count++;
-                sendflag=1;
-            }
-
-        }
-    else
-        {
-            if(sendflag)
-            {
-                if((route_table[dllTxPacket.packet[DEST_ADDRESS_BYTE]]).next_hop != UNKNOWN_NEXT_HOP)
-                {
-                    printf("Entry in route table exists\n");
-                    dllTxFlag=1;
-                    count = 0;
-                    
-                }
-                else
-                {
-                    printf("No entry in route table, sending RREQ");
-                    send_rreq(dllTxPacket.packet[DEST_ADDRESS_BYTE]);
-                    count++;
-                }
-                sendflag = 0;
-            }
-
-
-        }
-        
+    if(dequeue(&tx_buffer))
+    {
+        //fprintf(stderr, "dest node: %d\n", tx_buffer.packet[DEST_ADDRESS_BYTE] );
+        return 1;
+    }
+    if(transportTxFlag == 1;)
+        return 1;
+    return 0 ;
 }
+
+uint8_t net_handle_tx(uint8_t *packet)
+{
+    if(transportTxFlag)
+    {
+       uint8_t tx_packet[7+transportTxSegment.length];
+
+            tx_packet[CONTROL_1_BYTE] = transportTxSegment.control>>8;
+            tx_packet[CONTROL_2_BYTE] = transportTxSegment.control;
+            tx_packet[SRC_ADDRESS_BYTE] = transportTxSegment.source;
+            tx_packet[DEST_ADDRESS_BYTE] = transportTxSegment.destination;
+            tx_packet[LENGTH_BYTE] = transportTxSegment.length;
+            memcpy(&tx_packet[TRAN_SEGMENT_BYTE], &(transportRxSegment.data), transportTxSegment.length );
+            tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length] = transportTxSegment.checksum>>8;
+            tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
+            send_data(transportTxAddress, transportTxSegment, transportTxSegment.length + DATA_PACKET_SIZE_NO_TRAN );
+    }
+
+    if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
+    {
+        //fprintf(stderr,"Route table entry exists\n");
+        memcpy(packet, tx_buffer.packet, tx_buffer.packet_size);
+        return 1;
+    }
+    else
+    {
+        //fprintf(stderr,"No route table entry\n");
+        send_rreq(tx_buffer.packet[DEST_ADDRESS_BYTE]);
+        enqueue(tx_buffer.packet, tx_buffer.packet_size);
+        return 0;
+    }
+
+}
+
+
+/*uint8_t net_handle_tx(uint8_t *packet)
+{
+    if(transportTxFlag)
+    {
+       uint8_t tx_packet[7+transportTxSegment.length];
+
+            tx_packet[CONTROL_1_BYTE] = transportTxSegment.control>>8;
+            tx_packet[CONTROL_2_BYTE] = transportTxSegment.control;
+            tx_packet[SRC_ADDRESS_BYTE] = transportTxSegment.source;
+            tx_packet[DEST_ADDRESS_BYTE] = transportTxSegment.destination;
+            tx_packet[LENGTH_BYTE] = transportTxSegment.length;
+            memcpy(&tx_packet[TRAN_SEGMENT_BYTE], &(transportRxSegment.data), transportTxSegment.length );
+            tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length] = transportTxSegment.checksum>>8;
+            tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
+            send_data(transportTxAddress, transportTxSegment.data, transportTxSegment.length );
+
+    }
+    static uint8_t stop_dequeue = 0;
+    static uint8_t count = 0;
+    static qrecord buffer;
+
+    if(!stop_dequeue)
+    {
+        dequeue(&buffer);
+    }
+
+    fprintf(stderr,"dest: %d\n", buffer.packet[DEST_ADDRESS_BYTE]);
+
+    if (route_table[buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
+    {
+        fprintf(stderr,"Route table entry exists\n");
+        memcpy(packet, buffer.packet, buffer.packet_size);
+        stop_dequeue = 0;
+        return 1;
+    }
+    else   
+    {
+        fprintf(stderr,"No route table entry\n");
+        send_rreq(buffer.packet[DEST_ADDRESS_BYTE], packet);
+        stop_dequeue = 1;
+        count++;
+        if(count == 4)
+        {
+            count = 0;
+            stop_dequeue = 0;
+        }
+        return 0;
+    }
+}*/
+
+
 
 
 
 void net_init(){
     net_seqnum = 0;
-    route_table = calloc(DEFAULT_NETWORK_SIZE, sizeof(net_rt_entry));
     RREQ_ID_buffer = 0;
     net_node_address = APP_ADDR;
     front = -1;
     back = -1;
     route_table[0].next_hop = 0;
     int i;
-    for(i=1; i<10; i++)
+    for(i=1; i<DEFAULT_NETWORK_SIZE; i++)
     {
         route_table[i].next_hop = 255;
+        route_table[i].dest_seq = 0;
+        route_table[i].hop_count = 255;
+        route_table[i].dest_node = i;
     }
 
     printf("Network layer initialised\n");
@@ -129,7 +191,10 @@ void net_init(){
 void net_handle_rx_packet(uint8_t *packet, uint8_t length){
 
     uint8_t masked = packet[0] & (3<<6);
+    masked = masked>>6;
+
     switch (masked)
+ 
     {
         case RREQ_ID: 
         {
@@ -150,6 +215,7 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
 
         case RREP_ID: 
         {
+            
             printf("RREP packet received\n");
             if(!net_handle_rrep(packet))
                 {
@@ -177,20 +243,20 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
 
 uint8_t net_handle_rreq ( uint8_t *packet){
 
-    net_rt_entry *rt_entry_src = &route_table[packet[SRC_ADDRESS_BYTE]];
-    net_rt_entry *rt_entry_dest = &route_table[packet[DEST_ADDRESS_BYTE]];
+    net_rt_entry rt_entry_src = route_table[packet[SRC_ADDRESS_BYTE]];
+    net_rt_entry rt_entry_dest = route_table[packet[DEST_ADDRESS_BYTE]];
 
-    if((rt_entry_src->dest_seq < packet[RREQ_ORIG_SEQ_BYTE]) || ((rt_entry_src->dest_seq == packet[RREQ_ORIG_SEQ_BYTE]) && rt_entry_src->hop_count > packet[RREQ_HOP_COUNT_BYTE] ) ){
+    if((route_table[packet[SRC_ADDRESS_BYTE]].dest_seq < packet[RREQ_ORIG_SEQ_BYTE]) || ((route_table[packet[DEST_ADDRESS_BYTE]].dest_seq == packet[RREQ_ORIG_SEQ_BYTE]) && route_table[packet[DEST_ADDRESS_BYTE]].hop_count > packet[RREQ_HOP_COUNT_BYTE] ) ){
 
-    rt_entry_src->dest_node = packet[SRC_ADDRESS_BYTE];
-    rt_entry_src->next_hop = packet[RREQ_SENDER_BYTE];
-    rt_entry_src->dest_seq = packet[RREQ_ORIG_SEQ_BYTE];
-    rt_entry_src->hop_count = packet[RREQ_HOP_COUNT_BYTE] + 1;
+    route_table[packet[SRC_ADDRESS_BYTE]].dest_node = packet[SRC_ADDRESS_BYTE];
+    route_table[packet[SRC_ADDRESS_BYTE]].next_hop = packet[RREQ_SENDER_BYTE];
+    route_table[packet[SRC_ADDRESS_BYTE]].dest_seq = packet[RREQ_ORIG_SEQ_BYTE];
+    route_table[packet[SRC_ADDRESS_BYTE]].hop_count = packet[RREQ_HOP_COUNT_BYTE] + 1;
 
     }
 
 
-    if (packet[DEST_ADDRESS_BYTE] == net_node_address || rt_entry_dest->dest_seq > packet[RREQ_ORIG_SEQ_BYTE])
+    if (packet[DEST_ADDRESS_BYTE] == net_node_address || rt_entry_dest.dest_seq > packet[RREQ_ORIG_SEQ_BYTE])
         return 1;
 
     return 0;
@@ -199,14 +265,18 @@ uint8_t net_handle_rreq ( uint8_t *packet){
 
 uint8_t net_handle_rrep ( uint8_t *packet){
 
-    net_rt_entry *rt_entry_dest = &route_table[packet[DEST_ADDRESS_BYTE]];
-    net_rt_entry *rt_entry_src = &route_table[packet[SRC_ADDRESS_BYTE]];
+    net_rt_entry rt_entry_dest = route_table[packet[DEST_ADDRESS_BYTE]];
+    net_rt_entry rt_entry_src = route_table[packet[SRC_ADDRESS_BYTE]];
 
-    if((rt_entry_dest->dest_seq < packet[RREP_DEST_SEQ_BYTE]) || ((rt_entry_src->dest_seq == packet[RREP_DEST_SEQ_BYTE]) && rt_entry_src->hop_count > packet[RREP_HOP_COUNT_BYTE] ) ){
-        rt_entry_dest->dest_node = packet[SRC_ADDRESS_BYTE];
-        rt_entry_dest->next_hop = packet[RREP_SENDER_BYTE];
-        rt_entry_dest->dest_seq = packet[RREP_DEST_SEQ_BYTE];
-        rt_entry_dest->hop_count = packet[RREP_HOP_COUNT_BYTE];
+    fprintf(stderr,"%d\n", packet[SRC_ADDRESS_BYTE] );
+
+    
+
+    if((route_table[packet[SRC_ADDRESS_BYTE]].dest_seq < packet[RREP_DEST_SEQ_BYTE]) || ((route_table[packet[SRC_ADDRESS_BYTE]].dest_seq == packet[RREP_DEST_SEQ_BYTE]) && route_table[packet[SRC_ADDRESS_BYTE]].hop_count > packet[RREP_HOP_COUNT_BYTE] ) ){
+        route_table[packet[SRC_ADDRESS_BYTE]].dest_node = packet[DEST_ADDRESS_BYTE];
+        route_table[packet[SRC_ADDRESS_BYTE]].next_hop = packet[RREP_SENDER_BYTE];
+        route_table[packet[SRC_ADDRESS_BYTE]].dest_seq = packet[RREP_DEST_SEQ_BYTE];
+        route_table[packet[SRC_ADDRESS_BYTE]].hop_count= packet[RREP_HOP_COUNT_BYTE];
     
     }
 
@@ -253,7 +323,7 @@ uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_
     packet[CONTROL_1_BYTE] |= DATA_ID<<6;
     packet[CONTROL_1_BYTE] |= DEFAULT_TTL<<4;
     packet[CONTROL_2_BYTE] = 0;
-    packet[SRC_ADDRESS_BYTE] = net_node_address;
+    packet[SRC_ADDRESS_BYTE] = APP_ADDR;
     packet[DEST_ADDRESS_BYTE] = dest_node;
     packet[LENGTH_BYTE] = tran_seg_length ;
     memcpy(&packet[TRAN_SEGMENT_BYTE], tran_segment, tran_seg_length);
@@ -278,22 +348,22 @@ void send_rreq( uint8_t dest_node)
 {
     net_seqnum++;
 
-
     uint8_t packet[RREQ_PACKET_SIZE];
     packet[CONTROL_1_BYTE] = 0;
     packet[CONTROL_1_BYTE] |= RREQ_ID<<6;
-    packet[CONTROL_1_BYTE] |= RREQ_TTL<<4;
+    packet[CONTROL_1_BYTE] |= RREQ_TTL<<2;
     packet[CONTROL_2_BYTE] = 0;
-    packet[SRC_ADDRESS_BYTE] = net_node_address;
+    packet[SRC_ADDRESS_BYTE] = APP_ADDR;
     packet[DEST_ADDRESS_BYTE] = dest_node;
     packet[LENGTH_BYTE] = RREQ_PACKET_SIZE;
-    packet[RREQ_SENDER_BYTE] = net_node_address;
+    packet[RREQ_SENDER_BYTE] = APP_ADDR;
     packet[RREQ_ORIG_SEQ_BYTE] = net_seqnum;
     packet[RREQ_DEST_SEQ_BYTE] = 0;
     packet[RREQ_RREQ_ID_BYTE] = rreq_id;
     packet[RREQ_HOP_COUNT_BYTE] = 0;
 
-    enqueue(packet, RREQ_PACKET_SIZE);
+    enqueue(packet,RREQ_PACKET_SIZE);
+
     rreq_id++;
 
 }

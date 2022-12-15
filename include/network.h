@@ -4,6 +4,7 @@
 #include "util.h"
 #include "transport.h"
 #include "datalink.h"
+#include <string.h>
 
 #define NET_MAX_SEGMENT_SIZE 121
 #define NET_MAX_PACKET_SIZE 128
@@ -11,7 +12,7 @@
 #define ROUTE_TIMEOUT_MS 2000
 #define REQUEST_TIMEOUT_MS 500
 #define REQUEST_MAX_AMOUNT 3
-#define DEFAULT_NETWORK_SIZE 10
+#define DEFAULT_NETWORK_SIZE 30
 
 #define RREQ_ID 0
 #define RREP_ID 1
@@ -77,6 +78,7 @@ extern uint8_t dllTxNexthop;
 void net_init();
 
 void net_handle_rx_packet(uint8_t *packet, uint8_t length);
+uint8_t net_handle_tx(uint8_t *packet);
 
 uint8_t  net_handle_rreq(uint8_t *packet);
 uint8_t  net_handle_rrep(uint8_t *packet);
@@ -90,7 +92,8 @@ void resend_packet(uint8_t *packet, uint8_t length);
 
 void send_packet();
 
-
+uint8_t enqueue(uint8_t *packet, uint8_t packet_size);
+uint8_t dequeue (qrecord *buffer);
 
 
 #endif
