@@ -5,6 +5,7 @@
 #include <avr/interrupt.h>
 
 #include "../include/transport.h"
+#include "../include/datalink_phy_interface.h"
 
 #define msTIMER_VALUE (256-((F_CPU/64)/1000))
 

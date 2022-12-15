@@ -6,6 +6,7 @@ ISR(TIMER0_OVF_vect) {
     //TODO: Add timer functions in here
     
     transport_timer_update();
+    dll_timer();
 }
 
 void init_timer() {
