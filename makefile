@@ -113,6 +113,7 @@ clean:
 	@rm -f $(BUILD)/$(TEST_TARGET)
 	@rm -f $(BUILD)/temp.txt
 	@rm -f $(BUILD)/$(SERIAL_TARGET).exe
+	@rm -f $(BUILD)/$(APP_TARGET)
 	
 help:
 	@echo "Il Matto Makefile Usage"
