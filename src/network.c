@@ -213,12 +213,6 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
                     send_rrep(packet);
                 }
                 
-            else
-                {
-                    resend_packet(packet, length);
-                }
-
-                
         }
         break;
 
@@ -226,10 +220,7 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
         {
             
             printf("RREP packet received\n");
-            if(!net_handle_rrep(packet))
-                {
-                    send_rrep(packet);
-                }
+            net_handle_rrep(packet);
                 
         }
         break;
@@ -266,6 +257,16 @@ uint8_t net_handle_rreq ( uint8_t *packet){
 
     if (packet[DEST_ADDRESS_BYTE] == net_node_address || route_table[packet[DEST_ADDRESS_BYTE]].dest_seq > packet[RREQ_ORIG_SEQ_BYTE])
         return 1;
+    else
+        {        
+        uint8_t ttl = packet[CONTROL_1_BYTE]>>2 & 15;
+        packet[CONTROL_1_BYTE] &= 0 & (15 << 2);
+        packet[CONTROL_1_BYTE] |= (ttl-1)<<2;
+        packet[RREQ_SENDER_BYTE] = APP_ADDR;
+        enqueue(packet, RREQ_PACKET_SIZE);
+        }
+
+
 
     return 0;
 
@@ -289,6 +290,15 @@ uint8_t net_handle_rrep ( uint8_t *packet){
 
     if(packet[DEST_ADDRESS_BYTE] == net_node_address)
         return 1;
+    else
+    {   uint8_t ttl = packet[CONTROL_1_BYTE]>>2 & 15;
+        packet[CONTROL_1_BYTE] &= 0 & (15 << 2);
+        packet[CONTROL_1_BYTE] |= (ttl-1)<<2;
+        packet[RREP_SENDER_BYTE] = APP_ADDR;
+        packet[RREP_NEXTHOP_BYTE] = route_table[SRC_ADDRESS_BYTE].next_hop;
+        enqueue(packet, RREP_PACKET_SIZE);
+    }
+
 
     return 0;
     
@@ -314,7 +324,9 @@ uint8_t net_handle_data(uint8_t *packet, uint8_t length)
         }
     else
         {
-            //change to resend data 
+            uint8_t ttl = packet[CONTROL_1_BYTE]>>2 & 15;
+            packet[CONTROL_1_BYTE] &= 0 & (15 << 2);
+            packet[CONTROL_1_BYTE] |= (ttl-1)<<2;
             enqueue(packet, length);
             return 0;
         }
@@ -397,6 +409,7 @@ void send_rrep(uint8_t *packet)
     output_packet[LENGTH_BYTE] = RREP_PACKET_SIZE;
     output_packet[RREP_DEST_SEQ_BYTE] = net_seqnum;
     output_packet[RREP_HOP_COUNT_BYTE] = 0;
+
 
     uint16_t crc = crc16_compute(packet, RREP_PACKET_SIZE );
     output_packet[9] = crc>>8;
