@@ -154,8 +154,7 @@ void poll_network_stack() {
             transportTxFlag = 0;
             
     }
-    
-    send_packet();
+
 
 
 

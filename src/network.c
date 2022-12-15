@@ -74,7 +74,7 @@ uint8_t net_tx_poll()
         //fprintf(stderr, "dest node: %d\n", tx_buffer.packet[DEST_ADDRESS_BYTE] );
         return 1;
     }
-    if(transportTxFlag == 1;)
+    if(transportTxFlag == 1)
         return 1;
     return 0 ;
 }
@@ -93,7 +93,7 @@ uint8_t net_handle_tx(uint8_t *packet)
             memcpy(&tx_packet[TRAN_SEGMENT_BYTE], &(transportRxSegment.data), transportTxSegment.length );
             tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length] = transportTxSegment.checksum>>8;
             tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
-            send_data(transportTxAddress, transportTxSegment, transportTxSegment.length + DATA_PACKET_SIZE_NO_TRAN );
+            send_data(transportTxAddress, tx_packet, transportTxSegment.length + DATA_PACKET_SIZE_NO_TRAN );
     }
 
     if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
