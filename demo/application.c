@@ -23,19 +23,19 @@ int main() {
 
 void application_demo() {
 
-    uint8_t testData[4] = {0x00, 0x01, 0x02, 0x03};
+    uint8_t testData[8] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0};
     
     printf("\nApplication Layer\n");
     
     printf("Sending Data: ");
-    for(int i=0; i<4; i++) {
+    for(int i=0; i<8; i++) {
         printf("0x%02x ", testData[i]);
     }
 
-    application_handle_tx(testData, 4, 0x01, 0x01);
+    application_handle_tx(testData, 8, 0x01, 0x01);
 
     printf("\nTX Encrypted Data: ");
-    for(int i=0; i<4; i++) {
+    for(int i=0; i<8; i++) {
         printf("0x%02x ", applicationTxData[i]);
     }
 
@@ -45,7 +45,7 @@ void application_demo() {
 
     printf("\nApplication Layer\n");
     printf("\nRX Encrypted Data: ");
-    for(int i=0; i<4; i++) {
+    for(int i=0; i<8; i++) {
         printf("0x%02x ", applicationRxData[i]);
     }
 
@@ -71,9 +71,9 @@ void transport_demo() {
     transportRxAddress = APP_ADDR;
 
     printf("\n\nTransport Layer\n");
-    printf("------------------------------------------------------------------------------\n");
-    printf("| Origin | State   | Control | SRC  | DEST | Data        | Length | Checksum |\n");
-    printf("------------------------------------------------------------------------------\n");
+    printf("------------------------------------------------------------------------------------------\n");
+    printf("| Origin | State   | Control | SRC  | DEST | Data                    | Length | Checksum |\n");
+    printf("------------------------------------------------------------------------------------------\n");
     
     // Client Request Connection
     transportTxFlag = 0;
@@ -142,7 +142,7 @@ void transport_demo() {
     clientState = transportConnectionState;
     clientType = transportConnectionType;
 
-    printf("------------------------------------------------------------------------------\n");
+    printf("------------------------------------------------------------------------------------------\n");
 }
 
 void format_segment(Segment seg, ConnectionType state) {
@@ -177,7 +177,7 @@ void format_segment(Segment seg, ConnectionType state) {
 
     printf(" 0x%04x  | 0x%02x | 0x%02x | ", seg.control, seg.source, seg.destination);
     
-    for(int i=0; i<4; i++) {
+    for(int i=0; i<8; i++) {
         if(i < seg.length) {
             printf("%02x ", seg.data[i]);
         }
