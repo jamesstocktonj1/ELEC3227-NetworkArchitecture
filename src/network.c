@@ -86,18 +86,21 @@ qrecord net_handle_tx()
     output.next_hop = 0;
     if(transportTxFlag)
     {
-       uint8_t tx_packet[7+transportTxSegment.length];
+        printf("Transport Queue Packet\n");
+        uint8_t tx_packet[7+transportTxSegment.length];
 
-            tx_packet[CONTROL_1_BYTE] = transportTxSegment.control>>8;
-            tx_packet[CONTROL_2_BYTE] = transportTxSegment.control;
-            tx_packet[SRC_ADDRESS_BYTE] = transportTxSegment.source;
-            tx_packet[DEST_ADDRESS_BYTE] = transportTxSegment.destination;
-            tx_packet[LENGTH_BYTE] = transportTxSegment.length;
-            memcpy(&tx_packet[TRAN_SEGMENT_BYTE], &(transportRxSegment.data), transportTxSegment.length );
-            tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length] = transportTxSegment.checksum>>8;
-            tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
-            send_data(transportTxAddress, tx_packet, transportTxSegment.length + DATA_PACKET_SIZE_NO_TRAN );
-            return output;
+        tx_packet[CONTROL_1_BYTE] = transportTxSegment.control>>8;
+        tx_packet[CONTROL_2_BYTE] = transportTxSegment.control;
+        tx_packet[SRC_ADDRESS_BYTE] = transportTxSegment.source;
+        tx_packet[DEST_ADDRESS_BYTE] = transportTxSegment.destination;
+        tx_packet[LENGTH_BYTE] = transportTxSegment.length;
+        memcpy(&tx_packet[TRAN_SEGMENT_BYTE], &(transportRxSegment.data), transportTxSegment.length );
+        tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length] = transportTxSegment.checksum>>8;
+        tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
+        send_data(transportTxAddress, tx_packet, transportTxSegment.length + DATA_PACKET_SIZE_NO_TRAN );
+
+        transportTxFlag = 0;
+        return output;
     }
 
     if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)

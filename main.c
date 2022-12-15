@@ -115,6 +115,8 @@ void poll_network_stack() {
     if(transport_poll_tx()) {
         printf("Transport TX Data\n");
         transport_handle_tx();
+
+        transportTxAddress = 0x00;
     }
 
     if(transport_poll_rx()) {
@@ -149,10 +151,13 @@ void poll_network_stack() {
     }
 
      if (net_tx_poll()) {
+        
         qrecord buffer = net_handle_tx();
         if(buffer.packet_size)
-        {
-            if (!dll_has_tx_frame()) {
+        {   
+            printf("Network TX\n");
+            if (dll_has_tx_frame() == 0) {
+                printf("DLL\n");
                 uint8_t queued = dll_queue_tx_net_packet(buffer.packet, buffer.packet_size, buffer.next_hop);
                 if (!queued) printf("Failed to queue TX packet\n");
             }
