@@ -252,8 +252,7 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
 
 uint8_t net_handle_rreq ( uint8_t *packet){
 
-    net_rt_entry rt_entry_src = route_table[packet[SRC_ADDRESS_BYTE]];
-    net_rt_entry rt_entry_dest = route_table[packet[DEST_ADDRESS_BYTE]];
+
 
     if((route_table[packet[SRC_ADDRESS_BYTE]].dest_seq < packet[RREQ_ORIG_SEQ_BYTE]) || ((route_table[packet[DEST_ADDRESS_BYTE]].dest_seq == packet[RREQ_ORIG_SEQ_BYTE]) && route_table[packet[DEST_ADDRESS_BYTE]].hop_count > packet[RREQ_HOP_COUNT_BYTE] ) ){
 
@@ -265,7 +264,7 @@ uint8_t net_handle_rreq ( uint8_t *packet){
     }
 
 
-    if (packet[DEST_ADDRESS_BYTE] == net_node_address || rt_entry_dest.dest_seq > packet[RREQ_ORIG_SEQ_BYTE])
+    if (packet[DEST_ADDRESS_BYTE] == net_node_address || route_table[packet[DEST_ADDRESS_BYTE]].dest_seq > packet[RREQ_ORIG_SEQ_BYTE])
         return 1;
 
     return 0;
@@ -274,8 +273,7 @@ uint8_t net_handle_rreq ( uint8_t *packet){
 
 uint8_t net_handle_rrep ( uint8_t *packet){
 
-    net_rt_entry rt_entry_dest = route_table[packet[DEST_ADDRESS_BYTE]];
-    net_rt_entry rt_entry_src = route_table[packet[SRC_ADDRESS_BYTE]];
+
 
     fprintf(stderr,"%d\n", packet[SRC_ADDRESS_BYTE] );
 
@@ -336,8 +334,12 @@ uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_
     packet[DEST_ADDRESS_BYTE] = dest_node;
     packet[LENGTH_BYTE] = tran_seg_length ;
     memcpy(&packet[TRAN_SEGMENT_BYTE], tran_segment, tran_seg_length);
-    enqueue(packet, tran_seg_length + DATA_PACKET_SIZE_NO_TRAN);
 
+    uint16_t crc = crc16_compute(packet, tran_seg_length + DATA_PACKET_SIZE_NO_TRAN);
+    packet[LENGTH_BYTE+tran_seg_length] = crc>>8;
+    packet[LENGTH_BYTE+tran_seg_length] = crc;
+
+    enqueue(packet, tran_seg_length + DATA_PACKET_SIZE_NO_TRAN);
 
     if (&route_table[dest_node] == NULL)
         count++;
@@ -371,6 +373,10 @@ void send_rreq( uint8_t dest_node)
     packet[RREQ_RREQ_ID_BYTE] = rreq_id;
     packet[RREQ_HOP_COUNT_BYTE] = 0;
 
+    uint16_t crc = crc16_compute(packet, RREQ_PACKET_SIZE );
+    packet[10] = crc>>8;
+    packet[11] = crc;
+
     enqueue(packet,RREQ_PACKET_SIZE);
 
     rreq_id++;
@@ -391,6 +397,10 @@ void send_rrep(uint8_t *packet)
     output_packet[LENGTH_BYTE] = RREP_PACKET_SIZE;
     output_packet[RREP_DEST_SEQ_BYTE] = net_seqnum;
     output_packet[RREP_HOP_COUNT_BYTE] = 0;
+
+    uint16_t crc = crc16_compute(packet, RREP_PACKET_SIZE );
+    output_packet[9] = crc>>8;
+    output_packet[10] = crc;
 
     enqueue(output_packet, RREQ_PACKET_SIZE);
 
