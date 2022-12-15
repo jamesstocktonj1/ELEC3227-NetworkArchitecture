@@ -64,7 +64,10 @@ void transport_handle_tx() {
         transportTxSegment.length = 0x01;
         transportTxSegment.data[0] = 0x00;
         transportTxSegment.checksum = transport_crc(transportTxSegment);
+
+        
     }
+    applicationTxFlag = 0;
 
     transport_timer_reset();
 }
