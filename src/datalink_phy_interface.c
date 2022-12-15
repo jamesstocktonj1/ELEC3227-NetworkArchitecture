@@ -1,5 +1,6 @@
 #include "../include/datalink_phy_interface.h"
 
+#include <util/delay.h>
 #include <string.h>
 
 // Include the library for the RFM12 module and the UART
@@ -68,7 +69,10 @@ void dll_rf_tick() {
         if (is_carrier_present()) return;
     }
 
-    if (actually_transmit) rfm12_start_tx();
+    if (actually_transmit) {
+        rfm12_start_tx();
+        _delay_ms(50);
+    }
 }
 
 uint16_t is_carrier_present() {
