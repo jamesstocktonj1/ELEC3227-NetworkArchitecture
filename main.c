@@ -37,6 +37,8 @@ uint8_t rx_frame[DLL_MAX_FRAME_SIZE] = {0};
 uint8_t dllRxFlag;
 uint8_t dllRxLength;
 
+qrecord buffer;
+
 int main() {
     init_pins();
     init_serial();
@@ -58,6 +60,8 @@ int main() {
     uint8_t i;
     uint8_t rxLength;
     uint8_t rxBuffer[BUFF_SIZE];
+
+    buffer.next_hop = 255;
     
 
 
@@ -136,7 +140,7 @@ void poll_network_stack() {
 
 
 
-    net_handle_timeout();
+    net_handle_timeout_rt();
 
 
     // handle data link layer
@@ -153,7 +157,7 @@ void poll_network_stack() {
 
      if (net_tx_poll()) {
         
-        qrecord buffer = net_handle_tx();
+        buffer = net_handle_tx();
         if(buffer.packet_size)
         {   
             printf("Network TX\n");

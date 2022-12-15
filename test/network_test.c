@@ -66,7 +66,7 @@ void handle_tx_test()
     uint8_t packet1[DATA_PACKET_SIZE_NO_TRAN];
 
     qrecord *buffer;
-    uint8_t interface_buffer[NET_MAX_PACKET_SIZE];
+    uint8_t tx_buffer[NET_MAX_PACKET_SIZE];
     uint8_t rx_buffer[NET_MAX_PACKET_SIZE];
     
     route_table[0].next_hop = 0;
@@ -78,6 +78,12 @@ void handle_tx_test()
     }
 
 
+    fprintf(stderr, "Transport layer wants to send a packet\n\n");
+    transportTxFlag = 1;
+
+
+
+    /*
     packet1[0]=1;
     packet1[1]=3;
     packet1[2]=6;
@@ -176,6 +182,8 @@ net_tx_poll();
         net_handle_tx(interface_buffer);
 
     print_packet_info(interface_buffer);
+
+    */
 
 
 }

@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include "../include/network.h"
 #include "../include/transport.h"
 #include "../include/datalink_phy_interface.h"
 

@@ -52,6 +52,7 @@
 #define UNKNOWN_NEXT_HOP 255
 
 #define NET_ROUTE_TABLE_TIMEOUT_MS 10000
+#define NET_RREQ_TIMEOUT_MS 10000
 
 typedef struct {
     uint8_t dest_node;
@@ -74,10 +75,16 @@ extern qrecord dllTxPacket;
 extern uint8_t dllTxLength;
 extern uint8_t dllTxNexthop;
 
-void net_reset_timer();
-void net_update_timer();
-uint8_t net_timeout();
-void net_handle_timeout();
+void net_reset_timer_rt();
+void net_update_timer_rt();
+uint8_t net_timeout_rt();
+void net_handle_timeout_rt();
+
+void net_reset_timer_rreq();
+void net_update_timer_rreq();
+uint8_t net_timeout_rreq();
+void net_handle_timeout_rreq();
+
 void net_init();
 
 void net_handle_rx_packet(uint8_t *packet, uint8_t length);
@@ -95,6 +102,8 @@ void resend_packet(uint8_t *packet, uint8_t length);
 
 void send_packet();
 uint8_t net_tx_poll();
+
+
 
 uint8_t enqueue(uint8_t *packet, uint8_t packet_size);
 uint8_t dequeue (qrecord *buffer);

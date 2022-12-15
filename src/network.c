@@ -17,6 +17,7 @@ static qrecord tx_buffer;
 static uint8_t rreq_id; 
 
 
+
 uint8_t *dllRxPacket;
 uint8_t dllRxLength;
 uint8_t dllRxReady;
@@ -25,29 +26,50 @@ uint8_t dllTxFlag;
 
 uint8_t *net_tx_buffer[NET_MAX_PACKET_SIZE];
 
-static uint16_t net_timer;
+static uint16_t net_timer_rt;
+static uint16_t net_timer_rreq;
 
-void net_reset_timer()
+
+void net_reset_timer_rreq()
 {
-    net_timer = NET_ROUTE_TABLE_TIMEOUT_MS;
+    net_timer_rreq = NET_RREQ_TIMEOUT_MS;
 }
 
-void net_update_timer()
+void net_reset_timer_rt()
 {
-        if(net_timer) 
+    net_timer_rt = NET_ROUTE_TABLE_TIMEOUT_MS;
+}
+
+void net_update_timer_rt()
+{
+        if(net_timer_rt) 
         {
-            net_timer--;
+            net_timer_rt--;
         }
 }
 
-uint8_t net_timeout() {
-    return net_timer == 0;
+void net_update_timer_rreq()
+{
+        if(net_timer_rreq) 
+        {
+            net_timer_rreq--;
+        }
 }
 
 
-void net_handle_timeout()
+
+uint8_t net_timeout_rt() {
+    return net_timer_rt == 0;
+}
+
+uint8_t net_timeout_rreq() {
+    return net_timer_rreq == 0;
+}
+
+
+void net_handle_timeout_rt()
 {
-    if (net_timeout())
+    if (net_timeout_rt())
     {
         for (int i=0; i<DEFAULT_NETWORK_SIZE; i++)
         {
@@ -58,6 +80,7 @@ void net_handle_timeout()
         }
     }
 }
+
 
 
 
@@ -113,6 +136,7 @@ uint8_t net_tx_poll()
 
 qrecord net_handle_tx()
 {
+    static uint8_t count = 0;
     qrecord output;
     output.packet_size = 0;
     output.next_hop = 0;
@@ -145,9 +169,19 @@ qrecord net_handle_tx()
     }
     else
     {
+        count++;
         fprintf(stderr,"No route table entry\n");
-        send_rreq(tx_buffer.packet[DEST_ADDRESS_BYTE]);
-        enqueue(tx_buffer.packet, tx_buffer.packet_size);
+        if(net_timeout_rreq())
+        {    
+            send_rreq(tx_buffer.packet[DEST_ADDRESS_BYTE]);
+            enqueue(tx_buffer.packet, tx_buffer.packet_size);
+        }
+
+        if (count == 4)
+        {
+            net_reset_timer_rreq();
+            count = 0;
+        }
         return output;
     }
 
@@ -209,7 +243,8 @@ qrecord net_handle_tx()
 
 
 void net_init(){
-    net_reset_timer();
+    net_timer_rreq = 0;
+    net_reset_timer_rt();
     net_seqnum = 0;
     RREQ_ID_buffer = 0;
     net_node_address = APP_ADDR;
