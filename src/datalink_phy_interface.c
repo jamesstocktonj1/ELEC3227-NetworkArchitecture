@@ -80,7 +80,7 @@ uint16_t is_carrier_present() {
 }
 
 void dll_timer() {
-    if (rf_interrupt_occurred) {
+    if (rf_interrupt_occurred || ctrl.rfm12_state == STATE_RX_IDLE) {
         rf_interrupt_occurred = 0;
         rfm12b_last_interrupt = 0;
     } else if (rfm12b_last_interrupt < 0xffff) {
