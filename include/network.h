@@ -74,9 +74,10 @@ extern qrecord dllTxPacket;
 extern uint8_t dllTxLength;
 extern uint8_t dllTxNexthop;
 
-
-
-
+void net_reset_timer();
+void net_update_timer();
+uint8_t net_timeout();
+void net_handle_timeout();
 void net_init();
 
 void net_handle_rx_packet(uint8_t *packet, uint8_t length);

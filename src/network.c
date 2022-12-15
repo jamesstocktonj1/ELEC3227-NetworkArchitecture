@@ -45,7 +45,7 @@ uint8_t net_timeout() {
 }
 
 
-uint8_t net_handle_timeout()
+void net_handle_timeout()
 {
     if (net_timeout())
     {
