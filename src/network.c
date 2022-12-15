@@ -79,8 +79,11 @@ uint8_t net_tx_poll()
     return 0 ;
 }
 
-uint8_t net_handle_tx(uint8_t *packet)
+qrecord net_handle_tx()
 {
+    qrecord output;
+    output.packet_size = 0;
+    output.next_hop = 0;
     if(transportTxFlag)
     {
        uint8_t tx_packet[7+transportTxSegment.length];
@@ -94,20 +97,23 @@ uint8_t net_handle_tx(uint8_t *packet)
             tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length] = transportTxSegment.checksum>>8;
             tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
             send_data(transportTxAddress, tx_packet, transportTxSegment.length + DATA_PACKET_SIZE_NO_TRAN );
+            return output;
     }
 
     if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
     {
         //fprintf(stderr,"Route table entry exists\n");
-        memcpy(packet, tx_buffer.packet, tx_buffer.packet_size);
-        return 1;
+        memcpy(output.packet, tx_buffer.packet, tx_buffer.packet_size);
+        output.next_hop = route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop;
+        output.packet_size = tx_buffer.packet_size;
+        return output;
     }
     else
     {
         //fprintf(stderr,"No route table entry\n");
         send_rreq(tx_buffer.packet[DEST_ADDRESS_BYTE]);
         enqueue(tx_buffer.packet, tx_buffer.packet_size);
-        return 0;
+        return output;
     }
 
 }

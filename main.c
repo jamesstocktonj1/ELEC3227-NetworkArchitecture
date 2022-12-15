@@ -131,29 +131,6 @@ void poll_network_stack() {
         net_handle_rx_packet(rx_packet, dllRxLength);
     }
 
-    if(transportTxFlag)
-    {
-        printf("Network TX Data\n");
-        uint8_t packet[7+transportTxSegment.length];
-
-            packet[CONTROL_1_BYTE] = transportTxSegment.control>>8;
-            packet[CONTROL_2_BYTE] = transportTxSegment.control;
-            packet[SRC_ADDRESS_BYTE] = transportTxSegment.source;
-            packet[DEST_ADDRESS_BYTE] = transportTxSegment.destination;
-            packet[LENGTH_BYTE] = transportTxSegment.length;
-            memcpy(&packet[TRAN_SEGMENT_BYTE], &(transportRxSegment.data), transportTxSegment.length );
-            packet[TRAN_SEGMENT_BYTE + transportTxSegment.length] = transportTxSegment.checksum>>8;
-            packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
-            send_data(transportTxAddress, transportTxSegment.data, transportTxSegment.length );
-
-            uint8_t dllQueued = dll_queue_tx_net_packet(packet, 7+transportTxSegment.length, transportTxAddress);
-            if(!dllQueued) {
-                printf("Network Failed to add to DLL queue\n");
-            }
-
-            transportTxFlag = 0;
-            
-    }
 
 
 
@@ -171,12 +148,17 @@ void poll_network_stack() {
         // SEND TO NET LAYER
     }
 
-    // if (net_has_tx_packet) {
-    //     if (!dll_has_tx_frame()) {
-    //         uint8_t queued = dll_queue_tx_net_packet((uint8_t*)msg, sizeof(msg), DLL_BROADCAST_ADDR);
-    //         if (!queued) printf("Failed to queue TX packet\n");
-    //     }
-    // }
+     if (net_tx_poll()) {
+        qrecord buffer = net_handle_tx();
+        if(buffer.packet_size)
+        {
+            if (!dll_has_tx_frame()) {
+                uint8_t queued = dll_queue_tx_net_packet(buffer.packet, buffer.packet_size, buffer.next_hop);
+                if (!queued) printf("Failed to queue TX packet\n");
+            }
+        }
+
+     }
 
     if (dll_rf_can_tx() && dll_has_tx_frame()) {
         printf("DLL TX Data Here\n");
