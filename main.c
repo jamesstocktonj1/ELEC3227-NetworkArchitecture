@@ -18,11 +18,11 @@
 
 #undef APP_ADDR
 #ifdef NODE1
-#define DEST_ADDR 0x01
-#define APP_ADDR 0x02
-#else
 #define DEST_ADDR 0x02
 #define APP_ADDR 0x01
+#else
+#define DEST_ADDR 0x01
+#define APP_ADDR 0x02
 #endif
 
 #define MAC_ADDR APP_ADDR
