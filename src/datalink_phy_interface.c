@@ -49,7 +49,7 @@ void dll_rf_tick() {
     if (rfm12b_last_interrupt > RFM12B_INTERRUPT_TIMEOUT_MS) {
         printf("Resetting RFM12B...\n");
         ctrl.rfm12_state = STATE_RX_IDLE;
-        rfm12_init();
+        rfm12_reset();
         rfm12b_last_interrupt = 0;
     }
 

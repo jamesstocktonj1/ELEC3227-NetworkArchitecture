@@ -88,6 +88,7 @@ typedef enum{
 //see rfm12.c for more documentation
 void rfm12_init(void);
 void rfm12_tick(void);
+void rfm12_reset(void);
 
 
 #if RFM12_USE_RX_CALLBACK

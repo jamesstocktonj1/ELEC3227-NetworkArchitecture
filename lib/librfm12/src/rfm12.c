@@ -793,3 +793,52 @@ void rfm12_init(void) {
 	//activate the interrupt
 	RFM12_INT_ON();
 }
+
+// This resets the RFM12B module without clearing the TX buffers
+void rfm12_reset(void) {
+	//write all the initialisation values to rfm12
+	uint8_t x;
+
+	#ifdef __PLATFORM_AVR__
+
+		for (x = 0; x < ( sizeof(init_cmds) / 2) ; x++) {
+			rfm12_data(pgm_read_word(&init_cmds[x]));
+		}
+	#else
+		for (x = 0; x < ( sizeof(init_cmds) / 2) ; x++) {
+			rfm12_data(init_cmds[x]);
+		}
+	#endif
+
+	#ifdef RX_ENTER_HOOK
+		RX_ENTER_HOOK;
+	#endif
+
+	#if RFM12_USE_CLOCK_OUTPUT || RFM12_LOW_BATT_DETECTOR
+		rfm12_data(RFM12_CMD_LBDMCD | RFM12_LBD_VOLTAGE | RFM12_CLOCK_OUT_FREQUENCY ); //set low battery detect, clock output
+	#endif
+
+	//ASK receive mode feature initialization
+	#if RFM12_RECEIVE_ASK
+		adc_init();
+	#endif
+
+	//setup interrupt for falling edge trigger
+#ifdef __PLATFORM_AVR__
+	RFM12_INT_SETUP();
+#endif
+
+	//clear int flag
+	rfm12_read(RFM12_CMD_STATUS);
+
+#ifdef __PLATFORM_AVR__
+	RFM12_INT_FLAG = (1<<RFM12_FLAG_BIT);
+#endif
+
+	//init receiver fifo, we now begin receiving.
+	rfm12_data(CLEAR_FIFO);
+	rfm12_data(ACCEPT_DATA);
+
+	//activate the interrupt
+	RFM12_INT_ON();
+}
