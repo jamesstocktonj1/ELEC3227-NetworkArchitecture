@@ -77,8 +77,8 @@
 
 //center frequency to use (+- FSK frequency shift)
 // #define RFM12_FREQUENCY       433170000UL
-// #define RFM12_FREQUENCY       434170000UL
-#define RFM12_FREQUENCY       433920000UL
+#define RFM12_FREQUENCY       434170000UL
+// #define RFM12_FREQUENCY       433920000UL
 
 //Transmit FSK frequency shift in kHz
 #define FSK_SHIFT             125000

@@ -73,6 +73,8 @@ uint8_t dll_get_tx_frame(uint8_t *frame, uint8_t node_address) {
 }
 
 int8_t dll_receive_dll_frame(uint8_t *frame, uint8_t length, uint8_t node_address) {
+    //for (uint8_t i = 0; i < length; i++) printf("%02x ", frame[i]);
+    //printf("\n");
     if (length < 6+3) return -1; // Below minimum length
     if (frame[0] != DLL_HEADER) return -2; // Invalid Header
     if (frame[4] != DLL_BROADCAST_ADDR && frame[4] != node_address) return -3; // Incorrect destination address
