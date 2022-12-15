@@ -25,7 +25,7 @@ void application_demo() {
 
     uint8_t testData[4] = {0x00, 0x01, 0x02, 0x03};
     
-    printf("Application Layer\n");
+    printf("\nApplication Layer\n");
     
     printf("Sending Data: ");
     for(int i=0; i<4; i++) {
@@ -58,6 +58,7 @@ void application_demo() {
     for(int i=0; i<rxLength; i++) {
         printf("0x%02x ", testData[i]);
     }
+    printf("\n");
 }
 
 void transport_demo() {
