@@ -102,156 +102,63 @@ void handle_tx_test()
     transportTxSegment.data[1] = 0;
     transportTxSegment.data[2] = 0;
 
-
-
-    net_transport_poll();
-    if(net_tx_poll())
-    {
-        buffer = net_handle_tx();
-    }
-
-    net_transport_poll();
-    if(net_tx_poll())
-    {
-        buffer = net_handle_tx();
-    }
-
-    net_transport_poll();
-    if(net_tx_poll())
-    {
-        buffer = net_handle_tx();
-    }
-
-    transportTxFlag = 1;
-    net_transport_poll();
-    if(net_tx_poll())
-    {
-        buffer = net_handle_tx();
-    }
-    
-
-
-    net_transport_poll();
-    if(net_tx_poll())
-    {
-        buffer = net_handle_tx();
-    }
-
-    net_transport_poll();
-    if(net_tx_poll())
-    {
-        buffer = net_handle_tx();
-    }
-
-    net_transport_poll();
-    if(net_tx_poll())
-    {
-        buffer = net_handle_tx();
-    }
-
-
-    
-
-
-    /*
-    packet1[0]=1;
-    packet1[1]=3;
-    packet1[2]=6;
-    packet1[3]=7;
-    packet1[4]=8;
-
-
-    
-    uint8_t packet2[DATA_PACKET_SIZE_NO_TRAN+1];
-    packet2[0]=1;
-    packet2[1]=3;
-    packet2[2]=6;
-    packet2[3]=7;
-    packet2[4]=8;
-    packet2[5]=10;
-
     rx_buffer[CONTROL_1_BYTE] = 0;
-    rx_buffer[CONTROL_1_BYTE] |= RREP_ID<<6;
-
-    fprintf(stderr, "%d:\n ",rx_buffer[CONTROL_1_BYTE]);
-
-    rx_buffer[CONTROL_2_BYTE] = 2;
-    rx_buffer[SRC_ADDRESS_BYTE] = 7;
+    rx_buffer[CONTROL_1_BYTE] |= RREQ_ID;
+    rx_buffer[SRC_ADDRESS_BYTE] = 1;
     rx_buffer[DEST_ADDRESS_BYTE] = APP_ADDR;
-    rx_buffer[RREP_SENDER_BYTE] = 6;
-    rx_buffer[RREP_DEST_SEQ_BYTE] = 10;
-
-    enqueue(packet1, 5);
-
-            //dequeue(&buffer);
-    
-
-    net_tx_poll();
-
-    net_handle_tx(interface_buffer);
-
-    //print_packet_info(interface_buffer);
-
-    net_tx_poll();
-
-    net_handle_tx(interface_buffer);
-
-    //print_packet_info(interface_buffer);
 
 
+net_handle_rx_packet(rx_buffer, RREQ_PACKET_SIZE);
+    /*net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
 
-    net_handle_rx_packet(rx_buffer, RREP_PACKET_SIZE);
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
 
-
-
-    enqueue(packet1, 5);
-
-    
-net_tx_poll();
-
-    net_handle_tx(interface_buffer);
-
-    //print_packet_info(interface_buffer);
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
 
     transportTxFlag = 1;
-    transportTxSegment.control = 2;
-    transportTxSegment.source = 3;
-    transportTxSegment.destination  = 4;
-    transportTxSegment.length  = 0;
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+    
 
-    net_tx_poll();
 
-    net_handle_tx(interface_buffer);
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
 
-    //print_packet_info(interface_buffer);
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
 
-    net_tx_poll();
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }*/
 
-    net_handle_tx(interface_buffer);
 
-    //print_packet_info(interface_buffer);
+    
 
-    net_tx_poll();
 
-    net_handle_tx(interface_buffer);
-
-    //print_packet_info(interface_buffer);
-
-    net_tx_poll();
-
-    net_handle_tx(interface_buffer);
-
-    //print_packet_info(interface_buffer);
-
-    fprintf(stderr, "%d", net_tx_poll() );
-
-        net_handle_tx(interface_buffer);
-
-    //print_packet_info(interface_buffer);
-
-        net_handle_tx(interface_buffer);
-
-    print_packet_info(interface_buffer);
+    
 
     */
 

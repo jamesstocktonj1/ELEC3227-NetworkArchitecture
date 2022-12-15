@@ -113,7 +113,6 @@ uint8_t enqueue(uint8_t *packet, uint8_t packet_size)
 
 uint8_t dequeue (qrecord *buffer)
 {
-        fprintf(stderr,"front: %d\n", front);
         if (front == -1)
         {
             return 0;
@@ -136,12 +135,6 @@ void net_transport_poll()
         uint8_t tx_packet[7+transportTxSegment.length];
 
 
-
-        fprintf(stderr, "CONTROL1: %d\n", transportTxSegment.control>>8);
-        fprintf(stderr, "CONTROL2: %d\n", transportTxSegment.control);
-        fprintf(stderr, "SRC: %d\n", transportTxSegment.source );
-        fprintf(stderr, "DST: %d\n", transportTxSegment.destination);
-        fprintf(stderr, "Transport Queue Packet\n");
         tx_packet[CONTROL_1_BYTE] = transportTxSegment.control>>8;
         tx_packet[CONTROL_2_BYTE] = transportTxSegment.control;
         tx_packet[SRC_ADDRESS_BYTE] = transportTxSegment.source;
@@ -186,7 +179,7 @@ qrecord net_handle_tx()
     }
 
 
-    if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
+    else if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
     {
 
         fprintf(stderr,"Route table entry exists\n");
@@ -306,6 +299,7 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
         printf("RREQ packet received\n");
             if(net_handle_rreq(packet))
                 {
+                    printf("RREP queued\n");
                     send_rrep(packet);
                 }
                 
@@ -348,6 +342,8 @@ uint8_t net_handle_rreq ( uint8_t *packet){
     route_table[packet[SRC_ADDRESS_BYTE]].dest_seq = packet[RREQ_ORIG_SEQ_BYTE];
     route_table[packet[SRC_ADDRESS_BYTE]].hop_count = packet[RREQ_HOP_COUNT_BYTE] + 1;
 
+    printf("Route table updated\n");
+
     }
 
 
@@ -356,7 +352,9 @@ uint8_t net_handle_rreq ( uint8_t *packet){
     else
         {        
         uint8_t ttl = packet[CONTROL_1_BYTE]>>2 & 15;
-        packet[CONTROL_1_BYTE] &= 0 & (15 << 2);
+
+        packet[CONTROL_1_BYTE] = 0;
+        packet[CONTROL_1_BYTE] |= RREQ_ID<<6;
         packet[CONTROL_1_BYTE] |= (ttl-1)<<2;
         packet[RREQ_SENDER_BYTE] = net_node_address;
         enqueue(packet, RREQ_PACKET_SIZE);
