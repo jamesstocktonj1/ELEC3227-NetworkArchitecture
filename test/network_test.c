@@ -17,10 +17,15 @@ void main_network_test() {
 
 void queue_test()
 {
-    qrecord *buffer;
+    qrecord buffer;
     qrecord queue[QUEUE_MAX_SIZE];
     uint8_t packet1[DATA_PACKET_SIZE_NO_TRAN];
+    net_init();
 
+
+
+    fprintf(stderr,"Dequeued packet with size %d\n", buffer.packet_size);
+    fprintf(stderr,"Is empty %d\n", dequeue(&buffer));
 
     packet1[0]=1;
     packet1[1]=3;
@@ -28,8 +33,7 @@ void queue_test()
     packet1[3]=7;
     packet1[4]=8;
 
-    enqueue(packet1, DATA_PACKET_SIZE_NO_TRAN);
-    fprintf(stderr,"Enqueued packet with size %d\n", DATA_PACKET_SIZE_NO_TRAN);
+    
     
     uint8_t packet2[DATA_PACKET_SIZE_NO_TRAN+1];
     packet2[0]=1;
@@ -39,17 +43,25 @@ void queue_test()
     packet2[4]=8;
     packet2[5]=10;
 
-    enqueue(packet2, DATA_PACKET_SIZE_NO_TRAN+1);
+    
+    fprintf(stderr,"Is full %d\n", enqueue(packet2, DATA_PACKET_SIZE_NO_TRAN+1));
     fprintf(stderr,"Enqueued packet with size %d\n", DATA_PACKET_SIZE_NO_TRAN + 1);
 
-    dequeue(buffer);
-    fprintf(stderr,"Dequeued packet with size %d\n", buffer->packet_size);
-    dequeue(buffer);
-    fprintf(stderr,"Dequeued packet with size %d\n", buffer->packet_size);
-    dequeue(buffer);
-    fprintf(stderr,"Dequeued packet with size %d\n", buffer->packet_size);
-    dequeue(buffer);
-    fprintf(stderr,"Dequeued packet with size %d\n", buffer->packet_size);
+    fprintf(stderr,"Is empty %d\n", dequeue(&buffer));
+    fprintf(stderr,"Dequeued packet with size %d\n", buffer.packet_size);
+    
+
+    fprintf(stderr,"Is full %d\n", enqueue(packet1, DATA_PACKET_SIZE_NO_TRAN));
+    fprintf(stderr,"En packet with size %d\n", DATA_PACKET_SIZE_NO_TRAN);
+    
+
+    
+    fprintf(stderr,"Is empty %d\n", dequeue(&buffer));
+    fprintf(stderr,"Dequeued packet with size %d\n", buffer.packet_size);
+    
+    fprintf(stderr,"Is empty %d\n", dequeue(&buffer));
+    fprintf(stderr,"Dequeued packet with size %d\n", buffer.packet_size);
+    
 
 
 
@@ -65,7 +77,8 @@ void handle_tx_test()
     transportTxFlag = 0;
     uint8_t packet1[DATA_PACKET_SIZE_NO_TRAN];
 
-    qrecord *buffer;
+    qrecord buffer;
+    qrecord queue[QUEUE_MAX_SIZE];
     uint8_t tx_buffer[NET_MAX_PACKET_SIZE];
     uint8_t rx_buffer[NET_MAX_PACKET_SIZE];
     
@@ -79,8 +92,47 @@ void handle_tx_test()
 
 
     fprintf(stderr, "Transport layer wants to send a packet\n\n");
-    transportTxFlag = 1;
+    transportTxFlag = 0;
 
+    transportTxAddress = 0;
+    transportTxSegment.control  = 4;
+    transportTxSegment.source = 6;
+    transportTxSegment.destination = 0;
+
+
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+
+    transportTxFlag = 1;
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+
+
+    
 
 
     /*

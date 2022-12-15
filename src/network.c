@@ -9,8 +9,8 @@ static uint8_t RREQ_ID_buffer;
 static uint8_t net_node_address;
 
 static qrecord queue[QUEUE_MAX_SIZE];
-static int8_t front;
-static int8_t back;
+static int front;
+static int back;
 static qrecord tx_buffer;
 
 
@@ -88,20 +88,24 @@ uint8_t enqueue(uint8_t *packet, uint8_t packet_size)
 {
     if(back == QUEUE_MAX_SIZE - 1 )
         {
+            back = -1;
             return 0;
+            
         }
     else
         {
             if(front == -1)
                 front = 0;
+
             back++;
-            int i;
-            for (i=0; i<packet_size; i++)
+            for (int i=0; i<packet_size; i++)
             {
                 queue[back].packet[i] = packet[i];
             }
             queue[back].packet_size = packet_size;
-            //fprintf(stderr,"packet enqueued\n");
+            fprintf(stderr,"packet enqueued %d\n", back);
+
+
             return 1;
             
         }
@@ -109,42 +113,35 @@ uint8_t enqueue(uint8_t *packet, uint8_t packet_size)
 
 uint8_t dequeue (qrecord *buffer)
 {
-    if(front == -1)
-        return 0;
-    else
+        fprintf(stderr,"front: %d\n", front);
+        if (front == -1)
         {
+            return 0;
+        }
             *buffer = queue[front];
+            fprintf(stderr,"packet dequeued %d\n", front);
             front++;
             if (front > back)
                 front = back = -1;
-            //fprintf(stderr,"packet dequeued\n");
+
             return 1;
-        }
 }
 
-uint8_t net_tx_poll()
+void net_transport_poll()
 {
-    if(dequeue(&tx_buffer))
-    {
-        //fprintf(stderr, "dest node: %d\n", tx_buffer.packet[DEST_ADDRESS_BYTE] );
-        return 1;
-    }
     if(transportTxFlag == 1)
-        return 1;
-    return 0 ;
-}
-
-qrecord net_handle_tx()
-{
-    static uint8_t count = 0;
-    qrecord output;
-    output.packet_size = 0;
-    output.next_hop = 0;
-    if(transportTxFlag)
     {
+        fprintf(stderr, "Transport Queue Packet\n");
         printf("Transport Queue Packet\n");
         uint8_t tx_packet[7+transportTxSegment.length];
 
+
+
+        fprintf(stderr, "CONTROL1: %d\n", transportTxSegment.control>>8);
+        fprintf(stderr, "CONTROL2: %d\n", transportTxSegment.control);
+        fprintf(stderr, "SRC: %d\n", transportTxSegment.source );
+        fprintf(stderr, "DST: %d\n", transportTxSegment.destination);
+        fprintf(stderr, "Transport Queue Packet\n");
         tx_packet[CONTROL_1_BYTE] = transportTxSegment.control>>8;
         tx_packet[CONTROL_2_BYTE] = transportTxSegment.control;
         tx_packet[SRC_ADDRESS_BYTE] = transportTxSegment.source;
@@ -156,12 +153,30 @@ qrecord net_handle_tx()
         send_data(transportTxAddress, tx_packet, transportTxSegment.length + DATA_PACKET_SIZE_NO_TRAN );
 
         transportTxFlag = 0;
-        return output;
+
     }
+
+}
+
+uint8_t net_tx_poll()
+{
+    if(dequeue(&tx_buffer))
+    {
+        return 1;
+    }
+    return 0 ;
+}
+
+qrecord net_handle_tx()
+{
+    static uint8_t count = 0;
+    qrecord output;
+    output.packet_size = 0;
+    output.next_hop = 0;
 
     if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
     {
-        
+
         fprintf(stderr,"Route table entry exists\n");
         memcpy(output.packet, tx_buffer.packet, tx_buffer.packet_size);
         output.next_hop = route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop;

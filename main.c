@@ -37,7 +37,7 @@ uint8_t rx_frame[DLL_MAX_FRAME_SIZE] = {0};
 uint8_t dllRxFlag;
 uint8_t dllRxLength;
 
-qrecord buffer;
+static qrecord buffer;
 
 int main() {
     init_pins();
@@ -61,11 +61,7 @@ int main() {
     uint8_t rxLength;
     uint8_t rxBuffer[BUFF_SIZE];
 
-    buffer.next_hop = 255;
-    for (int i=0; i<NET_MAX_PACKET_SIZE;  i++)
-    {
-        buffer.packet[i] = 1;
-    }
+
 
     
 
@@ -144,7 +140,7 @@ void poll_network_stack() {
     }
 
 
-
+    net_transport_poll();
     net_handle_timeout_rt();
 
 

@@ -40,7 +40,7 @@
 #define RREQ_PACKET_SIZE 12
 #define RREP_PACKET_SIZE 11
 #define RERR_PACKET_SIZE 7
-#define DATA_PACKET_SIZE_NO_TRAN 5
+#define DATA_PACKET_SIZE_NO_TRAN 7
 
 #define QUEUE_MAX_SIZE 5
 #define DEFAULT_TTL 5
@@ -102,6 +102,7 @@ void resend_packet(uint8_t *packet, uint8_t length);
 
 void send_packet();
 uint8_t net_tx_poll();
+void net_transport_poll();
 
 
 
