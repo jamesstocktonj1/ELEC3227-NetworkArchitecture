@@ -176,6 +176,7 @@ qrecord net_handle_tx()
         memcpy(output.packet, tx_buffer.packet, tx_buffer.packet_size);
         output.next_hop = 0;
         output.packet_size = RREQ_PACKET_SIZE;
+        return output;
     }
 
 
