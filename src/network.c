@@ -270,12 +270,12 @@ qrecord net_handle_tx()
 
 
 
-void net_init(){
+void net_init(uint8_t net_node_addr){
     net_timer_rreq = 0;
     net_reset_timer_rt();
     net_seqnum = 0;
     RREQ_ID_buffer = 0;
-    net_node_address = APP_ADDR;
+    net_node_address = net_node_addr;
     front = -1;
     back = -1;
     route_table[0].next_hop = 0;

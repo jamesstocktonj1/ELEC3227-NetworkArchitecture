@@ -85,7 +85,7 @@ void net_update_timer_rreq();
 uint8_t net_timeout_rreq();
 void net_handle_timeout_rreq();
 
-void net_init();
+void net_init(uint8_t net_node_addr);
 
 void net_handle_rx_packet(uint8_t *packet, uint8_t length);
 qrecord net_handle_tx();

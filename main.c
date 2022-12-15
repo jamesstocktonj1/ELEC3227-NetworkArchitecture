@@ -49,7 +49,7 @@ int main() {
     printf("Initialising... ");
     application_init();
     transport_init();
-    net_init();
+    net_init(APP_ADDR);
     dll_init();
     dll_rf_init();
     sei(); // enable interrupts
