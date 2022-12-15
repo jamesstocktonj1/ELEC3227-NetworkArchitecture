@@ -174,6 +174,18 @@ qrecord net_handle_tx()
     output.packet_size = 0;
     output.next_hop = 0;
 
+
+    uint8_t masked = tx_buffer.packet[0] & (3<<6);
+    masked = masked>>6;
+    if(masked == RREQ_ID)
+    {
+        fprintf(stderr,"RREQ wil be sent\n");
+        memcpy(output.packet, tx_buffer.packet, tx_buffer.packet_size);
+        output.next_hop = 0;
+        output.packet_size = RREQ_PACKET_SIZE;
+    }
+
+
     if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
     {
 

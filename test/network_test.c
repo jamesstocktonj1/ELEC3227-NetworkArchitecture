@@ -94,10 +94,14 @@ void handle_tx_test()
     fprintf(stderr, "Transport layer wants to send a packet\n\n");
     transportTxFlag = 0;
 
-    transportTxAddress = 0;
+    transportTxAddress = 15;
     transportTxSegment.control  = 4;
     transportTxSegment.source = 6;
     transportTxSegment.destination = 0;
+    transportTxSegment.data[0] = 0;
+    transportTxSegment.data[1] = 0;
+    transportTxSegment.data[2] = 0;
+
 
 
     net_transport_poll();
@@ -119,6 +123,20 @@ void handle_tx_test()
     }
 
     transportTxFlag = 1;
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+    
+
+
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+
     net_transport_poll();
     if(net_tx_poll())
     {
