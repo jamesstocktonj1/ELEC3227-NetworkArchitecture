@@ -149,5 +149,5 @@ $(BUILD)/%.hex: $(BUILD)/%.elf
 $(BUILD)/$(TEST_TARGET): $(TESTS) $(TEST_FILES) $(TEST_INCLUDE) $(TESTS_INCLUDE)
 	$(TEST-CC) $(TESTFLAGS) $(TESTS) $(TEST_FILES) -o $@
 
-$(BUILD)/$(APP_TARGET): $(DEMO)/$(APP_DEMO).c $(TEST_FILES) $(TEST_INCLUDE)
-	$(TEST-CC) $(TESTFLAGS) $(TEST_FILES) $(DEMO)/$(APP_DEMO).c -o $@
+$(BUILD)/$(APP_TARGET): $(DEMO)/$(APP_DEMO).c src/application.c src/transport.c src/util.c
+	$(TEST-CC) $(TESTFLAGS) src/application.c src/transport.c src/util.c $(DEMO)/$(APP_DEMO).c -o $@
