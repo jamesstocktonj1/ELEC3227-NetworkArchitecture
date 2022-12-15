@@ -82,6 +82,8 @@ rf_tx_buffer_t rf_tx_buffer;
 //! Global control and status.
 rfm12_control_t ctrl;
 
+uint8_t rf_interrupt_occurred = 0;
+
 
 /************************
  * load other core and external components
@@ -143,6 +145,7 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 		if(interrupt_high_inactive)return;
 	#endif
 	RFM12_INT_OFF();
+	rf_interrupt_occurred = 1;
 	uint8_t status;
 	uint8_t recheck_interrupt  = 1;
 	//if receive mode is not disabled (default)

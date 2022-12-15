@@ -10,6 +10,8 @@
 
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
+uint16_t rfm12b_last_interrupt = 0;
+
 uint16_t is_carrier_present();
 
 uint8_t dll_rf_can_tx() {
@@ -43,6 +45,14 @@ void dll_rf_init() {
 void dll_rf_tick() {
     // 0.05-p CSMA
 
+    // Check module is still responding
+    if (rfm12b_last_interrupt > RFM12B_INTERRUPT_TIMEOUT_MS) {
+        printf("Resetting RFM12B...\n");
+        ctrl.rfm12_state = STATE_RX_IDLE;
+        rfm12_init();
+        rfm12b_last_interrupt = 0;
+    }
+
     // Do random calculation here instead of later, so the PRNG gets a bit more random
     uint8_t actually_transmit = (prng() % 20) == 0;
     
@@ -67,4 +77,13 @@ uint16_t is_carrier_present() {
 	RFM12_INT_ON();
 
 	return status & RFM12_STATUS_RSSI;
+}
+
+void dll_timer() {
+    if (rf_interrupt_occurred) {
+        rf_interrupt_occurred = 0;
+        rfm12b_last_interrupt = 0;
+    } else if (rfm12b_last_interrupt < 0xffff) {
+        rfm12b_last_interrupt++;
+    }
 }
