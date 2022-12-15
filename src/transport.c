@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+static uint8_t nodeAddress;
+
 // Transport Buffer
 uint8_t transportTxFlag;
 Segment transportTxSegment;
@@ -36,7 +38,9 @@ uint8_t transport_timeout() {
     return transport_timer == 0;
 }
 
-void transport_init() {
+void transport_init(uint8_t node_address) {
+    nodeAddress = node_address;
+
     transportTxFlag = 0;
     transportTxSegment.data = (uint8_t *)malloc(BUFF_SIZE);
     transportTxAddress = 0;
@@ -97,7 +101,7 @@ void transport_handle_rx() {
     uint8_t segmentState = transportRxSegment.control & PROT_MASK;
 
     // filter RX Address
-    if(transportRxAddress != APP_ADDR) {
+    if(transportRxAddress != nodeAddress) {
         return;
     }
 

@@ -48,7 +48,7 @@ int main() {
 
     printf("Initialising... ");
     application_init();
-    transport_init();
+    transport_init(APP_ADDR);
     net_init(APP_ADDR);
     dll_init();
     dll_rf_init();

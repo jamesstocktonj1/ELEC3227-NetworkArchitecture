@@ -358,7 +358,7 @@ uint8_t net_handle_rreq ( uint8_t *packet){
         uint8_t ttl = packet[CONTROL_1_BYTE]>>2 & 15;
         packet[CONTROL_1_BYTE] &= 0 & (15 << 2);
         packet[CONTROL_1_BYTE] |= (ttl-1)<<2;
-        packet[RREQ_SENDER_BYTE] = APP_ADDR;
+        packet[RREQ_SENDER_BYTE] = net_node_address;
         enqueue(packet, RREQ_PACKET_SIZE);
         }
 
@@ -390,7 +390,7 @@ uint8_t net_handle_rrep ( uint8_t *packet){
     {   uint8_t ttl = packet[CONTROL_1_BYTE]>>2 & 15;
         packet[CONTROL_1_BYTE] &= 0 & (15 << 2);
         packet[CONTROL_1_BYTE] |= (ttl-1)<<2;
-        packet[RREP_SENDER_BYTE] = APP_ADDR;
+        packet[RREP_SENDER_BYTE] = net_node_address;
         packet[RREP_NEXTHOP_BYTE] = route_table[SRC_ADDRESS_BYTE].next_hop;
         enqueue(packet, RREP_PACKET_SIZE);
     }
@@ -438,7 +438,7 @@ uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_
     packet[CONTROL_1_BYTE] |= DATA_ID<<6;
     packet[CONTROL_1_BYTE] |= DEFAULT_TTL<<4;
     packet[CONTROL_2_BYTE] = 0;
-    packet[SRC_ADDRESS_BYTE] = APP_ADDR;
+    packet[SRC_ADDRESS_BYTE] = net_node_address;
     packet[DEST_ADDRESS_BYTE] = dest_node;
     packet[LENGTH_BYTE] = tran_seg_length ;
     memcpy(&packet[TRAN_SEGMENT_BYTE], tran_segment, tran_seg_length);
@@ -472,10 +472,10 @@ void send_rreq( uint8_t dest_node)
     packet[CONTROL_1_BYTE] |= RREQ_ID<<6;
     packet[CONTROL_1_BYTE] |= RREQ_TTL<<2;
     packet[CONTROL_2_BYTE] = 0;
-    packet[SRC_ADDRESS_BYTE] = APP_ADDR;
+    packet[SRC_ADDRESS_BYTE] = net_node_address;
     packet[DEST_ADDRESS_BYTE] = dest_node;
     packet[LENGTH_BYTE] = RREQ_PACKET_SIZE;
-    packet[RREQ_SENDER_BYTE] = APP_ADDR;
+    packet[RREQ_SENDER_BYTE] = net_node_address;
     packet[RREQ_ORIG_SEQ_BYTE] = net_seqnum;
     packet[RREQ_DEST_SEQ_BYTE] = 0;
     packet[RREQ_RREQ_ID_BYTE] = rreq_id;

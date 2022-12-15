@@ -63,7 +63,7 @@ extern ConnectionType transportConnectionType;
  * This function initialises all the variables for the transport layer
  * 
  */
-void transport_init(void);
+void transport_init(uint8_t node_address);
 
 /**
  * This function resets the timer for the transport layer
