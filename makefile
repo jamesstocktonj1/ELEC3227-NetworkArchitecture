@@ -83,7 +83,6 @@ test: $(BUILD)/$(TEST_TARGET)
 app_demo: $(BUILD)/$(APP_TARGET)
 	$(BUILD)/$(APP_TARGET)
 
-
 .PHONY: dll_rf_test
 dll_rf_test: $(BUILD)/$(DLL_RF_TEST_TARGET).hex
 
@@ -113,6 +112,7 @@ clean:
 	@rm -f $(LIB_OBJECTS)
 	@rm -f $(BUILD)/$(TEST_TARGET)
 	@rm -f $(BUILD)/temp.txt
+	@rm -f $(BUILD)/$(SERIAL_TARGET).exe
 	
 help:
 	@echo "Il Matto Makefile Usage"
