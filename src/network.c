@@ -25,7 +25,39 @@ uint8_t dllTxFlag;
 
 uint8_t *net_tx_buffer[NET_MAX_PACKET_SIZE];
 
+static uint16_t net_timer;
 
+void net_reset_timer()
+{
+    net_timer = NET_ROUTE_TABLE_TIMEOUT_MS;
+}
+
+void net_update_timer()
+{
+        if(net_timer) 
+        {
+            net_timer--;
+        }
+}
+
+uint8_t net_timeout() {
+    return net_timer == 0;
+}
+
+
+uint8_t net_handle_timeout()
+{
+    if (net_timeout())
+    {
+        for (int i=0; i<DEFAULT_NETWORK_SIZE; i++)
+        {
+            route_table[i].dest_node = i;
+            route_table[i].dest_seq = 0;
+            route_table[i].next_hop = 255;
+            route_table[i].hop_count = 255;
+        }
+    }
+}
 
 
 
@@ -105,7 +137,7 @@ qrecord net_handle_tx()
 
     if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
     {
-        //fprintf(stderr,"Route table entry exists\n");
+        fprintf(stderr,"Route table entry exists\n");
         memcpy(output.packet, tx_buffer.packet, tx_buffer.packet_size);
         output.next_hop = route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop;
         output.packet_size = tx_buffer.packet_size;
@@ -113,7 +145,7 @@ qrecord net_handle_tx()
     }
     else
     {
-        //fprintf(stderr,"No route table entry\n");
+        fprintf(stderr,"No route table entry\n");
         send_rreq(tx_buffer.packet[DEST_ADDRESS_BYTE]);
         enqueue(tx_buffer.packet, tx_buffer.packet_size);
         return output;
@@ -177,6 +209,7 @@ qrecord net_handle_tx()
 
 
 void net_init(){
+    net_reset_timer();
     net_seqnum = 0;
     RREQ_ID_buffer = 0;
     net_node_address = APP_ADDR;

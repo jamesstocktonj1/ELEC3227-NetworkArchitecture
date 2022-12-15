@@ -51,6 +51,8 @@
 
 #define UNKNOWN_NEXT_HOP 255
 
+#define NET_ROUTE_TABLE_TIMEOUT_MS 10000
+
 typedef struct {
     uint8_t dest_node;
     uint8_t next_hop; 

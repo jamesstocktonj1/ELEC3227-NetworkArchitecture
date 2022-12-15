@@ -135,7 +135,7 @@ void poll_network_stack() {
 
 
 
-
+    net_handle_timeout();
 
 
     // handle data link layer
