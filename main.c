@@ -62,6 +62,11 @@ int main() {
     uint8_t rxBuffer[BUFF_SIZE];
 
     buffer.next_hop = 255;
+    for (int i=0; i<NET_MAX_PACKET_SIZE;  i++)
+    {
+        buffer.packet[i] = 1;
+    }
+
     
 
 

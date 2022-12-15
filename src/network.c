@@ -161,6 +161,7 @@ qrecord net_handle_tx()
 
     if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
     {
+        
         fprintf(stderr,"Route table entry exists\n");
         memcpy(output.packet, tx_buffer.packet, tx_buffer.packet_size);
         output.next_hop = route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop;
