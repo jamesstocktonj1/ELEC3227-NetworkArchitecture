@@ -49,6 +49,7 @@ int main() {
     transport_init();
     net_init();
     dll_init();
+    dll_rf_init();
     sei(); // enable interrupts
     printf("Done\n");
 
