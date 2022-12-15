@@ -435,7 +435,7 @@ uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_
 
     uint8_t packet[tran_seg_length + DATA_PACKET_SIZE_NO_TRAN ];
     packet[CONTROL_1_BYTE] |= DATA_ID<<6;
-    packet[CONTROL_1_BYTE] |= DEFAULT_TTL<<4;
+    packet[CONTROL_1_BYTE] |= DEFAULT_TTL<<2;
     packet[CONTROL_2_BYTE] = 0;
     packet[SRC_ADDRESS_BYTE] = net_node_address;
     packet[DEST_ADDRESS_BYTE] = dest_node;
