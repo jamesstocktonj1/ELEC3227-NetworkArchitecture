@@ -7,6 +7,10 @@
 
 
 void init_pins(void);
+
+void set_pins(uint8_t lightID, uint8_t lightIntensity);
+
+
 void set_led(void);
 void clear_led(void);
 
