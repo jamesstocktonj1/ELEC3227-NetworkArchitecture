@@ -51,11 +51,17 @@ TESTS = $(wildcard $(TEST)/*.c)
 TESTS_INCLUDE = $(wildcard $(TEST)/*.h)
 TEST_FILES = \
 	src/application.c \
+	src/transport.c \
 	src/network.c \
 	src/datalink.c \
 	src/util.c
 TEST_INCLUDE = $(subst $(SOURCE), $(INCLUDE), $(TEST_FILES:.c=.h))
 TEST_TARGET = test.out
+
+# demonstration files
+DEMO = demo
+APP_DEMO = 	application
+APP_TARGET = $(APP_DEMO).out
 
 #programmer constant
 AVRDUDE = avrdude 
@@ -73,6 +79,9 @@ all: $(BUILD)/$(TARGET).hex
 
 test: $(BUILD)/$(TEST_TARGET)
 	$(BUILD)/$(TEST_TARGET)
+
+app_demo: $(BUILD)/$(APP_TARGET)
+	@$(BUILD)/$(APP_TARGET)
 
 .PHONY: dll_rf_test
 dll_rf_test: $(BUILD)/$(DLL_RF_TEST_TARGET).hex
@@ -103,6 +112,8 @@ clean:
 	@rm -f $(LIB_OBJECTS)
 	@rm -f $(BUILD)/$(TEST_TARGET)
 	@rm -f $(BUILD)/temp.txt
+	@rm -f $(BUILD)/$(SERIAL_TARGET).exe
+	@rm -f $(BUILD)/$(APP_TARGET)
 	
 help:
 	@echo "Il Matto Makefile Usage"
@@ -138,3 +149,6 @@ $(BUILD)/%.hex: $(BUILD)/%.elf
 
 $(BUILD)/$(TEST_TARGET): $(TESTS) $(TEST_FILES) $(TEST_INCLUDE) $(TESTS_INCLUDE)
 	$(TEST-CC) $(TESTFLAGS) $(TESTS) $(TEST_FILES) -o $@
+
+$(BUILD)/$(APP_TARGET): $(DEMO)/$(APP_DEMO).c src/application.c src/transport.c src/util.c
+	@$(TEST-CC) $(TESTFLAGS) src/application.c src/transport.c src/util.c $(DEMO)/$(APP_DEMO).c -o $@

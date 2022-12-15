@@ -4,6 +4,9 @@ ISR(TIMER0_OVF_vect) {
     TCNT0 = msTIMER_VALUE;
 
     //TODO: Add timer functions in here
+    net_update_timer();
+    transport_timer_update();
+    dll_timer();
 }
 
 void init_timer() {

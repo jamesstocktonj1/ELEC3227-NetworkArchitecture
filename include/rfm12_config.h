@@ -77,8 +77,8 @@
 
 //center frequency to use (+- FSK frequency shift)
 // #define RFM12_FREQUENCY       433170000UL
-// #define RFM12_FREQUENCY       434170000UL
-#define RFM12_FREQUENCY       433920000UL
+#define RFM12_FREQUENCY       434170000UL
+// #define RFM12_FREQUENCY       433920000UL
 
 //Transmit FSK frequency shift in kHz
 #define FSK_SHIFT             125000
@@ -101,7 +101,8 @@
 #define RFM12_XTAL_LOAD       RFM12_XTAL_11_5PF
 
 //use this for datarates >= 2700 Baud
-#define DATARATE_VALUE        RFM12_DATARATE_CALC_HIGH(115200.0)
+// #define DATARATE_VALUE        RFM12_DATARATE_CALC_HIGH(115200.0)
+#define DATARATE_VALUE        RFM12_DATARATE_CALC_HIGH(38400.0)
 
 //use this for 340 Baud < datarate < 2700 Baud
 //#define DATARATE_VALUE      RFM12_DATARATE_CALC_LOW(1200.0)

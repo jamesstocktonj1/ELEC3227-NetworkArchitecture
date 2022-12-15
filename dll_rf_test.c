@@ -6,6 +6,7 @@
 #include "include/serial.h"
 
 #include "include/util.h"
+#include "include/timer.h"
 #include "include/datalink.h"
 #include "include/datalink_phy_interface.h"
 
@@ -25,6 +26,7 @@ int main() {
     // TODO: Seed PRNG
 
     printf("Initialising...");
+    init_timer();
     dll_init();
     dll_rf_init();
     sei(); // enable interrupts

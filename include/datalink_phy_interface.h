@@ -6,7 +6,7 @@
 // How long after transmitting a frame before we can transmit again
 #define RFM12B_TRANSMIT_HOLDOFF_MS 50
 // How long we wait before resetting the RFM12B module
-#define RFM12B_INTERRUPT_TIMEOUT_MS 100
+#define RFM12B_INTERRUPT_TIMEOUT_MS 5000
 
 /**
  * This function checks if the RFM12B module is ready for more data to transmit
