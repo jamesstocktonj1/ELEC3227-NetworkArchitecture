@@ -497,7 +497,7 @@ void send_rrep(uint8_t *packet)
     uint8_t output_packet[RREP_PACKET_SIZE];
     output_packet[CONTROL_1_BYTE] = 0;
     output_packet[CONTROL_1_BYTE] |= RREP_ID<<6;
-    output_packet[CONTROL_1_BYTE] |= RREP_TTL<<4;
+    output_packet[CONTROL_1_BYTE] |= RREP_TTL<<2;
     output_packet[CONTROL_2_BYTE] = 0;
     output_packet[SRC_ADDRESS_BYTE] = net_node_address;
     output_packet[DEST_ADDRESS_BYTE] = packet[SRC_ADDRESS_BYTE];
