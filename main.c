@@ -122,7 +122,7 @@ void poll_network_stack() {
         printf("Transport TX Data\n");
         transport_handle_tx();
 
-        transportTxAddress = 0x00;
+        // transportTxAddress = 0x00;
     }
 
     if(transport_poll_rx()) {
