@@ -30,7 +30,7 @@
 #define SEG_SIZE  121
 
 // Timeout Constants
-#define TRANS_TIMEOUT   500
+#define TRANS_TIMEOUT   5000
 
 // Resend Constants
 #define TRANS_RESEND 5
