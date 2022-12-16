@@ -20,7 +20,7 @@ void queue_test()
     qrecord buffer;
     qrecord queue[QUEUE_MAX_SIZE];
     uint8_t packet1[DATA_PACKET_SIZE_NO_TRAN];
-    net_init();
+    net_init(APP_ADDR);
 
 
 
@@ -73,7 +73,7 @@ void handle_tx_test()
 {
     
     net_rt_entry route_table[DEFAULT_NETWORK_SIZE];
-    net_init();
+    net_init(APP_ADDR);
     transportTxFlag = 0;
     uint8_t packet1[DATA_PACKET_SIZE_NO_TRAN];
 
@@ -153,14 +153,6 @@ net_handle_rx_packet(rx_buffer, RREQ_PACKET_SIZE);
     {
         buffer = net_handle_tx();
     }*/
-
-
-    
-
-
-    
-
-    */
 
 
 }

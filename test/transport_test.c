@@ -14,7 +14,7 @@ void transport_state_machine_test() {
 
     fprintf(stderr, "  RUN:  transport_state_machine_test\n");
 
-    transport_init();
+    transport_init(APP_ADDR);
 
     transportRxAddress = APP_ADDR;
 
@@ -318,7 +318,7 @@ void transport_timeout_test() {
 
 void transport_communication_test() {
 
-    transport_init();
+    transport_init(APP_ADDR);
     application_init();
 
     // setup test data
