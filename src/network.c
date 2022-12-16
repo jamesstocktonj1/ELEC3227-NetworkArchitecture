@@ -373,7 +373,7 @@ uint8_t net_handle_rreq ( uint8_t *packet){
     //printf("Route table updated\n");
 #endif
     }
-
+    packet[DEST_ADDRESS_BYTE] = net_node_address;
     printf("RREQ RX To: %d\n", packet[DEST_ADDRESS_BYTE]);
 
     if (packet[DEST_ADDRESS_BYTE] == net_node_address || route_table[packet[DEST_ADDRESS_BYTE]].dest_seq > packet[RREQ_ORIG_SEQ_BYTE])
@@ -442,13 +442,28 @@ uint8_t net_handle_data(uint8_t *packet, uint8_t length)
             transportRxFlag = 1;
             transportRxAddress = packet[DEST_ADDRESS_BYTE];
 
-            transportRxSegment.control = (tran_packet[0] << 8) | tran_packet[1];
-            transportRxSegment.source = tran_packet[2];
-            transportRxSegment.destination = tran_packet[3];
-            transportRxSegment.length = tran_packet[4];
-            memcpy(transportRxSegment.data, &tran_packet[5], tran_packet[4]);
-            transportRxSegment.checksum = (tran_packet[tran_length-2] << 8) | tran_packet[tran_length-1];
-            
+            // transportRxSegment.control = (tran_packet[0] << 8) | tran_packet[1];
+            // transportRxSegment.source = tran_packet[2];
+            // transportRxSegment.destination = tran_packet[3];
+            // transportRxSegment.length = tran_packet[4];
+            // memcpy(transportRxSegment.data, &tran_packet[5], tran_packet[4]);
+            // transportRxSegment.checksum = (tran_packet[tran_length-2] << 8) | tran_packet[tran_length-1];
+
+            transportRxSegment.control = (packet[5] << 8) + packet[6];
+            transportRxSegment.source = packet[7];
+            transportRxSegment.destination = packet[8];
+            transportRxSegment.length = packet[9];
+            memcpy(transportRxSegment.data, packet+5, transportRxSegment.length);
+            transportRxSegment.checksum = (packet[length-4] << 8) + packet[length-3];
+
+
+
+            // seg.control = (data[0] << 8) + data[1];
+            // seg.source = data[2];
+            // seg.destination = data[3];
+            // seg.length = data[4];
+            // memcpy(seg.data, data-5, seg.length);
+            // seg.checksum = (data[length-2] << 8) + data[length-1];
             return 1;
         }
     else

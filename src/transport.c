@@ -94,6 +94,11 @@ void transport_handle_timeout() {
             transportConnectionType = NONE;
             transportTxFlag = 0;
         }
+
+        // default to timeout
+        transportConnectionState = IDLE;
+        transportConnectionType = NONE;
+        transportTxFlag = 0;
     }
 }
 
@@ -119,15 +124,19 @@ void transport_handle_rx() {
         return;
     }
 
-    if(transport_crc(transportRxSegment) != transportRxSegment.checksum) {
-        printf("Transport Error: Checksum Mismatch: expected 0x%04x but got 0x%04x\n", transportRxSegment.checksum, transport_crc(transportRxSegment));
-        return;
-    }
+    // if(transport_crc(transportRxSegment) != transportRxSegment.checksum) {
+    //     printf("Transport Error: Checksum Mismatch: expected 0x%04x but got 0x%04x\n", transportRxSegment.checksum, transport_crc(transportRxSegment));
+    //     return;
+    // }
+
+    printf("Transport Segment State: 0x%02x\n", segmentState);
 
     switch(transportConnectionState) {
         case IDLE:
             // client requests to connect
             if((transportConnectionType == NONE) && (segmentState == CONNECT)) {
+
+                printf("Transport: Connect State\n");
 
                 // host accepts connection
                 if(transportTxFlag == 0) {
@@ -139,7 +148,7 @@ void transport_handle_rx() {
                     transportTxSegment.control = (NET_ID << 8) | (applicationTxEncryption << 4) | ACCEPT;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = applicationTxPort;
-                    transportTxAddress = applicationTxAddress;
+                    // transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
                     transportTxSegment.checksum = transport_crc(transportTxSegment);
@@ -153,6 +162,8 @@ void transport_handle_rx() {
             // host accepts connection
             if((transportConnectionType == CLIENT) && (segmentState == ACCEPT)) {
 
+                printf("Transport: Accept State\n");
+
                 // client replies with data
                 if(transportTxFlag == 0) {
                     transportConnectionState = CONN_DATA;
@@ -164,7 +175,7 @@ void transport_handle_rx() {
                     transportTxSegment.control = (NET_ID << 8) | SEND;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = applicationTxPort;
-                    transportTxAddress = applicationTxAddress;
+                    // transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = applicationTxLength;
                     memcpy(transportTxSegment.data, applicationTxData, applicationTxLength);
                     transportTxSegment.checksum = transport_crc(transportTxSegment);
@@ -179,6 +190,8 @@ void transport_handle_rx() {
             // client sends data
             else if((transportConnectionType == HOST) && (segmentState == SEND)) {
                 
+                printf("Transport: Send State\n");
+
                 // host (n)acknowledges data
                 if(transportTxFlag == 0) {
                     transportConnectionState = CONN_DATA;
@@ -192,7 +205,7 @@ void transport_handle_rx() {
                     transportTxSegment.control = (NET_ID << 8) | ACK;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = applicationTxPort;
-                    transportTxAddress = applicationTxAddress;
+                    // transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
                     transportTxSegment.checksum = transport_crc(transportTxSegment);
@@ -204,6 +217,8 @@ void transport_handle_rx() {
         case CONN_DATA:
             if((transportConnectionType == CLIENT) && (segmentState == ACK)) {
                 
+                printf("Transport: ACK State\n");
+
                 // client closes connection
                 if(transportTxFlag == 0) {
                     transportConnectionState = IDLE;
@@ -216,13 +231,15 @@ void transport_handle_rx() {
                     transportTxSegment.control = (NET_ID << 8) | CLOSE;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = applicationTxPort;
-                    transportTxAddress = applicationTxAddress;
+                    // transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
                     transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
             }
             else if((transportConnectionType == CLIENT) && (segmentState == NACK)) {
+                                
+                printf("Transport: NACK State\n");
 
                 // client closes connection
                 if(transportTxFlag == 0) {
@@ -233,13 +250,16 @@ void transport_handle_rx() {
                     transportTxSegment.control = (NET_ID << 8) | CLOSE;
                     transportTxSegment.source = TRANSMIT_PORT;
                     transportTxSegment.destination = applicationTxPort;
-                    transportTxAddress = applicationTxAddress;
+                    // transportTxAddress = applicationTxAddress;
                     transportTxSegment.length = 0x01;
                     transportTxSegment.data[0] = 0x00;
                     transportTxSegment.checksum = transport_crc(transportTxSegment);
                 }
             }
             else if((transportConnectionType == HOST) && (segmentState == CLOSE)) {
+                                
+                printf("Transport: Close State\n");
+
                 transportConnectionState = IDLE;
                 transportConnectionType = NONE;
             }
