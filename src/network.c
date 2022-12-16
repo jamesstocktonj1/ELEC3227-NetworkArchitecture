@@ -437,6 +437,7 @@ uint8_t net_handle_data(uint8_t *packet, uint8_t length)
     if(packet[DEST_ADDRESS_BYTE] == net_node_address)
         {
             transportRxFlag = 1;
+            transportRxAddress = packet[DEST_ADDRESS_BYTE];
             transportRxSegment.control = packet[CONTROL_1_BYTE] << 8;
             transportRxSegment.control |= packet[CONTROL_2_BYTE];
             transportRxSegment.source = packet[SRC_ADDRESS_BYTE];
