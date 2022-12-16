@@ -531,6 +531,7 @@ void send_rrep(uint8_t *packet)
     output_packet[CONTROL_2_BYTE] = 0;
     output_packet[SRC_ADDRESS_BYTE] = net_node_address;
     output_packet[DEST_ADDRESS_BYTE] = packet[SRC_ADDRESS_BYTE];
+    output_packet[RREP_SENDER_BYTE] = net_node_address;
     output_packet[LENGTH_BYTE] = RREP_PACKET_SIZE;
     output_packet[RREP_DEST_SEQ_BYTE] = net_seqnum;
     output_packet[RREP_HOP_COUNT_BYTE] = 0;
