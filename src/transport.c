@@ -103,24 +103,24 @@ void transport_handle_rx() {
     uint8_t segmentState = transportRxSegment.control & PROT_MASK;
 
     // filter RX Address
-    if(transportRxAddress != nodeAddress) {
-        printf("Transport Error: Mismatching Node Address: expected 0x%02x but got 0x%02x\n", nodeAddress, transportRxAddress);
-        return;
-    }
+    // if(transportRxAddress != nodeAddress) {
+    //     printf("Transport Error: Mismatching Node Address: expected 0x%02x but got 0x%02x\n", nodeAddress, transportRxAddress);
+    //     return;
+    // }
 
     if((transportRxSegment.control >> 8) != NET_ID){
-        printf("Transport Error: Mismatching Network ID\n");
+        printf("Transport Error: Mismatching Network ID: expected 0x%02x but got 0x%02x\n", NET_ID, (transportRxSegment.control >> 8));
         return;
     }
 
     // filter RX Port
     if((transportConnectionState != IDLE) && (transportRxSegment.destination != applicationTxPort)) {
-        printf("Transport Error: Mismatch of Port\n");
+        printf("Transport Error: Mismatch of Port: expected 0x%02x but got 0x%02x\n", applicationTxPort, transportRxSegment.destination);
         return;
     }
 
     if(transport_crc(transportRxSegment) != transportRxSegment.checksum) {
-        printf("Transport Error: Checksum Mismatch\n");
+        printf("Transport Error: Checksum Mismatch: expected 0x%04x but got 0x%04x\n", transportRxSegment.checksum, transport_crc(transportRxSegment));
         return;
     }
 
