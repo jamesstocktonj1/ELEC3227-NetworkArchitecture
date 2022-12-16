@@ -151,7 +151,7 @@ void net_transport_poll()
         tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
         send_data(transportTxAddress, tx_packet, transportTxSegment.length + DATA_PACKET_SIZE_NO_TRAN );
 
-        fprintf(stderr,"transport buffer /n");
+        /*fprintf(stderr,"transport buffer /n");
         uint8_t i;
         for (i = 0; i < (7+transportTxSegment.length); i++) fprintf(stderr, "%02x ", tx_packet[i]);
                 printf("\n");
