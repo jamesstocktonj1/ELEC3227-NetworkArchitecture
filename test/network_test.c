@@ -80,8 +80,8 @@ void handle_tx_test()
 
     qrecord buffer;
     qrecord queue[QUEUE_MAX_SIZE];
-    uint8_t tx_buffer[NET_MAX_PACKET_SIZE];
-    uint8_t rx_buffer[NET_MAX_PACKET_SIZE];
+    uint8_t tx_buffer[NET_MAX_PACKET_SIZE] = {0, };
+    uint8_t rx_buffer[NET_MAX_PACKET_SIZE] = {0, };
     
     route_table[0].next_hop = 0;
     
@@ -160,6 +160,10 @@ void handle_tx_test()
     {
         buffer = net_handle_tx();
     }
+
+
+    rx_buffer[CONTROL_1_BYTE] = 
+    net_handle_rx_packet(rx_buffer, RREP_PACKET_SIZE);
 
 
 }
