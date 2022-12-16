@@ -311,10 +311,10 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
     {
         case RREQ_ID: 
         {
-        //printf("RREQ packet received\n");
+        printf("RREQ packet received\n");
             if(net_handle_rreq(packet))
                 {
-                    //printf("RREP queued\n");
+                    printf("RREP queued\n");
                     send_rrep(packet);
                 }
                 
@@ -324,7 +324,7 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
         case RREP_ID: 
         {
             
-            //printf("RREP packet received\n");
+            printf("RREP packet received\n");
             net_handle_rrep(packet);
                 
         }
@@ -332,14 +332,14 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
 
         case RERR_ID: 
         {
-            //printf("RERR packet received\n");
+            printf("RERR packet received\n");
             net_handle_rerr(packet);
         }
         break;
 
         case DATA_ID: 
         {
-            //printf("DATA packet received\n");
+            printf("DATA packet received\n");
             net_handle_data(packet, length);
         }
         break;
@@ -361,6 +361,7 @@ uint8_t net_handle_rreq ( uint8_t *packet){
 
     }
 
+    printf("RREQ RX To: %d\n", packet[DEST_ADDRESS_BYTE]);
 
     if (packet[DEST_ADDRESS_BYTE] == net_node_address || route_table[packet[DEST_ADDRESS_BYTE]].dest_seq > packet[RREQ_ORIG_SEQ_BYTE])
         return 1;
@@ -422,13 +423,12 @@ uint8_t net_handle_data(uint8_t *packet, uint8_t length)
     if(packet[DEST_ADDRESS_BYTE] == net_node_address)
         {
             transportRxFlag = 1;
-            transportRxSegment.control = packet[CONTROL_1_BYTE];
-            transportRxSegment.control = transportRxSegment.control<<8;
-            transportRxSegment.control = transportRxSegment.control + packet[CONTROL_2_BYTE];
+            transportRxSegment.control = packet[CONTROL_1_BYTE] << 8;
+            transportRxSegment.control |= packet[CONTROL_2_BYTE];
             transportRxSegment.source = packet[SRC_ADDRESS_BYTE];
             transportRxSegment.destination = packet[DEST_ADDRESS_BYTE];
             transportRxSegment.length = packet[LENGTH_BYTE];
-            memcpy(&(transportRxSegment.data), &packet[TRAN_SEGMENT_BYTE], transportRxSegment.length);
+            memcpy(transportRxSegment.data, packet+TRAN_SEGMENT_BYTE, transportRxSegment.length);
             transportRxSegment.checksum = packet[length - 1];
             
             return 1;
@@ -526,7 +526,9 @@ void send_rrep(uint8_t *packet)
     output_packet[9] = crc>>8;
     output_packet[10] = crc;
 
-    enqueue(output_packet, RREQ_PACKET_SIZE);
+    enqueue(output_packet, RREP_PACKET_SIZE);
+
+    printf("Route Reply!!!!!");
 
 
 }
