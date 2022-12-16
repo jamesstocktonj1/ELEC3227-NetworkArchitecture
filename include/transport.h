@@ -125,4 +125,7 @@ uint8_t transport_poll_rx(void);
  */
 uint16_t transport_crc(Segment data);
 
+uint8_t segment_data(Segment seg, uint8_t *data);
+Segment data_segment(uint8_t *data, uint8_t length);
+
 #endif

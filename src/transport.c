@@ -270,3 +270,31 @@ uint16_t transport_crc(Segment data) {
 
     return crc16_compute(temp, data.length + 5);
 }
+
+
+uint8_t segment_data(Segment seg, uint8_t *data) {
+    uint8_t length = seg.length + 7;
+
+    data[0] = seg.control >> 8;
+    data[1] = (uint8_t)seg.control;
+    data[2] = seg.source;
+    data[3] = seg.destination;
+    data[4] = seg.length;
+    memcpy(data+5, seg.data, seg.length);
+    data[seg.length+5] = seg.checksum >> 8;
+    data[seg.length+6] = (uint8_t)seg.checksum;
+
+    return length;
+}
+
+Segment data_segment(uint8_t *data, uint8_t length) {
+    Segment seg;
+    seg.control = (data[0] << 8) + data[1];
+    seg.source = data[2];
+    seg.destination = data[3];
+    seg.length = data[4];
+    memcpy(seg.data, data-5, seg.length);
+    seg.checksum = (data[length-2] << 8) + data[length-1];
+
+    return seg;
+}
