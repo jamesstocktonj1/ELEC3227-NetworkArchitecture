@@ -56,7 +56,7 @@ void application_demo() {
 
     printf("\nRecieved Data: ");
     for(int i=0; i<rxLength; i++) {
-        printf("0x%02x ", testData[i]);
+        printf("0x%02x ", testRxData[i]);
     }
     printf("\n");
 }
