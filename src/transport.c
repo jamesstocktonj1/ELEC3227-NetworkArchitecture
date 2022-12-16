@@ -104,6 +104,7 @@ void transport_handle_rx() {
 
     // filter RX Address
     if(transportRxAddress != nodeAddress) {
+        printf("Transport Error: Mismatching Node Address: expected 0x%02x but got 0x%02x\n", nodeAddress, transportRxAddress);
         return;
     }
 
