@@ -138,15 +138,14 @@ $(LIB_OBJECTS): $(LIBRARYS)
 $(BUILD)/$(TARGET).elf: $(TARGET).c $(OBJECTS) $(LIB_OBJECTS)
 	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) $(TARGET).c $(OBJECTS) $(LIB_OBJECTS) -o $(BUILD)/$(TARGET).elf
 
-$(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
-	$(OBJCOPY) $(BUILD)/$(TARGET).elf $(BUILD)/$(TARGET).hex -O ihex
+# $(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
+# 	$(OBJCOPY) $(BUILD)/$(TARGET).elf $(BUILD)/$(TARGET).hex -O ihex
 
 $(BUILD)/%.elf: %.c $(OBJECTS) $(LIB_OBJECTS)
 	$(CC) -DF_CPU=$(CLK) -mmcu=$(MCU) $(CFLAGS) $< $(OBJECTS) $(LIB_OBJECTS) -o $@
 
 $(BUILD)/%.hex: $(BUILD)/%.elf
 	$(OBJCOPY) $< $@ -O ihex
-
 
 $(BUILD)/$(TEST_TARGET): $(TESTS) $(TEST_FILES) $(TEST_INCLUDE) $(TESTS_INCLUDE)
 	$(TEST-CC) $(TESTFLAGS) $(TESTS) $(TEST_FILES) -o $@
