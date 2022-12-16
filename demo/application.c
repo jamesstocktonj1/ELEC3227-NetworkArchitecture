@@ -14,7 +14,7 @@ void format_segment(Segment seg, ConnectionType state);
 int main() {
 
     application_init();
-    transport_init();
+    transport_init(APP_ADDR);
 
     application_demo();
 }
