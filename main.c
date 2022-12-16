@@ -6,6 +6,7 @@
 #include "include/io.h"
 #include "include/serial.h"
 #include "include/timer.h"
+#include "include/eeprom.h"
 
 #include "include/util.h"
 #include "include/application.h"
@@ -13,20 +14,8 @@
 #include "include/network.h"
 #include "include/datalink_phy_interface.h"
 
-
-#define NODE1
-
 #undef APP_ADDR
-#ifdef NODE1
-#define DEST_ADDR 0x02
-#define APP_ADDR 0x01
-#else
-#define DEST_ADDR 0x01
-#define APP_ADDR 0x02
-#endif
-
-#define MAC_ADDR APP_ADDR
-
+#define APP_ADDR 0x0
 
 void poll_network_stack(void);
 
@@ -37,6 +26,15 @@ uint8_t rx_frame[DLL_MAX_FRAME_SIZE] = {0};
 uint8_t dllRxFlag;
 uint8_t dllRxLength;
 
+uint8_t app_addr = APP_ADDR;
+uint8_t dest_addr = 0x1;
+
+uint8_t data_1[5] = {0x00, 0x01, 0x02, 0x03, 0x04};
+uint8_t data_2[5] = {0x10, 0x11, 0x12, 0x13, 0x14};
+uint8_t data_3[5] = {0x20, 0x21, 0x22, 0x23, 0x24};
+uint8_t data_4[5] = {0x30, 0x31, 0x32, 0x33, 0x34};
+
+
 static qrecord buffer;
 
 int main() {
@@ -46,10 +44,35 @@ int main() {
 
     // TODO: Seed PRNG
 
-    printf("Initialising... ");
+    if (app_addr == 0) {
+        app_addr = eeprom_get_node_id();
+    } else {
+        eeprom_set_node_id(app_addr);
+    }
+
+    switch(app_addr) {
+        case 0x1:
+            dest_addr = 0x2;
+            break;
+        case 0x2:
+            dest_addr = 0x1;
+            break;
+        case 0x3:
+            dest_addr = 0x4;
+            break;
+        case 0x4:
+            dest_addr = 0x3;
+            break;
+    }
+
+    printf("\n\n\n");
+    printf("Starting Node 0x%x\n", app_addr);
+    _delay_ms(1000);
+
+    printf("Initialising...\n");
     application_init();
-    transport_init(APP_ADDR);
-    net_init(APP_ADDR);
+    transport_init(app_addr);
+    net_init(app_addr);
     dll_init();
     dll_rf_init();
     sei(); // enable interrupts
@@ -73,13 +96,10 @@ int main() {
             t--;
         }
         else {
-            #ifdef NODE1
-            uint8_t data[5] = {0x00, 0x01, 0x02, 0x03, 0x04};
-            #else
-            uint8_t data[5] = {0x10, 0x10, 0x20, 0x30, 0x40};
-            #endif
+            uint8_t *data_arr[4] = {data_1, data_2, data_3, data_4};
+            uint8_t *data = data_arr[app_addr-1 < 4 ? app_addr-1 : 0];
             uint8_t data_length = 5;
-            uint8_t sent = application_handle_tx(data, data_length, LIGHT_PORT, DEST_ADDR);
+            uint8_t sent = application_handle_tx(data, data_length, LIGHT_PORT, dest_addr);
 
             printf("Data TX:");
 
@@ -179,7 +199,7 @@ void poll_network_stack() {
 
     if (dll_rf_can_tx() && dll_has_tx_frame()) {
         // printf("DLL TX Frame\n");
-        uint8_t length = dll_get_tx_frame(tx_frame, MAC_ADDR);
+        uint8_t length = dll_get_tx_frame(tx_frame, app_addr);
         error = dll_rf_tx(tx_frame, length);
         if (error) printf("RF TX Error: %i\n", error);
     }
@@ -187,7 +207,7 @@ void poll_network_stack() {
     uint8_t length = dll_rf_rx(rx_frame);
     if (length) {
         // printf("DLL RX Frame\n");
-        error = dll_receive_dll_frame(rx_frame, length, MAC_ADDR);
+        error = dll_receive_dll_frame(rx_frame, length, app_addr);
         if (error) printf("DLL RX Error: %i\n", error);
     }
 
