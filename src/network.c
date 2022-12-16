@@ -186,7 +186,9 @@ qrecord net_handle_tx()
     masked = masked>>6;
     if(masked == RREQ_ID)
     {
-        //fprintf(stderr,"RREQ wil be sent\n");
+#ifdef NET_DBG_ROUTING
+        fprintf(stderr,"RREQ wil be sent\n");
+#endif
         memcpy(output.packet, tx_buffer.packet, tx_buffer.packet_size);
         output.next_hop = 0;
         output.packet_size = RREQ_PACKET_SIZE;
@@ -196,8 +198,9 @@ qrecord net_handle_tx()
 
     else if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
     {
-
-        //fprintf(stderr,"Route table entry exists\n");
+#ifdef NET_DBG_ROUTING
+        fprintf(stderr,"Route table entry exists\n");
+#endif  
         memcpy(output.packet, tx_buffer.packet, tx_buffer.packet_size);
         output.next_hop = route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop;
         output.packet_size = tx_buffer.packet_size;
@@ -206,7 +209,9 @@ qrecord net_handle_tx()
     else
     {
         count++;
-        //fprintf(stderr,"No route table entry\n");
+#ifdef NET_DBG_ROUTING
+        fprintf(stderr,"No route table entry\n");
+#endif  
         if(net_timeout_rreq())
         {    
             send_rreq(tx_buffer.packet[DEST_ADDRESS_BYTE]);
@@ -356,9 +361,9 @@ uint8_t net_handle_rreq ( uint8_t *packet){
     route_table[packet[SRC_ADDRESS_BYTE]].next_hop = packet[RREQ_SENDER_BYTE];
     route_table[packet[SRC_ADDRESS_BYTE]].dest_seq = packet[RREQ_ORIG_SEQ_BYTE];
     route_table[packet[SRC_ADDRESS_BYTE]].hop_count = packet[RREQ_HOP_COUNT_BYTE] + 1;
-
+#ifdef NET_DBG_ROUTING
     //printf("Route table updated\n");
-
+#endif
     }
 
     printf("RREQ RX To: %d\n", packet[DEST_ADDRESS_BYTE]);

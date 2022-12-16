@@ -6,6 +6,11 @@
 #include "datalink.h"
 #include <string.h>
 
+#define NET_DEBUG
+#ifdef NET_DEBUG
+#define NET_DBG_ROUTING
+#endif
+
 #define NET_MAX_SEGMENT_SIZE 121
 #define NET_MAX_PACKET_SIZE 128
 
