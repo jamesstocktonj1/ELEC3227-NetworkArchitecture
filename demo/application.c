@@ -148,6 +148,9 @@ void transport_demo() {
 void format_segment(Segment seg, ConnectionType state) {
     if(state == HOST) {
         printf("| Host   |");
+        uint8_t temp = seg.destination;
+        seg.destination = seg.source;
+        seg.source = temp;
     }
     else {
         printf("| Client |");
