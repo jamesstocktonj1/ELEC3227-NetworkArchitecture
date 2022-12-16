@@ -528,7 +528,7 @@ void send_rrep(uint8_t *packet)
 
     enqueue(output_packet, RREP_PACKET_SIZE);
 
-    printf("Route Reply!!!!!");
+    printf("Route Reply!!!!!\n");
 
 
 }
