@@ -130,8 +130,6 @@ void handle_tx_test()
 
     uint8_t temp = transportTxSegment.data[2];
 
-
-     fprintf(stderr, "Transport layer wants to send a packet %d\n", transportTxSegment.data[1]);
     
 
      fprintf(stderr, "Transport layer wants to send a packet\n\n");

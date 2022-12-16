@@ -155,6 +155,7 @@ void net_transport_poll()
         uint8_t i;
         for (i = 0; i < (7+transportTxSegment.length); i++) fprintf(stderr, "%02x ", tx_packet[i]);
                 printf("\n");
+                */
 
         transportTxFlag = 0;
 
@@ -457,7 +458,7 @@ uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_
 
     uint16_t crc = crc16_compute(packet, tran_seg_length + DATA_PACKET_SIZE_NO_TRAN);
     packet[LENGTH_BYTE+tran_seg_length] = crc>>8;
-    packet[LENGTH_BYTE+tran_seg_length] = crc;
+    packet[LENGTH_BYTE+tran_seg_length+1] = crc;
 
     enqueue(packet, tran_seg_length + DATA_PACKET_SIZE_NO_TRAN);
 
