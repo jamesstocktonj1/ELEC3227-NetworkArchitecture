@@ -101,6 +101,7 @@ int main() {
             uint8_t data_length = 5;
             uint8_t sent = application_handle_tx(data, data_length, LIGHT_PORT, dest_addr);
 
+            printf("\n\n\n\n\n\n\n\n\n");
             printf("Data TX:");
 
             if(sent) {
@@ -139,7 +140,7 @@ void poll_network_stack() {
 
     // handle transport layer
     if(transport_poll_tx()) {
-        printf("Transport TX Data\n");
+        printf("Transport TX Data to 0x%x\n", transportTxAddress);
         transport_handle_tx();
 
         // transportTxAddress = 0x00;
@@ -155,6 +156,7 @@ void poll_network_stack() {
     // handle network layer
     if(dllRxFlag)
     {
+        dllRxFlag = 0;
         printf("Network RX Data\n");
         net_handle_rx_packet(rx_packet, dllRxLength);
     }
