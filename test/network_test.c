@@ -18,7 +18,7 @@ void main_network_test() {
 void queue_test()
 {
     qrecord buffer;
-    qrecord queue[QUEUE_MAX_SIZE];
+    // qrecord queue[QUEUE_MAX_SIZE];
     uint8_t packet1[DATA_PACKET_SIZE_NO_TRAN];
     net_init(APP_ADDR);
 
@@ -76,11 +76,11 @@ void handle_tx_test()
     net_init(APP_ADDR);
     transport_init(4);
     transportTxFlag = 0;
-    uint8_t packet1[DATA_PACKET_SIZE_NO_TRAN];
+    // uint8_t packet1[DATA_PACKET_SIZE_NO_TRAN];
 
     qrecord buffer;
-    qrecord queue[QUEUE_MAX_SIZE];
-    uint8_t tx_buffer[NET_MAX_PACKET_SIZE] = {0, };
+    // qrecord queue[QUEUE_MAX_SIZE];
+    // uint8_t tx_buffer[NET_MAX_PACKET_SIZE] = {0, };
     uint8_t rx_buffer[NET_MAX_PACKET_SIZE] = {0, };
     
     route_table[0].next_hop = 0;
@@ -117,7 +117,7 @@ void handle_tx_test()
         buffer = net_handle_tx();
     }
 
-    uint8_t app_data[4] = {1,2,3,4};
+    // uint8_t app_data[4] = {1,2,3,4};
     transportTxFlag = 1;
     transportTxAddress = 5;
     transportTxSegment.control  = 4;
@@ -128,7 +128,7 @@ void handle_tx_test()
     transportTxSegment.data[2] = 2;
     transportTxSegment.length = 3;
 
-    uint8_t temp = transportTxSegment.data[2];
+    // uint8_t temp = transportTxSegment.data[2];
 
     
 
@@ -185,6 +185,9 @@ void handle_tx_test()
     {
         buffer = net_handle_tx();
     }
+
+    (void)buffer;
+    (void)route_table;
 
 
 }
