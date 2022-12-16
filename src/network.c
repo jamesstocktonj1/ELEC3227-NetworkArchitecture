@@ -461,8 +461,6 @@ uint8_t net_handle_data(uint8_t *packet, uint8_t length)
 
 uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_length)
 {
-    static uint8_t count = 0;
-
     uint8_t packet[tran_seg_length + DATA_PACKET_SIZE_NO_TRAN ];
     packet[CONTROL_1_BYTE] |= DATA_ID<<6;
     packet[CONTROL_1_BYTE] |= DEFAULT_TTL<<2;

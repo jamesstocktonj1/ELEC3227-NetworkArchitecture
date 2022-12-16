@@ -15,7 +15,7 @@
 #define NET_MAX_SEGMENT_SIZE 121
 #define NET_MAX_PACKET_SIZE 128
 
-#define ROUTE_TIMEOUT_MS 10000
+#define ROUTE_TIMEOUT_MS 60000
 #define REQUEST_TIMEOUT_MS 1000
 #define REQUEST_MAX_AMOUNT 3
 #define DEFAULT_NETWORK_SIZE 30
@@ -59,8 +59,6 @@
 
 #define NET_ROUTE_TABLE_TIMEOUT_MS 10000
 #define NET_RREQ_TIMEOUT_MS 10000
-
-#define NET_DEBUG 0
 
 typedef struct {
     uint8_t dest_node;
