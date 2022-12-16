@@ -1,5 +1,6 @@
 #include "transport_test.h"
 
+#include <string.h>
 
 void main_transport_test() {
 
