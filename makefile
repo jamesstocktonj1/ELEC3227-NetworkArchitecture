@@ -71,7 +71,7 @@ CFLAGS	+= -D__PLATFORM_AVR__
 
 #fuses
 LF = 0xff
-HF = 0x9c
+HF = 0x94
 EF = 0xff
 
 
