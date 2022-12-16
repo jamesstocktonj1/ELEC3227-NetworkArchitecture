@@ -140,8 +140,9 @@ void poll_network_stack() {
 
     // handle transport layer
     if(transport_poll_tx()) {
-        printf("Transport TX Data to 0x%x\n", transportTxAddress);
+        // printf("Transport TX Data\n");
         transport_handle_tx();
+        printf("Transport TX Data to 0x%x\n", transportTxAddress);
 
         // transportTxAddress = 0x00;
     }
