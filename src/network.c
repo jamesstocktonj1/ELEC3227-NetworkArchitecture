@@ -71,7 +71,8 @@ void net_handle_timeout_rt()
 {
     if (net_timeout_rt())
     {
-        for (int i=0; i<DEFAULT_NETWORK_SIZE; i++)
+        int i;
+        for (i=0; i<DEFAULT_NETWORK_SIZE; i++)
         {
             route_table[i].dest_node = i;
             route_table[i].dest_seq = 0;
@@ -98,13 +99,14 @@ uint8_t enqueue(uint8_t *packet, uint8_t packet_size)
                 front = 0;
 
             back++;
-            for (int i=0; i<packet_size; i++)
+            int i;
+            for (i=0; i<packet_size; i++)
             {
                 queue[back].packet[i] = packet[i];
             }
             queue[back].packet_size = packet_size;
             fprintf(stderr,"packet enqueued %d\n", back);
-            for (uint8_t i = 0; i < queue[back].packet_size; i++) fprintf(stderr, "%02x ", queue[back].packet[i]);
+            for (i = 0; i < queue[back].packet_size; i++) fprintf(stderr, "%02x ", queue[back].packet[i]);
                 printf("\n");
 
 
@@ -121,7 +123,8 @@ uint8_t dequeue (qrecord *buffer)
         }
             *buffer = queue[front];
             fprintf(stderr,"packet dequeued %d\n", front);
-            for (uint8_t i = 0; i < queue[back].packet_size; i++) fprintf(stderr, "%02x ", queue[front].packet[i]);
+            uint8_t i;
+            for (i = 0; i < queue[back].packet_size; i++) fprintf(stderr, "%02x ", queue[front].packet[i]);
                 printf("\n");
             front++;
             if (front > back)
@@ -149,7 +152,8 @@ void net_transport_poll()
         send_data(transportTxAddress, tx_packet, transportTxSegment.length + DATA_PACKET_SIZE_NO_TRAN );
 
         fprintf(stderr,"transport buffer /n");
-        for (uint8_t i = 0; i < (7+transportTxSegment.length); i++) fprintf(stderr, "%02x ", tx_packet[i]);
+        uint8_t i;
+        for (i = 0; i < (7+transportTxSegment.length); i++) fprintf(stderr, "%02x ", tx_packet[i]);
                 printf("\n");
 
         transportTxFlag = 0;

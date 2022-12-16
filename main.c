@@ -155,7 +155,8 @@ void poll_network_stack() {
         // SEND TO NET LAYER
 
         printf("DLL RX Packet: ");
-        for (uint8_t i = 0; i < length; i++) printf("%02x ", rx_packet[i]);
+        uint8_t i;
+        for (i = 0; i < length; i++) printf("%02x ", rx_packet[i]);
         printf("\n");
     }
 
@@ -168,7 +169,8 @@ void poll_network_stack() {
             if (!dll_has_tx_frame()) {
                 // printf("DLL TX Queue Packet\n");
                 printf("DLL TX Packet To %d: ", buffer.next_hop);
-                for (uint8_t i = 0; i < buffer.packet_size; i++) printf("%02x ", buffer.packet[i]);
+                uint8_t i;
+                for (i = 0; i < buffer.packet_size; i++) printf("%02x ", buffer.packet[i]);
                 printf("\n");
                 uint8_t queued = dll_queue_tx_net_packet(buffer.packet, buffer.packet_size, buffer.next_hop);
                 if (!queued) printf("Failed to queue TX packet\n");
