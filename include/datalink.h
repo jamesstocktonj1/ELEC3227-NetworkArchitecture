@@ -84,6 +84,8 @@ uint8_t dll_has_rx_packet();
 */
 uint8_t dll_get_rx_packet(uint8_t *packet);
 
+// The below functions are for internal use only
+
 /**
  * This function inserts a fragment into the receive table
  * @param data A pointer to the start of the data field
