@@ -259,7 +259,7 @@ uint8_t transport_poll_rx() {
 }
 
 uint16_t transport_crc(Segment data) {
-    uint8_t *temp = (uint8_t *)malloc(data.length + 5);
+    uint8_t temp[121];
 
     temp[0] = (data.control >> 8);
     temp[1] = (uint8_t)data.control;

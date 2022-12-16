@@ -144,7 +144,7 @@ void net_transport_poll()
          #ifdef NET_DEBUG
         fprintf(stderr, "Transport Queue Packet\n");
         #endif
-        uint8_t tx_packet[7+transportTxSegment.length];
+        uint8_t tx_packet[121];
 
 
         tx_packet[CONTROL_1_BYTE] = transportTxSegment.control>>8;
@@ -154,14 +154,14 @@ void net_transport_poll()
         tx_packet[LENGTH_BYTE] = transportTxSegment.length;
         memcpy(tx_packet + TRAN_SEGMENT_BYTE, transportTxSegment.data, transportTxSegment.length );
         tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length] = transportTxSegment.checksum>>8;
-        tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
+        tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum&0xff;
         send_data(transportTxAddress, tx_packet, transportTxSegment.length + DATA_PACKET_SIZE_NO_TRAN );
 
-        /*fprintf(stderr,"transport buffer /n");
-        uint8_t i;
-        for (i = 0; i < (7+transportTxSegment.length); i++) fprintf(stderr, "%02x ", tx_packet[i]);
-                printf("\n");
-                */
+        // printf("transport buffer: ");
+        // uint8_t i;
+        // for (i = 0; i < (7+transportTxSegment.length); i++) printf("%02x ", tx_packet[i]);
+        // printf("\n");
+                
 
         transportTxFlag = 0;
 
@@ -436,15 +436,18 @@ uint8_t net_handle_data(uint8_t *packet, uint8_t length)
 {
     if(packet[DEST_ADDRESS_BYTE] == net_node_address)
         {
+            uint8_t *tran_packet = packet+TRAN_SEGMENT_BYTE;
+            uint8_t tran_length = packet[LENGTH_BYTE];
+
             transportRxFlag = 1;
             transportRxAddress = packet[DEST_ADDRESS_BYTE];
-            transportRxSegment.control = packet[CONTROL_1_BYTE] << 8;
-            transportRxSegment.control |= packet[CONTROL_2_BYTE];
-            transportRxSegment.source = packet[SRC_ADDRESS_BYTE];
-            transportRxSegment.destination = packet[DEST_ADDRESS_BYTE];
-            transportRxSegment.length = packet[LENGTH_BYTE];
-            memcpy(transportRxSegment.data, packet+TRAN_SEGMENT_BYTE, transportRxSegment.length);
-            transportRxSegment.checksum = packet[length - 1];
+
+            transportRxSegment.control = (tran_packet[0] << 8) | tran_packet[1];
+            transportRxSegment.source = tran_packet[2];
+            transportRxSegment.destination = tran_packet[3];
+            transportRxSegment.length = tran_packet[4];
+            memcpy(transportRxSegment.data, &tran_packet[5], tran_packet[4]);
+            transportRxSegment.checksum = (tran_packet[tran_length-2] << 8) | tran_packet[tran_length-1];
             
             return 1;
         }
@@ -463,7 +466,7 @@ uint8_t net_handle_data(uint8_t *packet, uint8_t length)
 uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_length)
 {
     uint8_t packet[tran_seg_length + DATA_PACKET_SIZE_NO_TRAN ];
-    packet[CONTROL_1_BYTE] |= DATA_ID<<6;
+    packet[CONTROL_1_BYTE] = DATA_ID<<6;
     packet[CONTROL_1_BYTE] |= DEFAULT_TTL<<2;
     packet[CONTROL_2_BYTE] = 0;
     packet[SRC_ADDRESS_BYTE] = net_node_address;
@@ -472,8 +475,8 @@ uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_
     memcpy(&packet[TRAN_SEGMENT_BYTE], tran_segment, tran_seg_length);
 
     uint16_t crc = crc16_compute(packet, tran_seg_length + DATA_PACKET_SIZE_NO_TRAN);
-    packet[LENGTH_BYTE+tran_seg_length] = crc>>8;
-    packet[LENGTH_BYTE+tran_seg_length+1] = crc;
+    packet[TRAN_SEGMENT_BYTE+tran_seg_length] = crc>>8;
+    packet[TRAN_SEGMENT_BYTE+tran_seg_length+1] = crc;
 
     enqueue(packet, tran_seg_length + DATA_PACKET_SIZE_NO_TRAN);
 

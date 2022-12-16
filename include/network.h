@@ -6,7 +6,7 @@
 #include "datalink.h"
 #include <string.h>
 
-#define NET_DEBUG
+// #define NET_DEBUG
 #ifdef NET_DEBUG
 #define NET_DBG_ROUTING
 // #define NET_DBG_QUEUE
