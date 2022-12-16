@@ -74,6 +74,7 @@ void handle_tx_test()
     
     net_rt_entry route_table[DEFAULT_NETWORK_SIZE];
     net_init(APP_ADDR);
+    transport_init(4);
     transportTxFlag = 0;
     uint8_t packet1[DATA_PACKET_SIZE_NO_TRAN];
 
@@ -92,42 +93,50 @@ void handle_tx_test()
 
 
     fprintf(stderr, "Transport layer wants to send a packet\n\n");
-    transportTxFlag = 0;
 
-    transportTxAddress = 15;
+
+
+
+    //net_handle_rx_packet(rx_buffer, RREQ_PACKET_SIZE);
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+   
+
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+
+    uint8_t app_data[4] = {1,2,3,4};
+    transportTxFlag = 1;
+    transportTxAddress = 5;
     transportTxSegment.control  = 4;
     transportTxSegment.source = 6;
-    transportTxSegment.destination = 0;
+    transportTxSegment.destination = 7;
     transportTxSegment.data[0] = 0;
-    transportTxSegment.data[1] = 0;
-    transportTxSegment.data[2] = 0;
+    transportTxSegment.data[1] = 1;
+    transportTxSegment.data[2] = 2;
+    transportTxSegment.length = 3;
 
-    rx_buffer[CONTROL_1_BYTE] = 0;
-    rx_buffer[CONTROL_1_BYTE] |= RREQ_ID;
-    rx_buffer[SRC_ADDRESS_BYTE] = 1;
-    rx_buffer[DEST_ADDRESS_BYTE] = APP_ADDR;
+    uint8_t temp = transportTxSegment.data[2];
 
 
-net_handle_rx_packet(rx_buffer, RREQ_PACKET_SIZE);
-    /*net_transport_poll();
-    if(net_tx_poll())
-    {
-        buffer = net_handle_tx();
-    }
+     fprintf(stderr, "Transport layer wants to send a packet %d\n", transportTxSegment.data[1]);
+    
 
-    net_transport_poll();
-    if(net_tx_poll())
-    {
-        buffer = net_handle_tx();
-    }
+     fprintf(stderr, "Transport layer wants to send a packet\n\n");
 
-    net_transport_poll();
-    if(net_tx_poll())
-    {
-        buffer = net_handle_tx();
-    }
 
-    transportTxFlag = 1;
     net_transport_poll();
     if(net_tx_poll())
     {
@@ -152,7 +161,7 @@ net_handle_rx_packet(rx_buffer, RREQ_PACKET_SIZE);
     if(net_tx_poll())
     {
         buffer = net_handle_tx();
-    }*/
+    }
 
 
 }

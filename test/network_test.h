@@ -3,6 +3,7 @@
 
 #include "../include/network.h"
 #include "../include/util.h"
+#include "../include/transport.h"
 
 
 #include <assert.h>

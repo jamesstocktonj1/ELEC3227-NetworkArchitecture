@@ -104,6 +104,8 @@ uint8_t enqueue(uint8_t *packet, uint8_t packet_size)
             }
             queue[back].packet_size = packet_size;
             fprintf(stderr,"packet enqueued %d\n", back);
+            for (uint8_t i = 0; i < queue[back].packet_size; i++) fprintf(stderr, "%02x ", queue[back].packet[i]);
+                printf("\n");
 
 
             return 1;
@@ -119,6 +121,8 @@ uint8_t dequeue (qrecord *buffer)
         }
             *buffer = queue[front];
             fprintf(stderr,"packet dequeued %d\n", front);
+            for (uint8_t i = 0; i < queue[back].packet_size; i++) fprintf(stderr, "%02x ", queue[front].packet[i]);
+                printf("\n");
             front++;
             if (front > back)
                 front = back = -1;
@@ -131,7 +135,6 @@ void net_transport_poll()
     if(transportTxFlag == 1)
     {
         fprintf(stderr, "Transport Queue Packet\n");
-        printf("Transport Queue Packet\n");
         uint8_t tx_packet[7+transportTxSegment.length];
 
 
@@ -140,10 +143,14 @@ void net_transport_poll()
         tx_packet[SRC_ADDRESS_BYTE] = transportTxSegment.source;
         tx_packet[DEST_ADDRESS_BYTE] = transportTxSegment.destination;
         tx_packet[LENGTH_BYTE] = transportTxSegment.length;
-        memcpy(&tx_packet[TRAN_SEGMENT_BYTE], &(transportRxSegment.data), transportTxSegment.length );
+        memcpy(tx_packet + TRAN_SEGMENT_BYTE, transportTxSegment.data, transportTxSegment.length );
         tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length] = transportTxSegment.checksum>>8;
         tx_packet[TRAN_SEGMENT_BYTE + transportTxSegment.length + 1] = transportTxSegment.checksum;
         send_data(transportTxAddress, tx_packet, transportTxSegment.length + DATA_PACKET_SIZE_NO_TRAN );
+
+        fprintf(stderr,"transport buffer /n");
+        for (uint8_t i = 0; i < (7+transportTxSegment.length); i++) fprintf(stderr, "%02x ", tx_packet[i]);
+                printf("\n");
 
         transportTxFlag = 0;
 
@@ -199,7 +206,7 @@ qrecord net_handle_tx()
             enqueue(tx_buffer.packet, tx_buffer.packet_size);
         }
 
-        if (count == 4)
+        if (count == 2)
         {
             net_reset_timer_rreq();
             count = 0;
@@ -380,6 +387,8 @@ uint8_t net_handle_rrep ( uint8_t *packet){
         route_table[packet[SRC_ADDRESS_BYTE]].next_hop = packet[RREP_SENDER_BYTE];
         route_table[packet[SRC_ADDRESS_BYTE]].dest_seq = packet[RREP_DEST_SEQ_BYTE];
         route_table[packet[SRC_ADDRESS_BYTE]].hop_count= packet[RREP_HOP_COUNT_BYTE];
+
+        printf("Route table updated\n");
     
     }
 
@@ -448,7 +457,7 @@ uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_
 
     enqueue(packet, tran_seg_length + DATA_PACKET_SIZE_NO_TRAN);
 
-    if (&route_table[dest_node] == NULL)
+    /*if (&route_table[dest_node] == NULL)
         count++;
 
 
@@ -457,7 +466,7 @@ uint8_t send_data (  uint8_t dest_node, uint8_t *tran_segment, uint8_t tran_seg_
         count = 0;
         transportErrorFlag = 1;
         return 0;
-    }
+    }*/
 
     return 1;
 }
