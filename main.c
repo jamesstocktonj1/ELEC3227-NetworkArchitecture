@@ -94,7 +94,7 @@ int main() {
 
         if(t) {
             t--;
-        }
+        } else if (app_addr != 4) { t = 5000; }
         else {
             uint8_t *data_arr[4] = {data_1, data_2, data_3, data_4};
             uint8_t *data = data_arr[app_addr-1 < 4 ? app_addr-1 : 0];
