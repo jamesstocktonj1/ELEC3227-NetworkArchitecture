@@ -98,6 +98,8 @@ void transport_handle_timeout() {
 }
 
 void transport_handle_rx() {
+    transportRxFlag = 0; // Clear flag
+    
     uint8_t segmentState = transportRxSegment.control & PROT_MASK;
 
     // filter RX Address
