@@ -70,6 +70,7 @@ PROGRAMMER = usbasp
 CFLAGS	+= -D__PLATFORM_AVR__
 
 #fuses
+# https://eleccelerator.com/fusecalc/fusecalc.php?chip=atmega644p
 LF = 0xff
 HF = 0x94
 EF = 0xff
