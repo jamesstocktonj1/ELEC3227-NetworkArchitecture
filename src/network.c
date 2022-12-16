@@ -105,10 +105,12 @@ uint8_t enqueue(uint8_t *packet, uint8_t packet_size)
                 queue[back].packet[i] = packet[i];
             }
             queue[back].packet_size = packet_size;
-            /*fprintf(stderr,"\npacket enqueued %d\n", back);
+
+            #ifdef NET_DEBUG
+            fprintf(stderr,"\npacket enqueued %d\n", back);
             for (i = 0; i < queue[back].packet_size; i++) fprintf(stderr, "%02x ", queue[back].packet[i]);
                 printf("\n");
-            */
+            #endif
 
             return 1;
             
@@ -122,12 +124,12 @@ uint8_t dequeue (qrecord *buffer)
             return 0;
         }
             *buffer = queue[front];
-            /*
+            #ifdef NET_DEBUG
             fprintf(stderr,"\npacket dequeued %d\n", front);
             uint8_t i;
             for (i = 0; i < queue[back].packet_size; i++) fprintf(stderr, "%02x ", queue[front].packet[i]);
                 printf("\n");
-            */
+            #endif
             front++;
             if (front > back)
                 front = back = -1;
@@ -139,7 +141,9 @@ void net_transport_poll()
 {
     if(transportTxFlag == 1)
     {
-        //fprintf(stderr, "Transport Queue Packet\n");
+         #ifdef NET_DEBUG
+        fprintf(stderr, "Transport Queue Packet\n");
+        #endif
         uint8_t tx_packet[7+transportTxSegment.length];
 
 
@@ -186,7 +190,9 @@ qrecord net_handle_tx()
     masked = masked>>6;
     if(masked == RREQ_ID)
     {
-        //fprintf(stderr,"RREQ wil be sent\n");
+        #ifdef NET_DEBUG
+        fprintf(stderr,"RREQ wil be sent\n");
+        #endif
         memcpy(output.packet, tx_buffer.packet, tx_buffer.packet_size);
         output.next_hop = 0;
         output.packet_size = RREQ_PACKET_SIZE;
@@ -196,8 +202,9 @@ qrecord net_handle_tx()
 
     else if (route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop != UNKNOWN_NEXT_HOP)
     {
-
-        //fprintf(stderr,"Route table entry exists\n");
+        #ifdef NET_DEBUG
+        fprintf(stderr,"Route table entry exists\n");
+        #endif
         memcpy(output.packet, tx_buffer.packet, tx_buffer.packet_size);
         output.next_hop = route_table[tx_buffer.packet[DEST_ADDRESS_BYTE]].next_hop;
         output.packet_size = tx_buffer.packet_size;
@@ -206,7 +213,9 @@ qrecord net_handle_tx()
     else
     {
         count++;
-        //fprintf(stderr,"No route table entry\n");
+        #ifdef NET_DEBUG
+        fprintf(stderr,"No route table entry\n");
+        #endif
         if(net_timeout_rreq())
         {    
             send_rreq(tx_buffer.packet[DEST_ADDRESS_BYTE]);
@@ -311,10 +320,14 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
     {
         case RREQ_ID: 
         {
-        printf("RREQ packet received\n");
+        #ifdef NET_DEBUG
+        fprintf(stderr, "RREQ packet received\n");
+        #endif
             if(net_handle_rreq(packet))
                 {
-                    printf("RREP queued\n");
+                    #ifdef NET_DEBUG
+                    fprintf(stderr,"RREP queued\n");
+                    #endif
                     send_rrep(packet);
                 }
                 
@@ -323,8 +336,9 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
 
         case RREP_ID: 
         {
-            
-            printf("RREP packet received\n");
+            #ifdef NET_DEBUG
+            fprintf(stderr, "RREP packet received\n");
+            #endif
             net_handle_rrep(packet);
                 
         }
@@ -332,14 +346,18 @@ void net_handle_rx_packet(uint8_t *packet, uint8_t length){
 
         case RERR_ID: 
         {
-            printf("RERR packet received\n");
+            #ifdef NET_DEBUG
+            fprintf(stderr, "RERR packet received\n");
+            #endif
             net_handle_rerr(packet);
         }
         break;
 
         case DATA_ID: 
         {
-            printf("DATA packet received\n");
+            #ifdef NET_DEBUG
+            fprintf(stderr, "DATA packet received\n");
+            #endif
             net_handle_data(packet, length);
         }
         break;
@@ -357,7 +375,9 @@ uint8_t net_handle_rreq ( uint8_t *packet){
     route_table[packet[SRC_ADDRESS_BYTE]].dest_seq = packet[RREQ_ORIG_SEQ_BYTE];
     route_table[packet[SRC_ADDRESS_BYTE]].hop_count = packet[RREQ_HOP_COUNT_BYTE] + 1;
 
-    //printf("Route table updated\n");
+    #ifdef NET_DEBUG
+    fprintf(stderr, "Route table updated\n");
+    #endif
 
     }
 
@@ -396,8 +416,9 @@ uint8_t net_handle_rrep ( uint8_t *packet){
         route_table[packet[SRC_ADDRESS_BYTE]].dest_seq = packet[RREP_DEST_SEQ_BYTE];
         route_table[packet[SRC_ADDRESS_BYTE]].hop_count= packet[RREP_HOP_COUNT_BYTE];
 
-        //printf("Route table updated\n");
-    
+        #ifdef NET_DEBUG
+        fprintf(stderr, "Route table updated\n");
+        #endif
     }
 
     if(packet[DEST_ADDRESS_BYTE] == net_node_address)

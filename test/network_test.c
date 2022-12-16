@@ -161,9 +161,30 @@ void handle_tx_test()
         buffer = net_handle_tx();
     }
 
+   
+    rx_buffer[CONTROL_1_BYTE] = 0;
+    rx_buffer[CONTROL_1_BYTE] |= RREP_ID<<6;
+    rx_buffer[CONTROL_1_BYTE] |= RREP_TTL<<2;
+    rx_buffer[CONTROL_2_BYTE] = 0;
+    rx_buffer[SRC_ADDRESS_BYTE] = 5;
+    rx_buffer[DEST_ADDRESS_BYTE] = APP_ADDR;
+    rx_buffer[RREP_DEST_SEQ_BYTE] = 2;
+    rx_buffer[RREP_HOP_COUNT_BYTE] = 1;
+    rx_buffer[RREP_NEXTHOP_BYTE] = APP_ADDR;
 
-    rx_buffer[CONTROL_1_BYTE] = 
     net_handle_rx_packet(rx_buffer, RREP_PACKET_SIZE);
+
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
+
+    net_transport_poll();
+    if(net_tx_poll())
+    {
+        buffer = net_handle_tx();
+    }
 
 
 }

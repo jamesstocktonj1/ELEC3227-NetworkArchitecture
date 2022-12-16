@@ -54,6 +54,8 @@
 #define NET_ROUTE_TABLE_TIMEOUT_MS 10000
 #define NET_RREQ_TIMEOUT_MS 10000
 
+#define NET_DEBUG 0
+
 typedef struct {
     uint8_t dest_node;
     uint8_t next_hop; 
