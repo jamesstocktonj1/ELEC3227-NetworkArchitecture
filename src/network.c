@@ -106,7 +106,7 @@ uint8_t enqueue(uint8_t *packet, uint8_t packet_size)
             }
             queue[back].packet_size = packet_size;
 
-            #ifdef NET_DEBUG
+            #ifdef NET_DBG_QUEUE
             fprintf(stderr,"\npacket enqueued %d\n", back);
             for (i = 0; i < queue[back].packet_size; i++) fprintf(stderr, "%02x ", queue[back].packet[i]);
                 printf("\n");
@@ -124,7 +124,7 @@ uint8_t dequeue (qrecord *buffer)
             return 0;
         }
             *buffer = queue[front];
-            #ifdef NET_DEBUG
+            #ifdef NET_DBG_QUEUE
             fprintf(stderr,"\npacket dequeued %d\n", front);
             uint8_t i;
             for (i = 0; i < queue[back].packet_size; i++) fprintf(stderr, "%02x ", queue[front].packet[i]);
@@ -180,7 +180,6 @@ uint8_t net_tx_poll()
 
 qrecord net_handle_tx()
 {
-    static uint8_t count = 0;
     qrecord output;
     output.packet_size = 0;
     output.next_hop = 0;
@@ -196,6 +195,7 @@ qrecord net_handle_tx()
         memcpy(output.packet, tx_buffer.packet, tx_buffer.packet_size);
         output.next_hop = 0;
         output.packet_size = RREQ_PACKET_SIZE;
+        net_reset_timer_rreq();
         return output;
     }
 
@@ -212,21 +212,16 @@ qrecord net_handle_tx()
     }
     else
     {
-        count++;
-#ifdef NET_DBG_ROUTING
-        fprintf(stderr,"No route table entry\n");
-#endif  
         if(net_timeout_rreq())
-        {    
+        {  
+#ifdef NET_DBG_ROUTING
+            fprintf(stderr,"No route table entry\n");
+#endif    
             send_rreq(tx_buffer.packet[DEST_ADDRESS_BYTE]);
-            enqueue(tx_buffer.packet, tx_buffer.packet_size);
         }
 
-        if (count == 2)
-        {
-            net_reset_timer_rreq();
-            count = 0;
-        }
+        enqueue(tx_buffer.packet, tx_buffer.packet_size);
+
         return output;
     }
 

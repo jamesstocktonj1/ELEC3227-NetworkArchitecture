@@ -9,6 +9,7 @@
 #define NET_DEBUG
 #ifdef NET_DEBUG
 #define NET_DBG_ROUTING
+// #define NET_DBG_QUEUE
 #endif
 
 #define NET_MAX_SEGMENT_SIZE 121
