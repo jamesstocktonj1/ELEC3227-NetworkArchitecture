@@ -5,6 +5,9 @@
 #include "../include/datalink.h"
 #include "../include/util.h"
 
+#define FAIL { printf("FAIL\n"); assert(0); return; }
+#define PASS printf("PASS\n");
+
 uint8_t get_next_prng_value();
 void serialisation_test();
 
