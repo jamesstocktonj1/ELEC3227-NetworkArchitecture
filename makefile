@@ -63,6 +63,9 @@ DEMO = demo
 APP_DEMO = 	application
 APP_TARGET = $(APP_DEMO).out
 
+DLL_DEMO = dll_demo
+DLL_TARGET = $(DLL_DEMO).out
+
 #programmer constant
 AVRDUDE = avrdude 
 PROGRAMMER = usbasp
@@ -86,6 +89,10 @@ app_demo: $(BUILD)/$(APP_TARGET)
 
 .PHONY: dll_rf_test
 dll_rf_test: $(BUILD)/$(DLL_RF_TEST_TARGET).hex
+
+.PHONY: dll_rf_test
+dll_demo: $(BUILD)/$(DLL_TARGET)
+	@$(BUILD)/$(DLL_TARGET)
 
 disasm: $(BUILD)/$(TARGET).elf
 	$(OBJDUMP) -d $(BUILD)/$(TARGET).elf
@@ -152,3 +159,6 @@ $(BUILD)/$(TEST_TARGET): $(TESTS) $(TEST_FILES) $(TEST_INCLUDE) $(TESTS_INCLUDE)
 
 $(BUILD)/$(APP_TARGET): $(DEMO)/$(APP_DEMO).c src/application.c src/transport.c src/util.c
 	@$(TEST-CC) $(TESTFLAGS) src/application.c src/transport.c src/util.c $(DEMO)/$(APP_DEMO).c -o $@
+
+$(BUILD)/$(DLL_TARGET): $(DEMO)/$(DLL_DEMO).c src/datalink.c src/util.c
+	@$(TEST-CC) $(TESTFLAGS) src/datalink.c src/util.c $(DEMO)/$(DLL_DEMO).c -o $@

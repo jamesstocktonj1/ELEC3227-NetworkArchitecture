@@ -12,7 +12,7 @@
 
 char msg[] = "This message should be longer than the MTU!";
 
-#define MAC_ADDR 0x1
+#define MAC_ADDR 0x2
 
 // Add extra byte so we can append null byte before printing
 uint8_t rx_packet[DLL_MAX_PACKET_SIZE+1] = {0};

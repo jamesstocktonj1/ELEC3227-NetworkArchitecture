@@ -13,6 +13,7 @@ static uint8_t dll_rx_packet_length = 0;
 
 void dll_init() {
     uint8_t i;
+    dll_sequence_number = 0;
     for (i = 0; i < DLL_RX_TABLE_SIZE; i++) {
         dll_rx_table[i].free = 1;
     }
