@@ -12,7 +12,7 @@ void main_datalink_test() {
 
     printf("main_datalink_test\n");
     dll_init();
-
+    printf("PLEASE SEE demo/dll_demo.c\n");
     
 }
 
