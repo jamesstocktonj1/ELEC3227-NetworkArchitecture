@@ -148,7 +148,7 @@ void deserialisation_check() {
     if (dll_receive_dll_frame(wrong_footer, sizeof(wrong_footer), mac_addr) != -6) FAIL
     else PASS
 
-    printf("Checking frame wrong footer error occurs...");
+    printf("Checking frame wrong checksum error occurs...");
     uint8_t wrong_checksum[] = {0x02, 0x02, 0x8a, 0x42, 0x05, 0x07, 0x72, 0x6c, 0x64, 0x21, 0x21, 0x21, 0x00, 0xFF, 0xFF, 0x03};
     if (dll_receive_dll_frame(wrong_checksum, sizeof(wrong_checksum), mac_addr) != -7) FAIL
     else PASS
