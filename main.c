@@ -24,7 +24,7 @@ uint8_t tx_frame[DLL_MAX_FRAME_SIZE] = {0};
 uint8_t rx_frame[DLL_MAX_FRAME_SIZE] = {0};
 
 uint8_t dllRxFlag;
-uint8_t dllRxLength;
+// uint8_t dllRxLength;
 
 uint8_t app_addr = APP_ADDR;
 uint8_t dest_addr = 0x1;
