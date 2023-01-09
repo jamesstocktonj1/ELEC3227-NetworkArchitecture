@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+static uint8_t nodeAddress;
+
 // Transport Buffer
 uint8_t transportTxFlag;
 Segment transportTxSegment;
@@ -36,7 +38,9 @@ uint8_t transport_timeout() {
     return transport_timer == 0;
 }
 
-void transport_init() {
+void transport_init(uint8_t node_address) {
+    nodeAddress = node_address;
+
     transportTxFlag = 0;
     transportTxSegment.data = (uint8_t *)malloc(BUFF_SIZE);
     transportTxAddress = 0;
@@ -94,26 +98,29 @@ void transport_handle_timeout() {
 }
 
 void transport_handle_rx() {
+    transportRxFlag = 0; // Clear flag
+    
     uint8_t segmentState = transportRxSegment.control & PROT_MASK;
 
     // filter RX Address
-    if(transportRxAddress != APP_ADDR) {
-        return;
-    }
+    // if(transportRxAddress != nodeAddress) {
+    //     printf("Transport Error: Mismatching Node Address: expected 0x%02x but got 0x%02x\n", nodeAddress, transportRxAddress);
+    //     return;
+    // }
 
     if((transportRxSegment.control >> 8) != NET_ID){
-        printf("Transport Error: Mismatching Network ID\n");
+        printf("Transport Error: Mismatching Network ID: expected 0x%02x but got 0x%02x\n", NET_ID, (transportRxSegment.control >> 8));
         return;
     }
 
     // filter RX Port
     if((transportConnectionState != IDLE) && (transportRxSegment.destination != applicationTxPort)) {
-        printf("Transport Error: Mismatch of Port\n");
+        printf("Transport Error: Mismatch of Port: expected 0x%02x but got 0x%02x\n", applicationTxPort, transportRxSegment.destination);
         return;
     }
 
     if(transport_crc(transportRxSegment) != transportRxSegment.checksum) {
-        printf("Transport Error: Checksum Mismatch\n");
+        printf("Transport Error: Checksum Mismatch: expected 0x%04x but got 0x%04x\n", transportRxSegment.checksum, transport_crc(transportRxSegment));
         return;
     }
 
@@ -252,7 +259,7 @@ uint8_t transport_poll_rx() {
 }
 
 uint16_t transport_crc(Segment data) {
-    uint8_t *temp = (uint8_t *)malloc(data.length + 5);
+    uint8_t temp[121];
 
     temp[0] = (data.control >> 8);
     temp[1] = (uint8_t)data.control;

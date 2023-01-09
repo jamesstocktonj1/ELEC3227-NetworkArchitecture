@@ -88,6 +88,7 @@ typedef enum{
 //see rfm12.c for more documentation
 void rfm12_init(void);
 void rfm12_tick(void);
+void rfm12_reset(void);
 
 
 #if RFM12_USE_RX_CALLBACK
@@ -273,6 +274,8 @@ extern rf_tx_buffer_t rf_tx_buffer;
 //the control struct
 extern rfm12_control_t ctrl;
 
+// This flag is set when the RFM12B module fires an interrupt
+extern uint8_t rf_interrupt_occurred;
 
 /************************
  * INLINE FUNCTIONS

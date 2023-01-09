@@ -4,14 +4,21 @@
 #include "util.h"
 #include "transport.h"
 #include "datalink.h"
+#include <string.h>
+
+#define NET_DEBUG
+#ifdef NET_DEBUG
+#define NET_DBG_ROUTING
+// #define NET_DBG_QUEUE
+#endif
 
 #define NET_MAX_SEGMENT_SIZE 121
 #define NET_MAX_PACKET_SIZE 128
 
-#define ROUTE_TIMEOUT_MS 2000
-#define REQUEST_TIMEOUT_MS 500
+#define ROUTE_TIMEOUT_MS 60000
+#define REQUEST_TIMEOUT_MS 1000
 #define REQUEST_MAX_AMOUNT 3
-#define DEFAULT_NETWORK_SIZE 10
+#define DEFAULT_NETWORK_SIZE 30
 
 #define RREQ_ID 0
 #define RREP_ID 1
@@ -36,10 +43,10 @@
 #define RREP_DEST_SEQ_BYTE 7
 #define RREP_HOP_COUNT_BYTE 8
 
-#define RREQ_PACKET_SIZE 10
-#define RREP_PACKET_SIZE 9
+#define RREQ_PACKET_SIZE 12
+#define RREP_PACKET_SIZE 11
 #define RERR_PACKET_SIZE 7
-#define DATA_PACKET_SIZE_NO_TRAN 5
+#define DATA_PACKET_SIZE_NO_TRAN 7
 
 #define QUEUE_MAX_SIZE 5
 #define DEFAULT_TTL 5
@@ -49,6 +56,9 @@
 #define RREP_TTL 10
 
 #define UNKNOWN_NEXT_HOP 255
+
+#define NET_ROUTE_TABLE_TIMEOUT_MS 10000
+#define NET_RREQ_TIMEOUT_MS 10000
 
 typedef struct {
     uint8_t dest_node;
@@ -71,12 +81,20 @@ extern qrecord dllTxPacket;
 extern uint8_t dllTxLength;
 extern uint8_t dllTxNexthop;
 
+void net_reset_timer_rt();
+void net_update_timer_rt();
+uint8_t net_timeout_rt();
+void net_handle_timeout_rt();
 
+void net_reset_timer_rreq();
+void net_update_timer_rreq();
+uint8_t net_timeout_rreq();
+void net_handle_timeout_rreq();
 
-
-void net_init();
+void net_init(uint8_t net_node_addr);
 
 void net_handle_rx_packet(uint8_t *packet, uint8_t length);
+qrecord net_handle_tx();
 
 uint8_t  net_handle_rreq(uint8_t *packet);
 uint8_t  net_handle_rrep(uint8_t *packet);
@@ -89,8 +107,13 @@ void send_rrep(uint8_t *packet);
 void resend_packet(uint8_t *packet, uint8_t length);
 
 void send_packet();
+uint8_t net_tx_poll();
+void net_transport_poll();
 
 
+
+uint8_t enqueue(uint8_t *packet, uint8_t packet_size);
+uint8_t dequeue (qrecord *buffer);
 
 
 #endif

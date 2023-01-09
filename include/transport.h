@@ -30,7 +30,7 @@
 #define SEG_SIZE  121
 
 // Timeout Constants
-#define TRANS_TIMEOUT   500
+#define TRANS_TIMEOUT   5000
 
 // Resend Constants
 #define TRANS_RESEND 5
@@ -63,7 +63,7 @@ extern ConnectionType transportConnectionType;
  * This function initialises all the variables for the transport layer
  * 
  */
-void transport_init(void);
+void transport_init(uint8_t node_address);
 
 /**
  * This function resets the timer for the transport layer

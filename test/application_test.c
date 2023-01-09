@@ -1,5 +1,6 @@
 #include "application_test.h"
 
+#include <string.h>
 
 void main_application_test() {
 
@@ -126,7 +127,7 @@ void application_data_test() {
     uint8_t testRxData[3];
     uint8_t testPort;
 
-    uint8_t isRx = application_handle_rx(testRxData, testPort);
+    uint8_t isRx = application_handle_rx(testRxData, &testPort);
     if(isRx == 0) {
         fprintf(stderr, "  FAIL: application_tx_data_test\n");
         fprintf(stderr, "  Application failed to recieve data\n");
